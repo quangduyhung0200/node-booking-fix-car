@@ -179,6 +179,21 @@ let postRegisterGara = async (req, res) => {
     }
 
 }
+let readTopGara = async (req, res) => {
+    let limit = req.query.limit;
+    if (!limit) limit = 10;
+    console.log(req.params)
+    try {
+        let response = await userService.readTopGaraService(+limit);
+        return res.status(200).json(response)
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            errCode: -1,
+            massge: 'erro from server...'
+        })
+    }
+}
 module.exports = {
-    postRegister, getGender, handldLogin, getUserAccount, handlLogout, readProvind, postRegisterGara
+    postRegister, getGender, handldLogin, getUserAccount, handlLogout, readProvind, postRegisterGara, readTopGara
 }

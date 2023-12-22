@@ -251,39 +251,62 @@ let accepGaraService = async (data) => {
     }
 }
 
-let test = async (page, limit) => {
+let test = async () => {
+
+    try {
+
+        let user = await db.CarCompany.findAll({
+
+
+
+        });
+
+        if (user) {
+
+            return {
+                EM: 'GET DATA SUCCESS',
+                EC: 0,
+                DT: user
+            }
+        }
+        else {
+            return {
+                EM: 'GET DATA SUCCESS',
+                EC: 1,
+                DT: ''
+            }
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: []
+        }
+    }
+}
+let getCarWithPage = async (page, limit) => {
     try {
         let offset = (page - 1) * limit
-        let { count, rows } = await db.User.findAndCountAll({
-            where: {
-                garaId: {
-                    [Op.ne]: null
-                }
-            },
-            attributes: ["id", "userName"],
-            include: { model: db.Gara, attributes: ["id", "nameGara", "address", "phone", "description", "descriptionHTML"], as: 'userGara' },
+        let { count, rows } = await db.Car.findAndCountAll({
+            attributes: ["id", "nameCar", "carCompanyId", "avata", "descriptions"],
+            include: { model: db.CarCompany, attributes: ["id", "name", "description", "avata"], as: 'carCompanyData' },
             order: [['id', 'DESC']],
-            raw: true,
+            raw: false,
             nest: true,
 
             offset: offset,
             limit: limit
         })
         let totalPage = Math.ceil(count / limit)
-        let data = {}
-
-
-        data = {
+        let data = {
             totalRow: count,
             totalPage: totalPage,
             user: rows
 
         }
 
-
-
         if (data) {
-
 
             return {
                 EM: 'GET DATA SUCCESS',
@@ -307,6 +330,39 @@ let test = async (page, limit) => {
         }
     }
 }
+let readCarCompany = async (page, limit) => {
+    try {
+
+        let user = await db.CarCompany.findAll({
+
+
+
+        });
+
+        if (user) {
+
+            return {
+                EM: 'GET DATA SUCCESS',
+                EC: 0,
+                DT: user
+            }
+        }
+        else {
+            return {
+                EM: 'GET DATA SUCCESS',
+                EC: 1,
+                DT: ''
+            }
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: []
+        }
+    }
+}
 module.exports = {
-    getUserWithPage, getAllUser, getGaraWithPage, getAllGara, getGaraWithId, accepGaraService, test
+    getUserWithPage, getAllUser, getGaraWithPage, getAllGara, getGaraWithId, accepGaraService, test, getCarWithPage, readCarCompany
 }

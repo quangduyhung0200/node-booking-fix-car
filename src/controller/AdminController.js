@@ -124,10 +124,35 @@ let accepGara = async (req, res) => {
 let test = async (req, res) => {
     try {
 
+
+        let data = await AdminService.test()
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data
+        })
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+
+    }
+
+
+
+
+}
+let readCar = async (req, res) => {
+    try {
+
         if (req.query.page && req.query.limit && req.query) {
             let page = req.query.page;
             let limit = req.query.limit;
-            let data = await AdminService.test(+page, +limit)
+            let data = await AdminService.getCarWithPage(+page, +limit)
             return res.status(200).json({
                 EM: data.EM,
                 EC: data.EC,
@@ -135,7 +160,7 @@ let test = async (req, res) => {
             })
         }
         else {
-            let data = await AdminService.getAllGara()
+            let data = await AdminService.getAllUser()
             return res.status(200).json({
                 EM: data.EM,
                 EC: data.EC,
@@ -154,6 +179,33 @@ let test = async (req, res) => {
     }
 
 }
+let readCarCompany = async (req, res) => {
+    try {
+
+
+
+
+        let data = await AdminService.readCarCompany()
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT
+        })
+
+
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+    }
+}
+
+
 module.exports = {
-    readUser, readGaraNonCensorship, readDeatailGara, accepGara, test
+    readUser, readGaraNonCensorship, readDeatailGara, accepGara, test, readCar, readCarCompany
 }

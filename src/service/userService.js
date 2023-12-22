@@ -3,6 +3,7 @@ import db from '../models/index';
 import { getGroupWithRole } from './JWTservice'
 import { createJWT } from '../midderWare/JWTaction'
 import { where } from 'sequelize';
+const { Op } = require("sequelize");
 var salt = bcrypt.genSaltSync(10);
 const checkemailIsExit = async (email) => {
     let data = await db.User.findOne({ where: { email: email } })
@@ -163,24 +164,22 @@ let readProvindservice = async () => {
 }
 let createRegisterGara = async (rawUserData) => {
     let checkMail = await checkemailIsExit(rawUserData.emailUser)
-    let check = false
-    let gara = await db.User.findAll({
+
+    let gara = await db.User.findOne({
         where: {
             email: rawUserData.emailUser,
             garaId: null
         }
 
     })
-    if (gara !== '') {
-        check = true
-    }
 
 
-    console.log('chcek gmail: ', checkMail)
+
+    console.log('chcek gmail: ', gara)
 
 
     try {
-        if (checkMail === false && check === true) {
+        if (checkMail === false && gara !== null) {
             await db.Gara.create({
                 nameGara: rawUserData.nameGara,
                 descriptionHTML: rawUserData.descriptionHTML,
@@ -231,6 +230,44 @@ let createRegisterGara = async (rawUserData) => {
     }
 
 }
+let readTopGaraService = async (limitInput) => {
+
+    try {
+
+
+        let user = await db.Gara.findAll({
+            limit: limitInput,
+
+            order: [['createdAt', 'DESC']],
+
+            include: [
+                {
+                    model: db.Provind, as: 'provindGaraData'
+
+                }
+
+            ],
+            raw: true,
+            nest: true
+
+
+        }
+        )
+        return {
+            EM: 'GET DATA SUCCESS',
+            EC: 0,
+            DT: user
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'song thing wrong',
+            EC: -1,
+            DT: ''
+        }
+    }
+
+}
 module.exports = {
-    createRegisterUser, getGender, LoginUser, readProvindservice, createRegisterGara
+    createRegisterUser, getGender, LoginUser, readProvindservice, createRegisterGara, readTopGaraService
 }

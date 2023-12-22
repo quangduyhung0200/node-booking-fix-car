@@ -29,7 +29,7 @@ module.exports = (sequelize, DataTypes) => {
         address: DataTypes.STRING,
         provindId: DataTypes.INTEGER,
         avata: DataTypes.BLOB('long'),
-        carId: DataTypes.INTEGER,
+
         phone: DataTypes.STRING,
         rateId: DataTypes.STRING,
 

@@ -15,14 +15,18 @@ const initAPIRouters = (app) => {
     router.post('/login/user', UserController.handldLogin)
     router.get('/account', checkUserJWT, UserController.getUserAccount)
     router.post('/logout/user', UserController.handlLogout)
-    router.get('/provind/read', UserController.readProvind)
+    router.get('/provind/read', checkUserJWT, checkUserPermisstion, UserController.readProvind)
     router.post('/register/gara', checkUserJWT, checkUserPermisstion, UserController.postRegisterGara)
+    router.get('/gara/read', UserController.readTopGara)
+
 
 
 
 
 
     router.get('/user/read', checkUserJWT, checkUserPermisstion, AdminController.readUser)
+    router.get('/carCompany/read', AdminController.readCarCompany)
+    router.get('/car/read', checkUserJWT, checkUserPermisstion, AdminController.readCar)
     router.get('/garanoncensorship/read', checkUserJWT, checkUserPermisstion, AdminController.readGaraNonCensorship)
     router.get('/detailGara/read/:id', checkUserJWT, checkUserPermisstion, AdminController.readDeatailGara)
     router.get('/test', AdminController.test)
