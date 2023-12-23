@@ -1,6 +1,6 @@
 import db from "../models";
 import bcrypt from 'bcryptjs';
-const { Op } = require("sequelize");
+const { Op, where } = require("sequelize");
 const getUserWithPage = async (page, limit) => {
     try {
         let offset = (page - 1) * limit
@@ -363,6 +363,121 @@ let readCarCompany = async (page, limit) => {
         }
     }
 }
+let createCarService = async (data) => {
+    try {
+
+        let user = await db.Car.findOne({
+            where: {
+                nameCar: data.nameCar
+            }
+        }
+
+
+
+        );
+
+        if (user) {
+
+            return {
+                EM: 'car has been declare in database',
+                EC: 1,
+                DT: ''
+            }
+        }
+        else {
+            await db.Car.create({
+                nameCar: data.nameCar,
+                carCompanyId: data.selectedCarCompany,
+                avata: data.avata,
+                descriptions: data.descriptions,
+
+
+            });
+            return {
+                EM: 'create success',
+                EC: 0,
+                DT: ''
+            }
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: []
+        }
+    }
+}
+let updateCarService = async (data) => {
+    try {
+
+
+        let user = await db.Car.findOne({ where: { id: data.id } }
+        )
+        if (user) {
+            user.nameCar = data.nameCar;
+            user.carCompanyId = data.carCompanyId;
+            user.avata = data.avata;
+            user.descriptions = data.descriptions
+            user.save()
+            return {
+                EM: 'update car seccess',
+                EC: 0,
+                DT: ''
+            }
+        }
+
+
+        else {
+            return {
+                EM: 'updatae user fail',
+                EC: 1,
+                DT: ''
+            }
+
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: []
+        }
+    }
+}
+let deleteUserService = async (inputId) => {
+    try {
+
+        let user = await db.Car.findOne({
+            where: { id: inputId }
+        })
+
+        if (user) {
+            user.destroy()
+            return {
+                EM: 'delete success',
+                EC: 0,
+                DT: []
+            }
+        }
+        else {
+            return {
+                EM: 'user not exit',
+                EC: 1,
+                DT: []
+            }
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: []
+        }
+    }
+
+}
 module.exports = {
-    getUserWithPage, getAllUser, getGaraWithPage, getAllGara, getGaraWithId, accepGaraService, test, getCarWithPage, readCarCompany
+    getUserWithPage, getAllUser, getGaraWithPage, getAllGara, getGaraWithId, accepGaraService, test, getCarWithPage, readCarCompany, createCarService,
+    updateCarService, deleteUserService
 }

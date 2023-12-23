@@ -204,8 +204,76 @@ let readCarCompany = async (req, res) => {
         })
     }
 }
+let createCar = async (req, res) => {
+    try {
 
 
+
+
+        let data = await AdminService.createCarService(req.body)
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT
+        })
+
+
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+    }
+}
+let updateCar = async (req, res) => {
+    try {
+
+
+
+
+        let data = await AdminService.updateCarService(req.body)
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT
+        })
+
+
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+    }
+}
+let deleteCar = async (req, res) => {
+    try {
+        let data = await AdminService.deleteUserService(req.body.id)
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT
+        })
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+    }
+
+}
 module.exports = {
-    readUser, readGaraNonCensorship, readDeatailGara, accepGara, test, readCar, readCarCompany
+    readUser, readGaraNonCensorship, readDeatailGara, accepGara, test, readCar, readCarCompany, createCar, updateCar, deleteCar
 }
