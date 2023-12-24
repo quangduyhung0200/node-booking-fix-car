@@ -22,6 +22,7 @@ module.exports = (sequelize, DataTypes) => {
         garaId: DataTypes.INTEGER,
 
 
+
     }, {
         sequelize,
         modelName: 'Schedule',

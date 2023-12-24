@@ -17,14 +17,6 @@ module.exports = {
                 type: Sequelize.INTEGER,
                 allowNull: false,
             },
-            priceId: {
-                type: Sequelize.INTEGER,
-                allowNull: false,
-            },
-            paymentId: {
-                type: Sequelize.INTEGER,
-                allowNull: false,
-            },
 
 
             createdAt: {

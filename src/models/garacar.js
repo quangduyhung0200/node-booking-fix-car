@@ -11,16 +11,18 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            Gara_Car.belongsTo(models.Price, { foreignKey: 'priceId', targetKey: 'id', as: 'priceData' });
-            Gara_Car.belongsTo(models.Payment, { foreignKey: 'paymentId', targetKey: 'id', as: 'paymentData' });
+
+            Gara_Car.belongsToMany(models.Service, { through: 'Service_Gara_Car', foreignKey: 'garaCarId' });
 
         }
     };
     Gara_Car.init({
         garaId: DataTypes.INTEGER,
         carId: DataTypes.INTEGER,
-        priceId: DataTypes.INTEGER,
-        paymentId: DataTypes.INTEGER,
+
+
+
+
 
 
     }, {

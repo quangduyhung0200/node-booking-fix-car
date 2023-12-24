@@ -2,7 +2,7 @@ import express from "express";
 import UserController from "../controller/UserController.js"
 import AdminController from "../controller/AdminController.js"
 import { checkUserJWT, checkUserPermisstion } from "../midderWare/JWTaction.js"
-
+import GaraController from "../controller/GaraController.js"
 const router = express.Router();
 
 
@@ -15,9 +15,22 @@ const initAPIRouters = (app) => {
     router.post('/login/user', UserController.handldLogin)
     router.get('/account', checkUserJWT, UserController.getUserAccount)
     router.post('/logout/user', UserController.handlLogout)
-    router.get('/provind/read', checkUserJWT, checkUserPermisstion, UserController.readProvind)
+    router.get('/provind/read', UserController.readProvind)
     router.post('/register/gara', checkUserJWT, checkUserPermisstion, UserController.postRegisterGara)
     router.get('/gara/read', UserController.readTopGara)
+    router.get('/price/read', UserController.readPrice)
+    router.get('/payment/read', UserController.readPayment)
+    router.get('/service/read', UserController.readService)
+
+
+
+    router.get('/gara/readdata', GaraController.readInfoGara)
+    router.get('/car/readCarInfoByCarCompany', GaraController.readInfoCar)
+    router.get('/car/readCarInfoByCariD', GaraController.readInfoCarById)
+    router.post('/gara/registerCar', GaraController.registerCartoGara)
+    router.get('/gara/readTime', GaraController.readAllTime)
+    router.post('/gara/createBulkSchedule', GaraController.createBulkSchedule)
+
 
 
 

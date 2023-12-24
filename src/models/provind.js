@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
         static associate(models) {
             // define association here
 
-            Provind.hasMany(models.Gara, { foreignKey: 'provindId', as: 'provindDataGara' });
+            Provind.hasMany(models.Gara, { foreignKey: 'provindId', as: 'provindGaraData' });
         }
     };
     Provind.init({

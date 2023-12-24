@@ -1,4 +1,5 @@
 'use strict';
+const { INTEGER } = require('sequelize');
 const {
     Model
 } = require('sequelize');
@@ -16,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
             Booking.belongsTo(models.User, { foreignKey: 'userId', targetKey: 'id', as: 'bookingData' });
             Booking.belongsTo(models.Gara, { foreignKey: 'garaId', targetKey: 'id', as: 'bookingDataGara' });
             Booking.belongsTo(models.Car, { foreignKey: 'carid', targetKey: 'id', as: 'carBookingData' });
+
         }
     };
     Booking.init({
@@ -26,6 +28,7 @@ module.exports = (sequelize, DataTypes) => {
         date: DataTypes.STRING,
         statusId: DataTypes.INTEGER,
         token: DataTypes.STRING,
+
 
     }, {
         sequelize,

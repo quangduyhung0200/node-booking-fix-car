@@ -68,7 +68,7 @@ let readGaraNonCensorship = async (req, res) => {
 }
 let readDeatailGara = async (req, res) => {
     try {
-        console.log('chcek reqasdasd: ', req.params.id)
+
         if (req.params.id) {
             let id = req.params.id;
 
@@ -102,7 +102,7 @@ let readDeatailGara = async (req, res) => {
 let accepGara = async (req, res) => {
     try {
 
-        console.log('chcek req: ', req.body)
+
         let data = await AdminService.accepGaraService(req.body)
         return res.status(200).json({
             EM: data.EM,

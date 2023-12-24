@@ -68,7 +68,7 @@ let handldLogin = async (req, res) => {
         if (data && data.DT.access_token) {
             res.cookie("jwt", data.DT.access_token, { httpOnly: true, maxAge: 60 * 60 * 1000 * 24 })
         }
-        console.log('check data token: ', data)
+
         return res.status(200).json({
             EM: data.EM,
             EC: data.EC,
@@ -160,7 +160,7 @@ let readProvind = async (req, res) => {
 let postRegisterGara = async (req, res) => {
     try {
 
-        console.log('chcek req: ', req.body)
+
         let data = await userService.createRegisterGara(req.body)
         return res.status(200).json({
             EM: data.EM,
@@ -182,7 +182,7 @@ let postRegisterGara = async (req, res) => {
 let readTopGara = async (req, res) => {
     let limit = req.query.limit;
     if (!limit) limit = 10;
-    console.log(req.params)
+
     try {
         let response = await userService.readTopGaraService(+limit);
         return res.status(200).json(response)
@@ -194,6 +194,46 @@ let readTopGara = async (req, res) => {
         })
     }
 }
+let readPrice = async (req, res) => {
+
+    try {
+        let response = await userService.readAllPrice();
+        return res.status(200).json(response)
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            errCode: -1,
+            massge: 'erro from server...'
+        })
+    }
+}
+let readPayment = async (req, res) => {
+
+    try {
+        let response = await userService.readAllPayment();
+        return res.status(200).json(response)
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            errCode: -1,
+            massge: 'erro from server...'
+        })
+    }
+}
+let readService = async (req, res) => {
+
+    try {
+        let response = await userService.readAllService();
+        return res.status(200).json(response)
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            errCode: -1,
+            massge: 'erro from server...'
+        })
+    }
+}
 module.exports = {
-    postRegister, getGender, handldLogin, getUserAccount, handlLogout, readProvind, postRegisterGara, readTopGara
+    postRegister, getGender, handldLogin, getUserAccount, handlLogout, readProvind, postRegisterGara, readTopGara,
+    readPrice, readPayment, readService
 }

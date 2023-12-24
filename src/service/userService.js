@@ -103,7 +103,7 @@ let LoginUser = async (rawData) => {
 
                 }
                 let token = createJWT(payload)
-                console.log('check token: ', token)
+
                 return {
                     EM: 'login success',
                     EC: 0,
@@ -145,7 +145,7 @@ let LoginUser = async (rawData) => {
 let readProvindservice = async () => {
     try {
 
-        let data = await db.Provind.findAll()
+        let data = await db.Provind.findAll({ attributes: ["id", "name"], })
         return {
             EM: `get provind success`,
             EC: 0,
@@ -164,20 +164,12 @@ let readProvindservice = async () => {
 }
 let createRegisterGara = async (rawUserData) => {
     let checkMail = await checkemailIsExit(rawUserData.emailUser)
-
     let gara = await db.User.findOne({
         where: {
             email: rawUserData.emailUser,
             garaId: null
         }
-
     })
-
-
-
-    console.log('chcek gmail: ', gara)
-
-
     try {
         if (checkMail === false && gara !== null) {
             await db.Gara.create({
@@ -189,23 +181,15 @@ let createRegisterGara = async (rawUserData) => {
                 avata: rawUserData.avata,
                 phone: rawUserData.phone,
                 description: rawUserData.description,
-
-
-
             }).then(async function (data) {
-
                 let user = await db.User.findOne({ where: { email: rawUserData.emailUser } }
                 )
                 if (user) {
                     user.garaId = data.dataValues.id;
 
                     user.save()
-
                 }  // no useful info
             });
-
-
-
             return {
                 EM: 'register success',
                 EC: 0,
@@ -268,6 +252,85 @@ let readTopGaraService = async (limitInput) => {
     }
 
 }
+let readAllPrice = async () => {
+
+    try {
+
+
+        let user = await db.Price.findAll({
+            attributes: ["id", "value"],
+
+
+        }
+        )
+        return {
+            EM: 'GET DATA SUCCESS',
+            EC: 0,
+            DT: user
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'song thing wrong',
+            EC: -1,
+            DT: ''
+        }
+    }
+
+}
+let readAllPayment = async () => {
+
+    try {
+
+
+        let user = await db.Payment.findAll({
+            attributes: ["id", "value"],
+
+
+        }
+        )
+        return {
+            EM: 'GET DATA SUCCESS',
+            EC: 0,
+            DT: user
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'song thing wrong',
+            EC: -1,
+            DT: ''
+        }
+    }
+
+}
+let readAllService = async () => {
+
+    try {
+
+
+        let user = await db.Service.findAll({
+            attributes: ["id", "name"],
+
+
+        }
+        )
+        return {
+            EM: 'GET DATA SUCCESS',
+            EC: 0,
+            DT: user
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'song thing wrong',
+            EC: -1,
+            DT: ''
+        }
+    }
+
+}
 module.exports = {
-    createRegisterUser, getGender, LoginUser, readProvindservice, createRegisterGara, readTopGaraService
+    createRegisterUser, getGender, LoginUser, readProvindservice, createRegisterGara, readTopGaraService,
+    readAllPrice, readAllPayment, readAllService
 }

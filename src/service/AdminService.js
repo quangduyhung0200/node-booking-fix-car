@@ -335,7 +335,7 @@ let readCarCompany = async (page, limit) => {
 
         let user = await db.CarCompany.findAll({
 
-
+            attributes: ["id", "name"],
 
         });
 
