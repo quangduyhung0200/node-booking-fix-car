@@ -8,6 +8,7 @@
     "define": {
       "freezeTableName": true
     },
+    "logging": false,
     "raw": false
   },
   "test": {

@@ -21,6 +21,7 @@ const initAPIRouters = (app) => {
     router.get('/price/read', UserController.readPrice)
     router.get('/payment/read', UserController.readPayment)
     router.get('/service/read', UserController.readService)
+    router.get('/schedule/read', UserController.readSchedule)
 
 
 
@@ -30,6 +31,9 @@ const initAPIRouters = (app) => {
     router.post('/gara/registerCar', GaraController.registerCartoGara)
     router.get('/gara/readTime', GaraController.readAllTime)
     router.post('/gara/createBulkSchedule', GaraController.createBulkSchedule)
+    router.get('/gara/getAllCar', GaraController.getAllCarByGara)
+    router.delete('/gara/deletePickCar', GaraController.deletePickCar)
+
 
 
 

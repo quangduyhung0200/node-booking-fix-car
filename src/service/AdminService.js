@@ -85,18 +85,15 @@ const getAllUser = async () => {
 let getGaraWithPage = async (page, limit) => {
     try {
         let offset = (page - 1) * limit
-        let { count, rows } = await db.User.findAndCountAll({
+        let { count, rows } = await db.Gara.findAndCountAll({
             where: {
-                garaId: {
-                    [Op.ne]: null
-                }
-                , groupId: 1
+                status: 'S1'
+
             },
-            attributes: ["id", "userName"],
-            include: {
-                model: db.Gara, attributes: ["id", "nameGara", "address", "phone", "description", "descriptionHTML"],
-                include: { model: db.Provind, attributes: ["id", "name"], as: 'provindGaraData' }, as: 'userGara'
-            },
+            attributes: ["id", "nameGara", "address", "phone", "description", "descriptionHTML"],
+            include: { model: db.Provind, attributes: ['id', "name"], as: 'provindGaraData' },
+
+
             order: [['id', 'DESC']],
             raw: true,
             nest: true,
@@ -184,9 +181,9 @@ let getGaraWithId = async (id) => {
 
         let user = await db.Gara.findOne({
             where: { id: id },
-            attributes: ["id", "nameGara", "address", "avata", "phone", "description", "descriptionHTML"],
+            attributes: ["id", "nameGara", "address", "avata", "phone", "description", "descriptionHTML", "userId"],
             include: [{ model: db.Provind, attributes: ["id", "name"], as: 'provindGaraData' },
-            { model: db.User, attributes: ["id"], as: 'userGara' }],
+            ],
 
             raw: false,
             nest: true,
@@ -219,12 +216,21 @@ let getGaraWithId = async (id) => {
 
 let accepGaraService = async (data) => {
     try {
-        let user = await db.User.findOne({ where: { id: data.id } }
+        let user = await db.Gara.findOne({ where: { userId: data.id, status: 'S1' } }
         )
+
         if (user) {
 
-            user.groupId = 2
+            user.status = 'S2'
             user.save()
+
+        }
+        let user1 = await db.User.findOne({
+            where: { id: data.id }
+        })
+        if (user1) {
+            user1.groupId = 2
+            user1.save()
             return {
                 EM: 'update user seccess',
                 EC: 0,
@@ -298,6 +304,7 @@ let getCarWithPage = async (page, limit) => {
             offset: offset,
             limit: limit
         })
+        console.log(rows)
         let totalPage = Math.ceil(count / limit)
         let data = {
             totalRow: count,

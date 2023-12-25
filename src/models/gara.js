@@ -12,11 +12,12 @@ module.exports = (sequelize, DataTypes) => {
         static associate(models) {
             // define association here
             Gara.belongsTo(models.Provind, { foreignKey: 'provindId', targetKey: 'id', as: 'provindGaraData' });
-            Gara.hasOne(models.User, { foreignKey: 'garaId', as: 'userGara' });
+
             Gara.belongsToMany(models.Car, { through: 'Gara_Car', foreignKey: 'garaId' });
             Gara.hasMany(models.Schedule, { foreignKey: 'garaId', as: 'GaraScheduleData' });
             Gara.hasMany(models.Booking, { foreignKey: 'garaId', as: 'bookingDataGara' });
             Gara.hasMany(models.Rate, { foreignKey: 'rateId', as: 'rateData' });
+            Gara.belongsTo(models.User, { foreignKey: 'userId', as: 'userGara' });
         }
     };
     Gara.init({
@@ -29,9 +30,10 @@ module.exports = (sequelize, DataTypes) => {
         address: DataTypes.STRING,
         provindId: DataTypes.INTEGER,
         avata: DataTypes.BLOB('long'),
-
+        userId: DataTypes.INTEGER,
         phone: DataTypes.STRING,
         rateId: DataTypes.STRING,
+        status: DataTypes.STRING,
 
     }, {
         sequelize,

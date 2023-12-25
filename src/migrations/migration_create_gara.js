@@ -43,6 +43,16 @@ module.exports = {
 
 
             },
+            userId: {
+                type: Sequelize.INTEGER,
+
+
+            },
+            status: {
+                type: Sequelize.STRING,
+
+
+            },
             description: {
                 type: Sequelize.STRING,
 

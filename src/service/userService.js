@@ -7,6 +7,7 @@ const { Op } = require("sequelize");
 var salt = bcrypt.genSaltSync(10);
 const checkemailIsExit = async (email) => {
     let data = await db.User.findOne({ where: { email: email } })
+
     if (data) {
         return false
     }
@@ -89,7 +90,7 @@ let LoginUser = async (rawData) => {
     let data = {}
     try {
         let checkMail = await checkemailIsExit(rawData.email)
-        if (!checkMail) {
+        if (checkMail === false) {
             let datamail = await db.User.findOne({ where: { email: rawData.email } })
 
             let checkpass = checkPassword(rawData.password, datamail.password)
@@ -99,7 +100,8 @@ let LoginUser = async (rawData) => {
                 let payload = {
                     email: datamail.email,
                     userName: datamail.userName,
-                    role
+                    role,
+                    id: datamail.id
 
                 }
                 let token = createJWT(payload)
@@ -111,7 +113,8 @@ let LoginUser = async (rawData) => {
                         access_token: token,
                         data: role,
                         email: datamail.email,
-                        userName: datamail.userName
+                        userName: datamail.userName,
+                        id: datamail.id
                     }
                 }
 
@@ -164,14 +167,14 @@ let readProvindservice = async () => {
 }
 let createRegisterGara = async (rawUserData) => {
     let checkMail = await checkemailIsExit(rawUserData.emailUser)
-    let gara = await db.User.findOne({
+    let gara = await db.Gara.findOne({
         where: {
-            email: rawUserData.emailUser,
-            garaId: null
+            userId: rawUserData.id,
+            status: 'S1'
         }
     })
     try {
-        if (checkMail === false && gara !== null) {
+        if (checkMail === false && gara === null) {
             await db.Gara.create({
                 nameGara: rawUserData.nameGara,
                 descriptionHTML: rawUserData.descriptionHTML,
@@ -181,14 +184,8 @@ let createRegisterGara = async (rawUserData) => {
                 avata: rawUserData.avata,
                 phone: rawUserData.phone,
                 description: rawUserData.description,
-            }).then(async function (data) {
-                let user = await db.User.findOne({ where: { email: rawUserData.emailUser } }
-                )
-                if (user) {
-                    user.garaId = data.dataValues.id;
-
-                    user.save()
-                }  // no useful info
+                userId: rawUserData.id,
+                status: 'S1'
             });
             return {
                 EM: 'register success',
@@ -220,6 +217,9 @@ let readTopGaraService = async (limitInput) => {
 
 
         let user = await db.Gara.findAll({
+            where: {
+                status: 'S2'
+            },
             limit: limitInput,
 
             order: [['createdAt', 'DESC']],
@@ -330,7 +330,47 @@ let readAllService = async () => {
     }
 
 }
+let readScheduleByDay = async (garaId, day) => {
+
+    try {
+
+        let text = day.toString();
+
+        let data = await db.Schedule.findAll({
+            where: {
+                garaId: +garaId,
+                date: text
+            },
+            include: [
+                { model: db.Time, as: 'timeDataSchedule', attributes: ['timValue'] },
+                { model: db.Gara, as: 'GaraScheduleData', attributes: ["id", "nameGara", "address", "phone", "description", "descriptionHTML", "avata", "userId"], }
+
+
+
+
+            ],
+            order: [['timeType', 'ASC']],
+            raw: true,
+            nest: true
+
+        })
+
+        return {
+            EM: 'GET DATA SUCCESS',
+            EC: 0,
+            DT: data
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'song thing wrong',
+            EC: -1,
+            DT: ''
+        }
+    }
+
+}
 module.exports = {
     createRegisterUser, getGender, LoginUser, readProvindservice, createRegisterGara, readTopGaraService,
-    readAllPrice, readAllPayment, readAllService
+    readAllPrice, readAllPayment, readAllService, readScheduleByDay
 }

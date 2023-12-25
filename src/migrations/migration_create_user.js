@@ -38,10 +38,7 @@ module.exports = {
         type: Sequelize.BLOB('long'),
         allowNull: true,
       },
-      garaId: {
-        type: Sequelize.INTEGER,
 
-      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
