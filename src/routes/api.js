@@ -22,6 +22,7 @@ const initAPIRouters = (app) => {
     router.get('/payment/read', UserController.readPayment)
     router.get('/service/read', UserController.readService)
     router.get('/schedule/read', UserController.readSchedule)
+    router.get('/booking/readService', UserController.readServiceCar)
 
 
 

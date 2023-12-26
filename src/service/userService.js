@@ -370,7 +370,67 @@ let readScheduleByDay = async (garaId, day) => {
     }
 
 }
+let readServiceCarService = async (garaId, carId) => {
+
+    try {
+
+
+
+        let data = await db.Gara_Car.findOne({
+            where: {
+                garaId: +garaId,
+                carId: +carId
+            },
+            attributes: ['id'],
+            raw: true,
+            nest: true
+
+        })
+
+        if (data) {
+            let service = await db.Service_Gara_Car.findAll({
+                where: {
+                    garaCarId: data.id
+                },
+                include: [{ model: db.Price, as: 'priceData' },
+                { model: db.Payment, as: 'paymentData' }],
+                raw: true,
+                nest: true
+            })
+
+            if (service) {
+                return {
+                    EM: 'GET DATA SUCCESS',
+                    EC: 0,
+                    DT: service
+                }
+            }
+            else {
+                return {
+                    EM: 'dataemty',
+                    EC: 1,
+                    DT: ''
+                }
+            }
+        } else {
+            return {
+                EM: 'dataemty',
+                EC: 1,
+                DT: ''
+            }
+        }
+
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'song thing wrong',
+            EC: -1,
+            DT: ''
+        }
+    }
+
+}
 module.exports = {
     createRegisterUser, getGender, LoginUser, readProvindservice, createRegisterGara, readTopGaraService,
-    readAllPrice, readAllPayment, readAllService, readScheduleByDay
+    readAllPrice, readAllPayment, readAllService, readScheduleByDay, readServiceCarService
 }
