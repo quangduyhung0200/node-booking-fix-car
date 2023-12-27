@@ -27,6 +27,11 @@ module.exports = {
 
                 allowNull: false,
             },
+            serviceId: {
+                type: Sequelize.INTEGER,
+
+                allowNull: false,
+            },
             date: {
                 type: Sequelize.STRING
             },

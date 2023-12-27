@@ -23,6 +23,10 @@ const initAPIRouters = (app) => {
     router.get('/service/read', UserController.readService)
     router.get('/schedule/read', UserController.readSchedule)
     router.get('/booking/readService', UserController.readServiceCar)
+    router.get('/booking/readPricePayment', UserController.readPricePayment)
+    router.post('/booking/createBooking', UserController.createBooking)
+    router.post('/vetyfy-booking', UserController.vetyfyBooking)
+
 
 
 
@@ -34,6 +38,9 @@ const initAPIRouters = (app) => {
     router.post('/gara/createBulkSchedule', GaraController.createBulkSchedule)
     router.get('/gara/getAllCar', GaraController.getAllCarByGara)
     router.delete('/gara/deletePickCar', GaraController.deletePickCar)
+    router.get('/gara/getListBooking', GaraController.getListBooking)
+    router.post('/gara/comfimeBooking', GaraController.comfimeBooking)
+    router.get('/gara/getListOrder', GaraController.getListOrder)
 
 
 
@@ -49,7 +56,7 @@ const initAPIRouters = (app) => {
     router.put('/car/update', AdminController.updateCar)
     router.delete('/car/delete', AdminController.deleteCar)
     router.get('/garanoncensorship/read', checkUserJWT, checkUserPermisstion, AdminController.readGaraNonCensorship)
-    router.get('/detailGara/read/:id', checkUserJWT, checkUserPermisstion, AdminController.readDeatailGara)
+    router.get('/detailGara/read/:id', AdminController.readDeatailGara)
     router.get('/test', AdminController.test)
 
     router.put('/accep/gara', AdminController.accepGara)

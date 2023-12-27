@@ -1,6 +1,7 @@
 import db from "../models";
 import bcrypt from 'bcryptjs';
 import _ from "lodash";
+import EmailService from './EmailService'
 const { Op, where } = require("sequelize");
 
 
@@ -426,7 +427,162 @@ let deletePickCarService = async (data) => {
         }
     }
 }
+
+let getListBookingService = async (garaId, date) => {
+    try {
+        let booking = await db.Booking.findAll({
+            where: { garaId: garaId, date: date, status: 'S2' },
+            attributes: ["id", "userId", "garaid", "carId", "timeType", "serviceId", "date", "status"],
+            include: [
+                {
+                    model: db.User, as: 'bookingData', attributes: ["id", "userName", "email", "address"]
+                },
+                {
+                    model: db.Gara, as: 'bookingDataGara', attributes: ["id", "nameGara", "address", "provindId", "phone"]
+                },
+                {
+                    model: db.Time, as: 'timeDataBooking', attributes: ["id", "timValue"]
+                },
+                {
+                    model: db.Car, as: 'carBookingData', attributes: ["id", "nameCar", "carCompanyId", "descriptions",],
+                    include: { model: db.CarCompany, as: "carCompanyData" }
+                },
+                {
+                    model: db.Service, as: 'serviceBookingData', attributes: ["id", "name", "description"]
+                },
+            ], raw: true,
+            nest: true
+
+
+        })
+
+        if (booking) {
+            return {
+                EM: 'GET DATA SUCCESS',
+                EC: 0,
+                DT: booking
+            }
+
+        }
+        else {
+            return {
+                EM: 'no customer in this day',
+                EC: 1,
+                DT: ''
+            }
+        }
+
+
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: []
+        }
+    }
+}
+let comfimeBookingService = async (data) => {
+    try {
+        let booking = await db.Booking.findOne({
+            where: { garaId: data.garaId, date: data.date, status: 'S2', userId: data.userId, carId: data.carId, timeType: data.timeType, serviceId: data.serviceId },
+
+
+
+
+
+
+        })
+
+        if (booking) {
+            booking.status = 'S3'
+            booking.save()
+            await EmailService.sendcomfemEmail({
+                reciverEmail: data.email,
+
+                time: data.time,
+
+            })
+            return {
+                EM: 'update DATA SUCCESS',
+                EC: 0,
+                DT: ''
+            }
+
+        }
+        else {
+            return {
+                EM: 'update fail',
+                EC: 1,
+                DT: ''
+            }
+        }
+
+
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: []
+        }
+    }
+}
+let getListOrderService = async (garaId, date) => {
+    try {
+        let booking = await db.Booking.findAll({
+            where: { garaId: garaId, date: date, status: 'S3' },
+            attributes: ["id", "userId", "garaid", "carId", "timeType", "serviceId", "date", "status"],
+            include: [
+                {
+                    model: db.User, as: 'bookingData', attributes: ["id", "userName", "email", "address"]
+                },
+                {
+                    model: db.Gara, as: 'bookingDataGara', attributes: ["id", "nameGara", "address", "provindId", "phone"]
+                },
+                {
+                    model: db.Time, as: 'timeDataBooking', attributes: ["id", "timValue"]
+                },
+                {
+                    model: db.Car, as: 'carBookingData', attributes: ["id", "nameCar", "carCompanyId", "descriptions",],
+                    include: { model: db.CarCompany, as: "carCompanyData" }
+                },
+                {
+                    model: db.Service, as: 'serviceBookingData', attributes: ["id", "name", "description"]
+                },
+            ], raw: true,
+            nest: true
+
+
+        })
+
+        if (booking) {
+            return {
+                EM: 'GET DATA SUCCESS',
+                EC: 0,
+                DT: booking
+            }
+
+        }
+        else {
+            return {
+                EM: 'no customer in this day',
+                EC: 1,
+                DT: ''
+            }
+        }
+
+
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: []
+        }
+    }
+}
 module.exports = {
     readInfoGaraService, getCarWithCarCompany, getAllCar, getCarWithCarId, registerCartoGaraService, readAllTimeService, createBulkScheduleService,
-    getAllCarByGaraService, deletePickCarService
+    getAllCarByGaraService, deletePickCarService, getListBookingService, comfimeBookingService, getListOrderService
 }

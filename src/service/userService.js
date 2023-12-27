@@ -2,9 +2,14 @@ import bcrypt from 'bcryptjs';
 import db from '../models/index';
 import { getGroupWithRole } from './JWTservice'
 import { createJWT } from '../midderWare/JWTaction'
-import { where } from 'sequelize';
+import EmailService from './EmailService'
+import { v4 as uuidv4 } from 'uuid';
 const { Op } = require("sequelize");
 var salt = bcrypt.genSaltSync(10);
+let buidUrlEmail = (garaId, token) => {
+    let resf = `${process.env.REACT_URL}/vetyfy-booking?token=${token}&garaId=${garaId}`
+    return resf
+}
 const checkemailIsExit = async (email) => {
     let data = await db.User.findOne({ where: { email: email } })
 
@@ -430,7 +435,218 @@ let readServiceCarService = async (garaId, carId) => {
     }
 
 }
+let readPricePaymentService = async (garaId, carId, serviceId) => {
+
+    try {
+
+
+
+        let data = await db.Gara_Car.findOne({
+            where: {
+                garaId: +garaId,
+                carId: +carId
+            },
+            attributes: ['id'],
+            raw: true,
+            nest: true
+
+        })
+
+        if (data) {
+            let service = await db.Service_Gara_Car.findOne({
+                where: {
+                    garaCarId: data.id,
+                    serviceId: serviceId
+                },
+                include: [{ model: db.Price, as: 'priceData' },
+                { model: db.Payment, as: 'paymentData' }],
+                raw: true,
+                nest: true
+            })
+
+            if (service) {
+                return {
+                    EM: 'GET DATA SUCCESS',
+                    EC: 0,
+                    DT: service
+                }
+            }
+            else {
+                return {
+                    EM: 'dataemty',
+                    EC: 1,
+                    DT: ''
+                }
+            }
+        } else {
+            return {
+                EM: 'dataemty',
+                EC: 1,
+                DT: ''
+            }
+        }
+
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'song thing wrong',
+            EC: -1,
+            DT: ''
+        }
+    }
+
+}
+let createBookingService = async (data) => {
+    return new Promise(async (resolve, reject) => {
+
+        try {
+            let token = uuidv4();
+            await EmailService.sendSimpleEmail({
+                reciverEmail: data.email,
+                customerName: data.userName,
+                time: data.time,
+                GaraName: data.garaName,
+
+                rediretLink: buidUrlEmail(data.garaId, token)
+            }
+
+            )
+            let user = await db.User.findOrCreate({
+                where: { email: data.email },
+                defaults: {
+                    email: data.email,
+                    groupId: 1,
+                    userName: data.userName,
+                    address: data.address,
+
+
+                },
+                raw: true
+
+            });
+            console.log(user[0].id,)
+            if (user && user[0]) {
+                let booking = await db.Booking.findOne({
+                    where: {
+                        date: data.date,
+                        garaId: data.garaId,
+                        timetype: data.timetype,
+                        userId: user[0].id,
+                        carId: data.carId,
+                        serviceId: data.serviceId
+                    }
+                })
+                if (booking === null) {
+                    await db.Booking.create({
+                        userId: user[0].id,
+                        garaId: data.garaId,
+                        carId: data.carId,
+                        timeType: data.timetype,
+                        date: data.date,
+                        status: 'S1',
+                        token: token,
+                        serviceId: data.serviceId
+                    })
+                    resolve({
+                        EC: 0,
+                        EM: 'DAT LICH THANH CONG',
+                        DT: ''
+
+
+
+                    })
+
+                } else {
+                    resolve({
+                        EC: 1,
+                        EM: 'ban da dat trung vui long kiem tra lai',
+                        DT: ''
+
+
+
+                    })
+                }
+
+
+            }
+
+
+
+            resolve({
+                EC: 0,
+                EM: 'DAT LICH THANH CONG',
+                DT: ''
+
+
+
+            })
+
+
+        } catch (e) {
+            console.log(e)
+            reject({
+                EC: -1,
+                EM: 'somthing wrong',
+                DT: ''
+
+
+
+            })
+        }
+    }
+    )
+}
+
+
+
+let vetyfyBookingService = async (data) => {
+
+    try {
+        console.log('check data: ', data)
+        let ec = ''
+        let appoiment = await db.Booking.findOne({
+            where: {
+                token: data.token,
+                garaId: data.garaId,
+                status: 'S1'
+            },
+            raw: true
+
+        })
+        console.log('check appoiment: ', appoiment)
+        if (appoiment !== null) {
+            console.log('booking', appoiment)
+            appoiment.status = 'S2';
+            await appoiment.save();
+            ec = 0
+        }
+        else {
+            ec = 2
+        }
+        return {
+            EM: 'dat lich thanh cong',
+            EC: ec,
+            DT: ''
+        }
+
+
+
+
+
+    }
+    catch (e) {
+        console.log(e)
+
+        return {
+            EM: 'song thing wrong',
+            EC: -1,
+            DT: ''
+        }
+    }
+
+}
 module.exports = {
     createRegisterUser, getGender, LoginUser, readProvindservice, createRegisterGara, readTopGaraService,
-    readAllPrice, readAllPayment, readAllService, readScheduleByDay, readServiceCarService
+    readAllPrice, readAllPayment, readAllService, readScheduleByDay, readServiceCarService, readPricePaymentService,
+    createBookingService, vetyfyBookingService
 }

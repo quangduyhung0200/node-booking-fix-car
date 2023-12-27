@@ -261,7 +261,56 @@ let readServiceCar = async (req, res) => {
         })
     }
 }
+let readPricePayment = async (req, res) => {
+
+    try {
+
+        let response = await userService.readPricePaymentService(req.query.garaId, req.query.carId, req.query.serviceId);
+        return res.status(200).json(response)
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            errCode: -1,
+            massge: 'erro from server...'
+        })
+    }
+}
+let createBooking = async (req, res) => {
+    try {
+
+
+        let data = await userService.createBookingService(req.body)
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: ''
+        })
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+
+    }
+
+}
+let vetyfyBooking = async (req, res) => {
+    try {
+        let response = await userService.vetyfyBookingService(req.body);
+        return res.status(200).json(response)
+    } catch (e) {
+        console.log(e)
+        return res.status(200).json({
+            errCode: -1,
+            massge: 'err from sever'
+        })
+
+    }
+}
 module.exports = {
     postRegister, getGender, handldLogin, getUserAccount, handlLogout, readProvind, postRegisterGara, readTopGara,
-    readPrice, readPayment, readService, readSchedule, readServiceCar
+    readPrice, readPayment, readService, readSchedule, readServiceCar, readPricePayment, createBooking, vetyfyBooking
 }
