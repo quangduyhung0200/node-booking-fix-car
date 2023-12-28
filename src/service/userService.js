@@ -77,12 +77,41 @@ const createRegisterUser = async (rawUserData) => {
             }
         }
         else {
-            return {
-                EM: 'register dont success',
-                EC: 2,
-                DT: ''
+
+
+            let user = await db.User.findOne({
+                where: { email: rawUserData.email }
+
+
+
+
+            })
+            if (user && user.password === null) {
+                user.userName = rawUserData.userName;
+                user.password = hashPassword;
+                user.email = rawUserData.email;
+                user.phone = rawUserData.phone;
+                user.gender = rawUserData.gender;
+                user.address = rawUserData.address;
+                user.groupId = 1;
+                user.save()
+                return {
+                    EM: 'register success',
+                    EC: 0,
+                    DT: ''
+                }
+            }
+            else {
+                return {
+                    EM: 'register dont success',
+                    EC: 2,
+                    DT: ''
+                }
             }
         }
+
+
+
 
     } catch (e) {
         console.log(e)
@@ -97,40 +126,50 @@ let LoginUser = async (rawData) => {
         let checkMail = await checkemailIsExit(rawData.email)
         if (checkMail === false) {
             let datamail = await db.User.findOne({ where: { email: rawData.email } })
-
-            let checkpass = checkPassword(rawData.password, datamail.password)
-            if (checkpass) {
-                let role = await getGroupWithRole(datamail)
-
-                let payload = {
-                    email: datamail.email,
-                    userName: datamail.userName,
-                    role,
-                    id: datamail.id
-
-                }
-                let token = createJWT(payload)
-
+            if (datamail.groupId === 5) {
                 return {
-                    EM: 'login success',
-                    EC: 0,
-                    DT: {
-                        access_token: token,
-                        data: role,
-                        email: datamail.email,
-                        userName: datamail.userName,
-                        id: datamail.id
-                    }
-                }
-
-            }
-            else {
-                return {
-                    EM: 'wrong passworld',
-                    EC: 1,
+                    EM: 'khach da dat lich nhung chua co tai khoan',
+                    EC: 3,
                     DT: ''
                 }
             }
+            else {
+                let checkpass = checkPassword(rawData.password, datamail.password)
+                if (checkpass) {
+                    let role = await getGroupWithRole(datamail)
+
+                    let payload = {
+                        email: datamail.email,
+                        userName: datamail.userName,
+                        role,
+                        id: datamail.id
+
+                    }
+                    let token = createJWT(payload)
+
+                    return {
+                        EM: 'login success',
+                        EC: 0,
+                        DT: {
+                            access_token: token,
+                            data: role,
+                            email: datamail.email,
+                            userName: datamail.userName,
+                            id: datamail.id
+                        }
+                    }
+
+                }
+                else {
+                    return {
+                        EM: 'wrong passworld',
+                        EC: 1,
+                        DT: ''
+                    }
+                }
+            }
+
+
         } else {
             return {
                 EM: 'wrong email',
@@ -341,10 +380,12 @@ let readScheduleByDay = async (garaId, day) => {
 
         let text = day.toString();
 
+
         let data = await db.Schedule.findAll({
             where: {
                 garaId: +garaId,
-                date: text
+                date: text,
+
             },
             include: [
                 { model: db.Time, as: 'timeDataSchedule', attributes: ['timValue'] },
@@ -359,11 +400,17 @@ let readScheduleByDay = async (garaId, day) => {
             nest: true
 
         })
-
+        let tocreate2 = []
+        data.map(item => item.currenOrder !== item.maxOrder ?
+            tocreate2.push({
+                GaraScheduleData: item.GaraScheduleData, garaId: garaId, date: item.date,
+                timeType: item.timeType, maxOrder: +item.maxOrder, currenOrder: +item.currenOrder, id: item.id, timeDataSchedule: item.timeDataSchedule
+            }) : '')
+        console.log(tocreate2)
         return {
             EM: 'GET DATA SUCCESS',
             EC: 0,
-            DT: data
+            DT: tocreate2
         }
     } catch (e) {
         console.log(e)
@@ -501,21 +548,12 @@ let createBookingService = async (data) => {
 
         try {
             let token = uuidv4();
-            await EmailService.sendSimpleEmail({
-                reciverEmail: data.email,
-                customerName: data.userName,
-                time: data.time,
-                GaraName: data.garaName,
 
-                rediretLink: buidUrlEmail(data.garaId, token)
-            }
-
-            )
             let user = await db.User.findOrCreate({
                 where: { email: data.email },
                 defaults: {
                     email: data.email,
-                    groupId: 1,
+                    groupId: 5,
                     userName: data.userName,
                     address: data.address,
 
@@ -536,7 +574,9 @@ let createBookingService = async (data) => {
                         serviceId: data.serviceId
                     }
                 })
+
                 if (booking === null) {
+
                     await db.Booking.create({
                         userId: user[0].id,
                         garaId: data.garaId,
@@ -547,6 +587,16 @@ let createBookingService = async (data) => {
                         token: token,
                         serviceId: data.serviceId
                     })
+                    await EmailService.sendSimpleEmail({
+                        reciverEmail: data.email,
+                        customerName: data.userName,
+                        time: data.time,
+                        GaraName: data.garaName,
+
+                        rediretLink: buidUrlEmail(data.garaId, token)
+                    }
+
+                    )
                     resolve({
                         EC: 0,
                         EM: 'DAT LICH THANH CONG',
@@ -610,14 +660,14 @@ let vetyfyBookingService = async (data) => {
                 garaId: data.garaId,
                 status: 'S1'
             },
-            raw: true
+
 
         })
         console.log('check appoiment: ', appoiment)
         if (appoiment !== null) {
             console.log('booking', appoiment)
             appoiment.status = 'S2';
-            await appoiment.save();
+            appoiment.save();
             ec = 0
         }
         else {
@@ -645,8 +695,66 @@ let vetyfyBookingService = async (data) => {
     }
 
 }
+let getAllOrderService = async (userId) => {
+
+    try {
+        let booking = await db.Booking.findAll({
+            where: { userId: userId },
+            attributes: ["id", "userId", "garaid", "carId", "timeType", "serviceId", "date", "status"],
+            include: [
+                {
+                    model: db.User, as: 'bookingData', attributes: ["id", "userName", "email", "address"]
+                },
+                {
+                    model: db.Gara, as: 'bookingDataGara', attributes: ["id", "nameGara", "address", "provindId", "phone"]
+                },
+                {
+                    model: db.Time, as: 'timeDataBooking', attributes: ["id", "timValue"]
+                },
+                {
+                    model: db.Car, as: 'carBookingData', attributes: ["id", "nameCar", "carCompanyId", "descriptions",],
+                    include: { model: db.CarCompany, as: "carCompanyData" }
+                },
+                {
+                    model: db.Service, as: 'serviceBookingData', attributes: ["id", "name", "description"]
+                },
+            ], raw: true,
+            nest: true
+
+
+        })
+        if (booking) {
+
+            return {
+                EM: 'GET DATA SUCCESS',
+                EC: 0,
+                DT: booking
+            }
+        }
+
+        else {
+            return {
+                EM: 'dataemty',
+                EC: 1,
+                DT: ''
+            }
+        }
+
+
+
+
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'song thing wrong',
+            EC: -1,
+            DT: ''
+        }
+    }
+
+}
 module.exports = {
     createRegisterUser, getGender, LoginUser, readProvindservice, createRegisterGara, readTopGaraService,
     readAllPrice, readAllPayment, readAllService, readScheduleByDay, readServiceCarService, readPricePaymentService,
-    createBookingService, vetyfyBookingService
+    createBookingService, vetyfyBookingService, getAllOrderService
 }

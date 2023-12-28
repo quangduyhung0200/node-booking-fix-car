@@ -310,7 +310,22 @@ let vetyfyBooking = async (req, res) => {
 
     }
 }
+let getAllOrder = async (req, res) => {
+
+    try {
+
+        let response = await userService.getAllOrderService(req.query.userId);
+        return res.status(200).json(response)
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            errCode: -1,
+            massge: 'erro from server...'
+        })
+    }
+}
 module.exports = {
     postRegister, getGender, handldLogin, getUserAccount, handlLogout, readProvind, postRegisterGara, readTopGara,
-    readPrice, readPayment, readService, readSchedule, readServiceCar, readPricePayment, createBooking, vetyfyBooking
+    readPrice, readPayment, readService, readSchedule, readServiceCar, readPricePayment, createBooking, vetyfyBooking,
+    getAllOrder
 }

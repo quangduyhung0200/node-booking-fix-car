@@ -218,7 +218,7 @@ let comfimeBooking = async (req, res) => {
 
 
 
-        console.log(req.body)
+
         let data = await GaraService.comfimeBookingService(req.body)
         return res.status(200).json({
             EM: data.EM,
@@ -262,7 +262,55 @@ let getListOrder = async (req, res) => {
 
     }
 }
+let finishOrder = async (req, res) => {
+    try {
+
+
+
+
+        let data = await GaraService.finishOrderService(req.body)
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT
+        })
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+
+    }
+}
+let canserOrder = async (req, res) => {
+    try {
+
+
+
+
+        let data = await GaraService.canserOrderService(req.body)
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT
+        })
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+
+    }
+}
 module.exports = {
     readInfoGara, readInfoCar, readInfoCarById, registerCartoGara, readAllTime, createBulkSchedule, getAllCarByGara,
-    deletePickCar, getListBooking, comfimeBooking, getListOrder
+    deletePickCar, getListBooking, comfimeBooking, getListOrder, finishOrder, canserOrder
 }

@@ -22,6 +22,14 @@ module.exports = {
                 type: Sequelize.INTEGER,
 
             },
+            maxOrder: {
+                type: Sequelize.STRING,
+
+            },
+            currenOrder: {
+                type: Sequelize.STRING,
+
+            },
 
 
             createdAt: {

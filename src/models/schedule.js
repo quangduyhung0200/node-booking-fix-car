@@ -20,6 +20,8 @@ module.exports = (sequelize, DataTypes) => {
         date: DataTypes.STRING,
         timeType: DataTypes.STRING,
         garaId: DataTypes.INTEGER,
+        maxOrder: DataTypes.STRING,
+        currenOrder: DataTypes.STRING,
 
 
 

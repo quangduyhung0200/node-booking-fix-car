@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
             Gara.hasMany(models.Booking, { foreignKey: 'garaId', as: 'bookingDataGara' });
             Gara.hasMany(models.Rate, { foreignKey: 'rateId', as: 'rateData' });
             Gara.belongsTo(models.User, { foreignKey: 'userId', as: 'userGara' });
+            Gara.hasMany(models.Comment, { foreignKey: 'garaId', as: 'GaraComment' });
         }
     };
     Gara.init({

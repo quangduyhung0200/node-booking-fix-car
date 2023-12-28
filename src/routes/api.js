@@ -26,6 +26,7 @@ const initAPIRouters = (app) => {
     router.get('/booking/readPricePayment', UserController.readPricePayment)
     router.post('/booking/createBooking', UserController.createBooking)
     router.post('/vetyfy-booking', UserController.vetyfyBooking)
+    router.get('/getAllOrder', UserController.getAllOrder)
 
 
 
@@ -41,6 +42,8 @@ const initAPIRouters = (app) => {
     router.get('/gara/getListBooking', GaraController.getListBooking)
     router.post('/gara/comfimeBooking', GaraController.comfimeBooking)
     router.get('/gara/getListOrder', GaraController.getListOrder)
+    router.post('/gara/finishOrder', GaraController.finishOrder)
+    router.post('/gara/canserOrder', GaraController.canserOrder)
 
 
 

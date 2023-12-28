@@ -2,6 +2,8 @@ import db from "../models";
 import bcrypt from 'bcryptjs';
 import _ from "lodash";
 import EmailService from './EmailService'
+import schedule from "../models/schedule";
+import moment from 'moment';
 const { Op, where } = require("sequelize");
 
 
@@ -291,7 +293,7 @@ let createBulkScheduleService = async (data) => {
 
 
         let tocreate2 = []; // new Array
-        toCreate.map(item => tocreate2.push({ garaId: data.garaId, date: item.date, timeType: item.timeType }))
+        toCreate.map(item => tocreate2.push({ garaId: data.garaId, date: item.date, timeType: item.timeType, maxOrder: +item.maxOrder, currenOrder: 0 }))
 
         if (tocreate2 && tocreate2.length > 0) {
             await db.Schedule.bulkCreate(tocreate2);
@@ -455,6 +457,21 @@ let getListBookingService = async (garaId, date) => {
 
 
         })
+        let booking2 = await db.Booking.findAll({
+            where: { garaId: garaId, status: 'S2' },
+            attributes: ["id", "userId", "garaid", "carId", "timeType", "serviceId", "date", "status"],
+
+
+        })
+        let currendate = moment(new Date()).startOf('day').unix()
+        for (let i = 0; i < booking2.length; i++) {
+            if (booking2[i].date < currendate) {
+                console.log
+                booking2[i].status = 'S0'
+                booking2[i].save()
+
+            }
+        }
 
         if (booking) {
             return {
@@ -484,39 +501,58 @@ let getListBookingService = async (garaId, date) => {
 }
 let comfimeBookingService = async (data) => {
     try {
-        let booking = await db.Booking.findOne({
-            where: { garaId: data.garaId, date: data.date, status: 'S2', userId: data.userId, carId: data.carId, timeType: data.timeType, serviceId: data.serviceId },
-
-
-
-
-
+        let schedule = await db.Schedule.findOne({
+            where: { garaId: data.garaId, date: data.date, timeType: data.timeType }
 
         })
 
-        if (booking) {
-            booking.status = 'S3'
-            booking.save()
-            await EmailService.sendcomfemEmail({
-                reciverEmail: data.email,
+        if (schedule) {
+            schedule.currenOrder = +schedule.currenOrder + 1
+            schedule.save()
 
-                time: data.time,
+            if (+schedule.currenOrder - 1 === +schedule.maxOrder) {
 
-            })
-            return {
-                EM: 'update DATA SUCCESS',
-                EC: 0,
-                DT: ''
+                schedule.currenOrder = +schedule.currenOrder - 1
+                schedule.save()
+                return {
+                    EM: 'max limit car per time',
+                    EC: 2,
+                    DT: ''
+                }
+            }
+
+            else {
+                let booking = await db.Booking.findOne({
+                    where: { garaId: data.garaId, date: data.date, status: 'S2', userId: data.userId, carId: data.carId, timeType: data.timeType, serviceId: data.serviceId },
+                })
+
+                if (booking) {
+                    booking.status = 'S3'
+                    booking.save()
+                    await EmailService.sendcomfemEmail({
+                        reciverEmail: data.email,
+                        time: data.time,
+
+                    })
+
+                    return {
+                        EM: 'update DATA SUCCESS',
+                        EC: 0,
+                        DT: ''
+                    }
+
+                }
+                else {
+                    return {
+                        EM: 'update fail',
+                        EC: 1,
+                        DT: ''
+                    }
+                }
             }
 
         }
-        else {
-            return {
-                EM: 'update fail',
-                EC: 1,
-                DT: ''
-            }
-        }
+
 
 
     } catch (e) {
@@ -555,12 +591,63 @@ let getListOrderService = async (garaId, date) => {
 
 
         })
+        let booking2 = await db.Booking.findAll({
+            where: { garaId: garaId, date: date, status: 'S4' },
+            attributes: ["id", "userId", "garaid", "carId", "timeType", "serviceId", "date", "status"],
+            include: [
+                {
+                    model: db.User, as: 'bookingData', attributes: ["id", "userName", "email", "address"]
+                },
+                {
+                    model: db.Gara, as: 'bookingDataGara', attributes: ["id", "nameGara", "address", "provindId", "phone"]
+                },
+                {
+                    model: db.Time, as: 'timeDataBooking', attributes: ["id", "timValue"]
+                },
+                {
+                    model: db.Car, as: 'carBookingData', attributes: ["id", "nameCar", "carCompanyId", "descriptions",],
+                    include: { model: db.CarCompany, as: "carCompanyData" }
+                },
+                {
+                    model: db.Service, as: 'serviceBookingData', attributes: ["id", "name", "description"]
+                },
+            ], raw: true,
+            nest: true
 
-        if (booking) {
+
+        })
+        let booking3 = await db.Booking.findAll({
+            where: { garaId: garaId, date: date, status: 'S0' },
+            attributes: ["id", "userId", "garaid", "carId", "timeType", "serviceId", "date", "status"],
+            include: [
+                {
+                    model: db.User, as: 'bookingData', attributes: ["id", "userName", "email", "address"]
+                },
+                {
+                    model: db.Gara, as: 'bookingDataGara', attributes: ["id", "nameGara", "address", "provindId", "phone"]
+                },
+                {
+                    model: db.Time, as: 'timeDataBooking', attributes: ["id", "timValue"]
+                },
+                {
+                    model: db.Car, as: 'carBookingData', attributes: ["id", "nameCar", "carCompanyId", "descriptions",],
+                    include: { model: db.CarCompany, as: "carCompanyData" }
+                },
+                {
+                    model: db.Service, as: 'serviceBookingData', attributes: ["id", "name", "description"]
+                },
+            ], raw: true,
+            nest: true
+
+
+        })
+        if (booking2 && booking) {
+            Array.prototype.push.apply(booking2, booking);
+            Array.prototype.push.apply(booking3, booking2);
             return {
                 EM: 'GET DATA SUCCESS',
                 EC: 0,
-                DT: booking
+                DT: booking3
             }
 
         }
@@ -571,6 +658,94 @@ let getListOrderService = async (garaId, date) => {
                 DT: ''
             }
         }
+
+
+
+
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: []
+        }
+    }
+}
+let finishOrderService = async (data) => {
+    try {
+
+
+        let booking = await db.Booking.findOne({
+            where: { garaId: data.garaId, date: data.date, status: 'S3', userId: data.userId, carId: data.carId, timeType: data.timeType, serviceId: data.serviceId },
+        })
+
+        if (booking) {
+            booking.status = 'S4'
+            booking.save()
+            await EmailService.sendcomfemEmail({
+                reciverEmail: data.email,
+                time: data.time,
+
+            })
+
+            return {
+                EM: 'update DATA SUCCESS',
+                EC: 0,
+                DT: ''
+            }
+
+        }
+        else {
+            return {
+                EM: 'update fail',
+                EC: 1,
+                DT: ''
+            }
+        }
+
+
+
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: []
+        }
+    }
+}
+let canserOrderService = async (data) => {
+    try {
+
+
+        let booking = await db.Booking.findOne({
+            where: { garaId: data.garaId, date: data.date, status: 'S3', userId: data.userId, carId: data.carId, timeType: data.timeType, serviceId: data.serviceId },
+        })
+
+        if (booking) {
+            booking.status = 'S0'
+            booking.save()
+            await EmailService.sendcomfemEmail({
+                reciverEmail: data.email,
+                time: data.time,
+
+            })
+
+            return {
+                EM: 'update DATA SUCCESS',
+                EC: 0,
+                DT: ''
+            }
+
+        }
+        else {
+            return {
+                EM: 'update fail',
+                EC: 1,
+                DT: ''
+            }
+        }
+
 
 
     } catch (e) {
@@ -584,5 +759,5 @@ let getListOrderService = async (garaId, date) => {
 }
 module.exports = {
     readInfoGaraService, getCarWithCarCompany, getAllCar, getCarWithCarId, registerCartoGaraService, readAllTimeService, createBulkScheduleService,
-    getAllCarByGaraService, deletePickCarService, getListBookingService, comfimeBookingService, getListOrderService
+    getAllCarByGaraService, deletePickCarService, getListBookingService, comfimeBookingService, getListOrderService, finishOrderService, canserOrderService
 }
