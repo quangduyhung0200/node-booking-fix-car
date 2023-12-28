@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
             Gara.belongsToMany(models.Car, { through: 'Gara_Car', foreignKey: 'garaId' });
             Gara.hasMany(models.Schedule, { foreignKey: 'garaId', as: 'GaraScheduleData' });
             Gara.hasMany(models.Booking, { foreignKey: 'garaId', as: 'bookingDataGara' });
-            Gara.hasMany(models.Rate, { foreignKey: 'rateId', as: 'rateData' });
+
             Gara.belongsTo(models.User, { foreignKey: 'userId', as: 'userGara' });
             Gara.hasMany(models.Comment, { foreignKey: 'garaId', as: 'GaraComment' });
         }
@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
         avata: DataTypes.BLOB('long'),
         userId: DataTypes.INTEGER,
         phone: DataTypes.STRING,
-        rateId: DataTypes.STRING,
+        rateId: DataTypes.FLOAT,
         status: DataTypes.STRING,
 
     }, {

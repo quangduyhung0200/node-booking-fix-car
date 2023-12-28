@@ -39,7 +39,7 @@ module.exports = {
 
             },
             rateId: {
-                type: Sequelize.INTEGER,
+                type: Sequelize.FLOAT,
 
 
             },

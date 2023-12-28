@@ -14,7 +14,7 @@ let readInfoGaraService = async (id) => {
 
         let user = await db.Gara.findOne({
             where: { userId: id },
-            attributes: ["id", "nameGara", "address", "phone", "description", "descriptionHTML", "avata", "userId"],
+            attributes: ["id", "nameGara", "address", "phone", "description", "descriptionHTML", "avata", "userId", "rateId"],
             include: [{ model: db.Provind, as: 'provindGaraData' }]
 
 
@@ -25,7 +25,7 @@ let readInfoGaraService = async (id) => {
         });
 
         if (user) {
-
+            console.log('ugata: ', user)
             return {
                 EM: 'GET DATA SUCCESS',
                 EC: 0,

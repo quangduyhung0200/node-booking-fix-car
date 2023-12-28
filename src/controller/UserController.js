@@ -324,8 +324,35 @@ let getAllOrder = async (req, res) => {
         })
     }
 }
+let createComment = async (req, res) => {
+    try {
+        let response = await userService.createCommentService(req.body);
+        return res.status(200).json(response)
+    } catch (e) {
+        console.log(e)
+        return res.status(200).json({
+            errCode: -1,
+            massge: 'err from sever'
+        })
+
+    }
+}
+let readAllComment = async (req, res) => {
+
+    try {
+
+        let response = await userService.readAllCommentService(req.query.garaId);
+        return res.status(200).json(response)
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            errCode: -1,
+            massge: 'erro from server...'
+        })
+    }
+}
 module.exports = {
     postRegister, getGender, handldLogin, getUserAccount, handlLogout, readProvind, postRegisterGara, readTopGara,
     readPrice, readPayment, readService, readSchedule, readServiceCar, readPricePayment, createBooking, vetyfyBooking,
-    getAllOrder
+    getAllOrder, createComment, readAllComment
 }

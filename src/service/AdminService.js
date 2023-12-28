@@ -181,7 +181,7 @@ let getGaraWithId = async (id) => {
 
         let user = await db.Gara.findOne({
             where: { id: id },
-            attributes: ["id", "nameGara", "address", "avata", "phone", "description", "descriptionHTML", "userId"],
+            attributes: ["id", "nameGara", "address", "avata", "phone", "description", "descriptionHTML", "userId", 'rateId'],
             include: [{ model: db.Provind, attributes: ["id", "name"], as: 'provindGaraData' },
             ],
 

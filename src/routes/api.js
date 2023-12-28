@@ -27,6 +27,8 @@ const initAPIRouters = (app) => {
     router.post('/booking/createBooking', UserController.createBooking)
     router.post('/vetyfy-booking', UserController.vetyfyBooking)
     router.get('/getAllOrder', UserController.getAllOrder)
+    router.post('/comment/create', UserController.createComment)
+    router.get('/comment/read', UserController.readAllComment)
 
 
 

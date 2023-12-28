@@ -753,8 +753,129 @@ let getAllOrderService = async (userId) => {
     }
 
 }
+let createCommentService = async (data) => {
+
+    try {
+
+        let comment = await db.Comment.create({
+            comment: data.comment,
+            garaId: data.garaId,
+            userId: data.userId,
+            rate: data.rate
+        })
+
+        if (comment) {
+            let gara = await db.Gara.findOne({ where: { id: data.garaId } })
+            if (gara) {
+                if (gara.rateId === null) {
+                    gara.rateId = data.rate
+                }
+                else {
+                    gara.rateId = +((gara.rateId + data.rate) / 2)
+                    console.log(gara.rateId)
+                }
+
+                gara.save()
+                let booking = await db.Booking.findOne({
+                    where: {
+                        userId: data.userId,
+                        garaid: data.garaId,
+                        carId: data.carId,
+                        timeType: data.timeType,
+                        serviceId: data.serviceId,
+                        date: data.date,
+                        status: 'S4'
+                    }
+                })
+                if (booking) {
+                    booking.status = 'S5'
+                    booking.save()
+                    return {
+                        EM: 'danh gia thanh cong',
+                        EC: 0,
+                        DT: ''
+                    }
+                }
+                else {
+                    return {
+                        EM: 'thong tin don hang khong chinh xac',
+                        EC: 3,
+                        DT: ''
+                    }
+                }
+            }
+            else {
+                return {
+                    EM: 'thong tin gara khong chinh xac',
+                    EC: 2,
+                    DT: ''
+                }
+            }
+
+        }
+        else {
+            return {
+                EM: 'comment that bai',
+                EC: 1,
+                DT: ''
+            }
+        }
+
+
+
+
+
+
+
+    }
+    catch (e) {
+        console.log(e)
+
+        return {
+            EM: 'song thing wrong',
+            EC: -1,
+            DT: ''
+        }
+    }
+
+}
+let readAllCommentService = async (garaId) => {
+
+    try {
+
+        let comment = await db.Comment.findAll({
+            where: { garaId: garaId },
+            include: [{ model: db.User, as: 'UserComment', attributes: ["userName"] }]
+        })
+        if (comment) {
+            return {
+                EM: 'get data successs',
+                EC: 0,
+                DT: comment
+            }
+        }
+        else {
+            return {
+                EM: 'data emty',
+                EC: 1,
+                DT: ''
+            }
+        }
+
+
+
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'song thing wrong',
+            EC: -1,
+            DT: ''
+        }
+    }
+
+}
 module.exports = {
     createRegisterUser, getGender, LoginUser, readProvindservice, createRegisterGara, readTopGaraService,
     readAllPrice, readAllPayment, readAllService, readScheduleByDay, readServiceCarService, readPricePaymentService,
-    createBookingService, vetyfyBookingService, getAllOrderService
+    createBookingService, vetyfyBookingService, getAllOrderService, createCommentService, readAllCommentService
 }
