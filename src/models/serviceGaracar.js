@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
         garaCarId: DataTypes.INTEGER,
         priceId: DataTypes.INTEGER,
         paymentId: DataTypes.INTEGER,
-
+        isDelete: DataTypes.STRING,
 
 
     }, {

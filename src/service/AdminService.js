@@ -175,44 +175,7 @@ const getAllGara = async () => {
         }
     }
 }
-let getGaraWithId = async (id) => {
 
-    try {
-
-        let user = await db.Gara.findOne({
-            where: { id: id },
-            attributes: ["id", "nameGara", "address", "avata", "phone", "description", "descriptionHTML", "userId", 'rateId'],
-            include: [{ model: db.Provind, attributes: ["id", "name"], as: 'provindGaraData' },
-            ],
-
-            raw: false,
-            nest: true,
-        });
-
-        if (user) {
-
-            return {
-                EM: 'GET DATA SUCCESS',
-                EC: 0,
-                DT: user
-            }
-        }
-        else {
-            return {
-                EM: 'GET DATA SUCCESS',
-                EC: 1,
-                DT: ''
-            }
-        }
-    } catch (e) {
-        console.log(e)
-        return {
-            EM: 'SOMTHING WRONG',
-            EC: -1,
-            DT: []
-        }
-    }
-}
 
 let accepGaraService = async (data) => {
     try {
@@ -291,85 +254,8 @@ let test = async () => {
         }
     }
 }
-let getCarWithPage = async (page, limit) => {
-    try {
-        let offset = (page - 1) * limit
-        let { count, rows } = await db.Car.findAndCountAll({
-            attributes: ["id", "nameCar", "carCompanyId", "avata", "descriptions"],
-            include: { model: db.CarCompany, attributes: ["id", "name", "description", "avata"], as: 'carCompanyData' },
-            order: [['id', 'DESC']],
-            raw: false,
-            nest: true,
 
-            offset: offset,
-            limit: limit
-        })
-        console.log(rows)
-        let totalPage = Math.ceil(count / limit)
-        let data = {
-            totalRow: count,
-            totalPage: totalPage,
-            user: rows
 
-        }
-
-        if (data) {
-
-            return {
-                EM: 'GET DATA SUCCESS',
-                EC: 0,
-                DT: data
-            }
-        }
-        else {
-            return {
-                EM: 'GET DATA SUCCESS',
-                EC: 1,
-                DT: ''
-            }
-        }
-    } catch (e) {
-        console.log(e)
-        return {
-            EM: 'SOMTHING WRONG',
-            EC: -1,
-            DT: []
-        }
-    }
-}
-let readCarCompany = async (page, limit) => {
-    try {
-
-        let user = await db.CarCompany.findAll({
-
-            attributes: ["id", "name"],
-
-        });
-
-        if (user) {
-
-            return {
-                EM: 'GET DATA SUCCESS',
-                EC: 0,
-                DT: user
-            }
-        }
-        else {
-            return {
-                EM: 'GET DATA SUCCESS',
-                EC: 1,
-                DT: ''
-            }
-        }
-    } catch (e) {
-        console.log(e)
-        return {
-            EM: 'SOMTHING WRONG',
-            EC: -1,
-            DT: []
-        }
-    }
-}
 let createCarService = async (data) => {
     try {
 
@@ -485,6 +371,6 @@ let deleteUserService = async (inputId) => {
 
 }
 module.exports = {
-    getUserWithPage, getAllUser, getGaraWithPage, getAllGara, getGaraWithId, accepGaraService, test, getCarWithPage, readCarCompany, createCarService,
+    getUserWithPage, getAllUser, getGaraWithPage, getAllGara, accepGaraService, test, createCarService,
     updateCarService, deleteUserService
 }

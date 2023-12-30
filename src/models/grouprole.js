@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     Group_Role.init({
         groupId: DataTypes.INTEGER,
         roleId: DataTypes.INTEGER,
-
+        isDelete: DataTypes.STRING,
 
     }, {
         sequelize,

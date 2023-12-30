@@ -57,6 +57,22 @@ module.exports = {
                 type: Sequelize.STRING,
 
             },
+            isDelete: {
+                type: Sequelize.STRING,
+
+                allowNull: true,
+            },
+            contenMarkdown: {
+                type: Sequelize.STRING,
+
+                allowNull: true,
+            },
+            contenHTML: {
+                type: Sequelize.STRING,
+
+                allowNull: true,
+            },
+
 
 
 

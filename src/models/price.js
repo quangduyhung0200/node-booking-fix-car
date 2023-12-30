@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     };
     Price.init({
         value: DataTypes.STRING,
-
+        isDelete: DataTypes.STRING,
 
     }, {
         sequelize,

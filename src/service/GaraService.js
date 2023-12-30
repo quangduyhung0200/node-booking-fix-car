@@ -25,7 +25,7 @@ let readInfoGaraService = async (id) => {
         });
 
         if (user) {
-            console.log('ugata: ', user)
+
             return {
                 EM: 'GET DATA SUCCESS',
                 EC: 0,
@@ -48,89 +48,10 @@ let readInfoGaraService = async (id) => {
         }
     }
 }
-let getAllCar = async (carCompany) => {
-    try {
-        let data = await db.Car.findAll({
-
-            attributes: ["id", "nameCar"],
-
-        })
 
 
 
-        return {
-            EM: 'GET DATA SUCCESS',
-            EC: 0,
-            DT: data
-        }
 
-
-    } catch (e) {
-        console.log(e)
-        return {
-            EM: 'SOMTHING WRONG',
-            EC: -1,
-            DT: []
-        }
-    }
-}
-let getCarWithCarCompany = async (carCompany) => {
-    try {
-        let data = await db.Car.findAll({
-            where: { carCompanyId: carCompany },
-            attributes: ["id", "nameCar"],
-
-        })
-
-
-
-        return {
-            EM: 'GET DATA SUCCESS',
-            EC: 0,
-            DT: data
-        }
-
-
-    } catch (e) {
-        console.log(e)
-        return {
-            EM: 'SOMTHING WRONG',
-            EC: -1,
-            DT: []
-        }
-    }
-}
-
-let getCarWithCarId = async (carId) => {
-    try {
-        let data = await db.Car.findOne({
-            where: { id: carId },
-            attributes: ["id", "nameCar", "avata", "descriptions"],
-            include: [{
-                model: db.CarCompany, attributes: ["id", "name"], as: 'carCompanyData',
-            }]
-
-        })
-        console.log(carId)
-
-
-
-        return {
-            EM: 'GET DATA SUCCESS',
-            EC: 0,
-            DT: data
-        }
-
-
-    } catch (e) {
-        console.log(e)
-        return {
-            EM: 'SOMTHING WRONG',
-            EC: -1,
-            DT: []
-        }
-    }
-}
 let registerCartoGaraService = async (rawdata) => {
 
     let garaCar = await db.Gara_Car.findOne({
@@ -253,7 +174,7 @@ let readAllTimeService = async () => {
 
 
 
-        console.log(data)
+
         return {
             EM: 'GET DATA SUCCESS',
             EC: 0,
@@ -328,43 +249,10 @@ let createBulkScheduleService = async (data) => {
     }
 
 }
-let getAllCarByGaraService = async (garaId) => {
-    try {
-        let gara = await db.Gara.findAll({
-            where: { id: garaId },
-            attributes: ["id", "nameGara", "address", "phone", "description", "descriptionHTML", "userId"],
-            include: {
-                model: db.Car,
-                attributes: ["id", "nameCar", "descriptions", "avata"],
-                include: [{ model: db.CarCompany, as: 'carCompanyData' }],
-                through: { attributes: [] }
-            }, raw: true,
-            nest: true
 
-
-        })
-
-
-        console.log(gara)
-        return {
-            EM: 'GET DATA SUCCESS',
-            EC: 0,
-            DT: gara
-        }
-
-
-    } catch (e) {
-        console.log(e)
-        return {
-            EM: 'SOMTHING WRONG',
-            EC: -1,
-            DT: []
-        }
-    }
-}
 let deletePickCarService = async (data) => {
     try {
-        console.log(data)
+
         let gara = await db.Gara_Car.findOne({
             where: { garaId: data.garaId, carId: data.carId },
             attributes: ['id']
@@ -466,7 +354,7 @@ let getListBookingService = async (garaId, date) => {
         let currendate = moment(new Date()).startOf('day').unix()
         for (let i = 0; i < booking2.length; i++) {
             if (booking2[i].date < currendate) {
-                console.log
+
                 booking2[i].status = 'S0'
                 booking2[i].save()
 
@@ -758,6 +646,6 @@ let canserOrderService = async (data) => {
     }
 }
 module.exports = {
-    readInfoGaraService, getCarWithCarCompany, getAllCar, getCarWithCarId, registerCartoGaraService, readAllTimeService, createBulkScheduleService,
-    getAllCarByGaraService, deletePickCarService, getListBookingService, comfimeBookingService, getListOrderService, finishOrderService, canserOrderService
+    readInfoGaraService, registerCartoGaraService, readAllTimeService, createBulkScheduleService
+    , deletePickCarService, getListBookingService, comfimeBookingService, getListOrderService, finishOrderService, canserOrderService
 }

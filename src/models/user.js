@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
             User.hasMany(models.Booking, { foreignKey: 'userId', as: 'bookingData' });
             User.hasOne(models.Gara, { foreignKey: 'userId', as: 'userGara' });
             User.hasMany(models.Comment, { foreignKey: 'userId', as: 'UserComment' });
+            User.hasMany(models.HandBook, { foreignKey: 'staffId', as: 'StaffHandbookData' });
         }
     };
     User.init({
@@ -27,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
         gender: DataTypes.STRING,
         address: DataTypes.STRING,
         groupId: DataTypes.INTEGER,
-
+        isDelete: DataTypes.STRING,
         avata: DataTypes.BLOB('long'),
 
     }, {

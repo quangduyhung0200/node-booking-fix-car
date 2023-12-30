@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
     };
     Time.init({
         timValue: DataTypes.STRING,
-
+        isDelete: DataTypes.STRING,
 
     }, {
         sequelize,

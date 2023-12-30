@@ -24,7 +24,11 @@ module.exports = {
             descriptions: {
                 type: Sequelize.STRING
             },
+            isDelete: {
+                type: Sequelize.STRING,
 
+                allowNull: true,
+            },
 
             createdAt: {
                 allowNull: false,

@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
         garaId: DataTypes.INTEGER,
         maxOrder: DataTypes.STRING,
         currenOrder: DataTypes.STRING,
-
+        isDelete: DataTypes.STRING,
 
 
     }, {

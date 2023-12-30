@@ -35,7 +35,9 @@ module.exports = (sequelize, DataTypes) => {
         phone: DataTypes.STRING,
         rateId: DataTypes.FLOAT,
         status: DataTypes.STRING,
-
+        isDelete: DataTypes.STRING,
+        contenMarkdown: DataTypes.STRING,
+        contenHTML: DataTypes.STRING,
     }, {
         sequelize,
         modelName: 'Gara',

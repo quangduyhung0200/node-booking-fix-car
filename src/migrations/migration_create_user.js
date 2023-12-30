@@ -38,6 +38,11 @@ module.exports = {
         type: Sequelize.BLOB('long'),
         allowNull: true,
       },
+      isDelete: {
+        type: Sequelize.STRING,
+
+        allowNull: true,
+      },
 
       createdAt: {
         allowNull: false,

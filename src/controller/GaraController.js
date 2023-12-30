@@ -3,7 +3,7 @@ import GaraService from '../service/GaraService'
 let readInfoGara = async (req, res) => {
 
     try {
-        console.log(req.query.id)
+
         let response = await GaraService.readInfoGaraService(req.query.id);
         return res.status(200).json(response)
     } catch (e) {
@@ -14,70 +14,8 @@ let readInfoGara = async (req, res) => {
         })
     }
 }
-let readInfoCar = async (req, res) => {
-    try {
 
-        if (req.query.carCompany && req.query && req.query.carCompany !== 'ALL') {
-            let carCompany = req.query.carCompany;
 
-            let data = await GaraService.getCarWithCarCompany(carCompany)
-            return res.status(200).json({
-                EM: data.EM,
-                EC: data.EC,
-                DT: data.DT
-            })
-        }
-        else {
-
-            let data = await GaraService.getAllCar()
-            return res.status(200).json({
-                EM: data.EM,
-                EC: data.EC,
-                DT: data.DT
-            })
-        }
-
-    } catch (e) {
-        console.log(e)
-        return res.status(500).json({
-            EM: 'erro from sever',
-            EC: -1,
-            DT: ''
-
-        })
-    }
-}
-let readInfoCarById = async (req, res) => {
-    try {
-
-        if (req.query.carId && req.query) {
-            let carId = req.query.carId;
-
-            let data = await GaraService.getCarWithCarId(+carId)
-            return res.status(200).json({
-                EM: data.EM,
-                EC: data.EC,
-                DT: data.DT
-            })
-        }
-        else {
-            return res.status(200).json({
-                EM: 'you dont pass the id',
-                EC: 1,
-                DT: ''
-            })
-        }
-
-    } catch (e) {
-        console.log(e)
-        return res.status(500).json({
-            EM: 'erro from sever',
-            EC: -1,
-            DT: ''
-
-        })
-    }
-}
 let registerCartoGara = async (req, res) => {
     try {
 
@@ -140,36 +78,13 @@ let createBulkSchedule = async (req, res) => {
         })
     }
 }
-let getAllCarByGara = async (req, res) => {
-    try {
 
-
-
-        let garaId = req.query.id;
-        let data = await GaraService.getAllCarByGaraService(garaId)
-        return res.status(200).json({
-            EM: data.EM,
-            EC: data.EC,
-            DT: data.DT
-        })
-
-    } catch (e) {
-        console.log(e)
-        return res.status(500).json({
-            EM: 'erro from sever',
-            EC: -1,
-            DT: ''
-
-        })
-
-    }
-}
 let deletePickCar = async (req, res) => {
     try {
 
 
 
-        console.log('adasdasdasd', req.body)
+
         let data = await GaraService.deletePickCarService(req.body)
         return res.status(200).json({
             EM: data.EM,
@@ -311,6 +226,6 @@ let canserOrder = async (req, res) => {
     }
 }
 module.exports = {
-    readInfoGara, readInfoCar, readInfoCarById, registerCartoGara, readAllTime, createBulkSchedule, getAllCarByGara,
+    readInfoGara, registerCartoGara, readAllTime, createBulkSchedule,
     deletePickCar, getListBooking, comfimeBooking, getListOrder, finishOrder, canserOrder
 }

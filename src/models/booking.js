@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
         static associate(models) {
             // define association here
             Booking.belongsTo(models.Time, { foreignKey: 'timeType', targetKey: 'id', as: 'timeDataBooking' });
-            Booking.belongsTo(models.Status, { foreignKey: 'status', targetKey: 'id', as: 'statusData' });
+
             Booking.belongsTo(models.User, { foreignKey: 'userId', targetKey: 'id', as: 'bookingData' });
             Booking.belongsTo(models.Gara, { foreignKey: 'garaId', targetKey: 'id', as: 'bookingDataGara' });
             Booking.belongsTo(models.Car, { foreignKey: 'carid', targetKey: 'id', as: 'carBookingData' });
@@ -30,6 +30,7 @@ module.exports = (sequelize, DataTypes) => {
         status: DataTypes.INTEGER,
         token: DataTypes.STRING,
         serviceId: DataTypes.INTEGER,
+        isDelete: DataTypes.STRING,
 
 
     }, {

@@ -45,6 +45,11 @@ module.exports = {
                 type: Sequelize.STRING,
                 allowNull: false,
             },
+            isDelete: {
+                type: Sequelize.STRING,
+
+                allowNull: true,
+            },
 
             createdAt: {
                 allowNull: false,

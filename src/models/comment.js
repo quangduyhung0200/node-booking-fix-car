@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
         garaId: DataTypes.INTEGER,
         userId: DataTypes.INTEGER,
         rate: DataTypes.STRING,
-
+        isDelete: DataTypes.STRING,
     }, {
         sequelize,
         modelName: 'Comment',

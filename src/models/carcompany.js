@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
         name: DataTypes.STRING,
         description: DataTypes.STRING,
         avata: DataTypes.BLOB('long'),
+        isDelete: DataTypes.STRING,
 
 
     }, {

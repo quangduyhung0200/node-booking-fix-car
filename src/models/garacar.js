@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
     Gara_Car.init({
         garaId: DataTypes.INTEGER,
         carId: DataTypes.INTEGER,
-
+        isDelete: DataTypes.STRING,
 
 
 

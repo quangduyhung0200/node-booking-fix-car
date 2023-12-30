@@ -23,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
         carCompanyId: DataTypes.INTEGER,
         avata: DataTypes.BLOB('long'),
         descriptions: DataTypes.STRING,
+        isDelete: DataTypes.STRING,
 
     }, {
         sequelize,

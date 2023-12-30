@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
     Group.init({
         name: DataTypes.STRING,
         description: DataTypes.STRING,
-
+        isDelete: DataTypes.STRING,
     }, {
         sequelize,
         modelName: 'Group',

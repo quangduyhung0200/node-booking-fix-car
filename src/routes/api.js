@@ -3,68 +3,77 @@ import UserController from "../controller/UserController.js"
 import AdminController from "../controller/AdminController.js"
 import { checkUserJWT, checkUserPermisstion } from "../midderWare/JWTaction.js"
 import GaraController from "../controller/GaraController.js"
+import GuestController from "../controller/GuestController.js"
 const router = express.Router();
 
 
 const initAPIRouters = (app) => {
-
-    // router.all('*', checkUserJWT, checkUserPermisstion,)
-
-    router.post('/register/user', UserController.postRegister)
-    router.get('/gender/read', UserController.getGender)
-    router.post('/login/user', UserController.handldLogin)
-    router.get('/account', checkUserJWT, UserController.getUserAccount)
-    router.post('/logout/user', UserController.handlLogout)
-    router.get('/provind/read', UserController.readProvind)
-    router.post('/register/gara', checkUserJWT, checkUserPermisstion, UserController.postRegisterGara)
-    router.get('/gara/read', UserController.readTopGara)
-    router.get('/price/read', UserController.readPrice)
-    router.get('/payment/read', UserController.readPayment)
-    router.get('/service/read', UserController.readService)
-    router.get('/schedule/read', UserController.readSchedule)
-    router.get('/booking/readService', UserController.readServiceCar)
-    router.get('/booking/readPricePayment', UserController.readPricePayment)
-    router.post('/booking/createBooking', UserController.createBooking)
-    router.post('/vetyfy-booking', UserController.vetyfyBooking)
-    router.get('/getAllOrder', UserController.getAllOrder)
-    router.post('/comment/create', UserController.createComment)
-    router.get('/comment/read', UserController.readAllComment)
+    //nguoi dung chua dang ky
+    router.post('/register/user', GuestController.postRegister)//done
+    router.get('/gender/read', GuestController.getGender)//done
+    router.get('/account', checkUserJWT, GuestController.getUserAccount)//done
+    router.get('/gara/read', GuestController.readTopGara)//done
+    router.get('/payment/read', GuestController.readPayment)//done
+    router.get('/price/read', GuestController.readPrice)//done
+    router.get('/service/read', GuestController.readService)//done
+    router.get('/schedule/read', GuestController.readSchedule)//done
+    router.get('/booking/readPricePayment', GuestController.readPricePayment)//done
+    router.get('/booking/readService', GuestController.readServiceCar)//done
+    router.post('/booking/createBooking', GuestController.createBooking)//done
+    router.post('/vetyfy-booking', GuestController.vetyfyBooking)//done
+    router.get('/comment/read', GuestController.readAllComment)//done
+    router.get('/gara/getAllGara', GuestController.getAllGara)//done
 
 
+    router.get('/provind/read', GuestController.readProvind)//done
+    router.get('/gara/getAllCar', GuestController.getAllCarByGara)//done
+
+    router.get('/detailGara/read/:id', GuestController.readDeatailGara)//done
+    router.get('/car/readCarInfoByCariD', GuestController.readInfoCarById)
+    router.get('/car/readCarInfoByCarCompany', GuestController.readInfoCar)
+    router.get('/carCompany/read', GuestController.readCarCompany)//done
+    router.get('/car/read', GuestController.readCar)//done
+    router.get('/gara/readGarabyProvind', GuestController.readGarabyProvind)//done
+    router.get('/gara/getAllDay', GuestController.getAllDay)//done
+    router.get('/gara/readGarabyProvindCarCompanyCar', GuestController.readGarabyProvindCarCompanyCar)//done
+    //nguoi dung da dangky
+    router.post('/login/user', UserController.handldLogin)//done
+    router.post('/logout/user', UserController.handlLogout)//done
+
+    router.post('/register/gara', checkUserJWT, checkUserPermisstion, UserController.postRegisterGara)//done
+    router.get('/getAllOrder', UserController.getAllOrder)//done
+    router.post('/comment/create', UserController.createComment)//done
+    //nguoi dung dag ky gara
+    router.get('/gara/readTime', GaraController.readAllTime)//done
 
 
-    router.get('/gara/readdata', GaraController.readInfoGara)
-    router.get('/car/readCarInfoByCarCompany', GaraController.readInfoCar)
-    router.get('/car/readCarInfoByCariD', GaraController.readInfoCarById)
-    router.post('/gara/registerCar', GaraController.registerCartoGara)
-    router.get('/gara/readTime', GaraController.readAllTime)
-    router.post('/gara/createBulkSchedule', GaraController.createBulkSchedule)
-    router.get('/gara/getAllCar', GaraController.getAllCarByGara)
-    router.delete('/gara/deletePickCar', GaraController.deletePickCar)
-    router.get('/gara/getListBooking', GaraController.getListBooking)
-    router.post('/gara/comfimeBooking', GaraController.comfimeBooking)
-    router.get('/gara/getListOrder', GaraController.getListOrder)
-    router.post('/gara/finishOrder', GaraController.finishOrder)
-    router.post('/gara/canserOrder', GaraController.canserOrder)
+    router.get('/gara/readdata', GaraController.readInfoGara)//done
+    router.post('/gara/registerCar', GaraController.registerCartoGara)//done
+    router.post('/gara/createBulkSchedule', GaraController.createBulkSchedule)//done
+    router.delete('/gara/deletePickCar', GaraController.deletePickCar)//done
+    router.get('/gara/getListBooking', GaraController.getListBooking)//done
+    router.post('/gara/comfimeBooking', GaraController.comfimeBooking)//done
+    router.get('/gara/getListOrder', GaraController.getListOrder)//done
+    router.post('/gara/finishOrder', GaraController.finishOrder)//done
+    router.post('/gara/canserOrder', GaraController.canserOrder)//done
+    //ngui kiem duyet
+    router.put('/accep/gara', AdminController.accepGara)//done
+    router.get('/user/read', checkUserJWT, checkUserPermisstion, AdminController.readUser)//done
+    //admin
 
 
 
 
+    router.post('/car/create', AdminController.createCar)//done
+    router.put('/car/update', AdminController.updateCar)//done
+    router.delete('/car/delete', AdminController.deleteCar)//done
+    router.get('/garanoncensorship/read', checkUserJWT, checkUserPermisstion, AdminController.readGaraNonCensorship)//done
 
 
-
-
-    router.get('/user/read', checkUserJWT, checkUserPermisstion, AdminController.readUser)
-    router.get('/carCompany/read', AdminController.readCarCompany)
-    router.get('/car/read', checkUserJWT, checkUserPermisstion, AdminController.readCar)
-    router.post('/car/create', AdminController.createCar)
-    router.put('/car/update', AdminController.updateCar)
-    router.delete('/car/delete', AdminController.deleteCar)
-    router.get('/garanoncensorship/read', checkUserJWT, checkUserPermisstion, AdminController.readGaraNonCensorship)
-    router.get('/detailGara/read/:id', AdminController.readDeatailGara)
     router.get('/test', AdminController.test)
 
-    router.put('/accep/gara', AdminController.accepGara)
+
+
 
     // router.post('/login', ApiController.handldLogin)
     // router.post('/logout', ApiController.handlLogout)

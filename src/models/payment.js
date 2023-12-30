@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     };
     Payment.init({
         value: DataTypes.STRING,
-
+        isDelete: DataTypes.STRING,
 
     }, {
         sequelize,

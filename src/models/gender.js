@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     };
     Gender.init({
         name: DataTypes.STRING,
-
+        isDelete: DataTypes.STRING,
 
     }, {
         sequelize,
