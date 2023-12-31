@@ -17,10 +17,12 @@ module.exports = (sequelize, DataTypes) => {
     };
     HandBook.init({
         staffId: DataTypes.INTEGER,
-        contentHTML: DataTypes.STRING,
-        contentMarkdown: DataTypes.STRING,
+        contentHTML: DataTypes.TEXT('long'),
+        contentMarkdown: DataTypes.TEXT('long'),
         avata: DataTypes.BLOB('long'),
         isDelete: DataTypes.STRING,
+        status: DataTypes.STRING,
+        title: DataTypes.STRING,
 
 
 

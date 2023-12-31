@@ -27,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
         nameGara: DataTypes.STRING,
         descriptionHTML: DataTypes.STRING,
         descriptionMarkDown: DataTypes.STRING,
-        description: DataTypes.STRING,
+        description: DataTypes.TEXT('long'),
         address: DataTypes.STRING,
         provindId: DataTypes.INTEGER,
         avata: DataTypes.BLOB('long'),
@@ -36,8 +36,9 @@ module.exports = (sequelize, DataTypes) => {
         rateId: DataTypes.FLOAT,
         status: DataTypes.STRING,
         isDelete: DataTypes.STRING,
-        contenMarkdown: DataTypes.STRING,
-        contenHTML: DataTypes.STRING,
+
+        contenMarkdown: DataTypes.TEXT('long'),
+        contenHTML: DataTypes.TEXT('long'),
     }, {
         sequelize,
         modelName: 'Gara',

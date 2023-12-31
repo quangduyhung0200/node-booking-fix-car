@@ -54,7 +54,7 @@ module.exports = {
 
             },
             description: {
-                type: Sequelize.STRING,
+                type: Sequelize.TEXT('long')
 
             },
             isDelete: {
@@ -63,12 +63,12 @@ module.exports = {
                 allowNull: true,
             },
             contenMarkdown: {
-                type: Sequelize.STRING,
+                type: Sequelize.TEXT('long'),
 
                 allowNull: true,
             },
             contenHTML: {
-                type: Sequelize.STRING,
+                type: Sequelize.TEXT('long'),
 
                 allowNull: true,
             },

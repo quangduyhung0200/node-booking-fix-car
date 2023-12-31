@@ -58,7 +58,8 @@ const initAPIRouters = (app) => {
     router.post('/gara/canserOrder', GaraController.canserOrder)//done
     //ngui kiem duyet
     router.put('/accep/gara', AdminController.accepGara)//done
-    router.get('/user/read', checkUserJWT, checkUserPermisstion, AdminController.readUser)//done
+    router.get('/user/read', AdminController.readUser)//done
+    router.get('/handBook/read', AdminController.readHandBook)//done
     //admin
 
 

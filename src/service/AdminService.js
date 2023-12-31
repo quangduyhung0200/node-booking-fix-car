@@ -370,7 +370,67 @@ let deleteUserService = async (inputId) => {
     }
 
 }
+let readHandBookService = async (page, limit, staffId) => {
+    try {
+        let offset = (page - 1) * limit
+        let { count, rows } = await db.HandBook.findAndCountAll({
+            where: {
+                staffId: staffId,
+                status: 'S1',
+                isDelete: null
+
+            },
+            attributes: ["id", "staffId", "contentHTML", "contentMarkdown", "avata", "status", "title", "createdAt"],
+            include: [{ model: db.User, as: 'StaffHandbookData' }],
+
+
+
+            order: [['id', 'DESC']],
+            raw: true,
+            nest: true,
+
+            offset: offset,
+            limit: limit
+        })
+        let totalPage = Math.ceil(count / limit)
+        let data = {}
+
+
+        data = {
+            totalRow: count,
+            totalPage: totalPage,
+            user: rows
+
+        }
+
+
+
+        if (data) {
+
+
+            return {
+                EM: 'GET DATA SUCCESS',
+                EC: 0,
+                DT: data
+            }
+        }
+        else {
+            return {
+                EM: 'GET DATA SUCCESS',
+                EC: 1,
+                DT: ''
+            }
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: []
+        }
+    }
+}
 module.exports = {
     getUserWithPage, getAllUser, getGaraWithPage, getAllGara, accepGaraService, test, createCarService,
-    updateCarService, deleteUserService
+    updateCarService, deleteUserService, readHandBookService
 }

@@ -186,6 +186,40 @@ let deleteCar = async (req, res) => {
     }
 
 }
+let readHandBook = async (req, res) => {
+    try {
+
+        if (req.query.page && req.query.limit && req.query && req.query.staffId) {
+            let page = req.query.page;
+            let limit = req.query.limit;
+            let staffId = req.query.staffId;
+            let data = await AdminService.readHandBookService(+page, +limit, +staffId)
+            return res.status(200).json({
+                EM: data.EM,
+                EC: data.EC,
+                DT: data.DT
+            })
+        }
+        else {
+            let data = await AdminService.getAllHandBook()
+            return res.status(200).json({
+                EM: data.EM,
+                EC: data.EC,
+                DT: data.DT
+            })
+        }
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+    }
+
+}
 module.exports = {
-    readUser, readGaraNonCensorship, accepGara, test, createCar, updateCar, deleteCar
+    readUser, readGaraNonCensorship, accepGara, test, createCar, updateCar, deleteCar, readHandBook
 }

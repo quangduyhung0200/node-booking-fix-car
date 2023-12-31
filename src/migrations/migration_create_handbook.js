@@ -14,12 +14,12 @@ module.exports = {
                 allowNull: false,
             },
             contentHTML: {
-                type: Sequelize.STRING,
+                type: Sequelize.TEXT('long'),
                 allowNull: false,
             },
 
             contentMarkdown: {
-                type: Sequelize.STRING,
+                type: Sequelize.TEXT('long'),
                 allowNull: false,
             },
             avata: {
@@ -31,6 +31,17 @@ module.exports = {
 
                 allowNull: true,
             },
+            status: {
+                type: Sequelize.STRING,
+
+                allowNull: true,
+            },
+            title: {
+                type: Sequelize.STRING,
+
+                allowNull: true,
+            },
+
 
 
             createdAt: {
