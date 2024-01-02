@@ -35,7 +35,11 @@ const initAPIRouters = (app) => {
     router.get('/car/read', GuestController.readCar)//done
     router.get('/gara/readGarabyProvind', GuestController.readGarabyProvind)//done
     router.get('/gara/getAllDay', GuestController.getAllDay)//done
+    router.get('/handbook/getTopHandBook', GuestController.getTopHandBook)//done
+    router.get('/handbook/getHandBookRelateto', GuestController.getHandBookRelateto)//done
     router.get('/gara/readGarabyProvindCarCompanyCar', GuestController.readGarabyProvindCarCompanyCar)//done
+
+    router.get('/gara/searchHandBook', GuestController.searchHandBook)//done
     //nguoi dung da dangky
     router.post('/login/user', UserController.handldLogin)//done
     router.post('/logout/user', UserController.handlLogout)//done
@@ -45,8 +49,6 @@ const initAPIRouters = (app) => {
     router.post('/comment/create', UserController.createComment)//done
     //nguoi dung dag ky gara
     router.get('/gara/readTime', GaraController.readAllTime)//done
-
-
     router.get('/gara/readdata', GaraController.readInfoGara)//done
     router.post('/gara/registerCar', GaraController.registerCartoGara)//done
     router.post('/gara/createBulkSchedule', GaraController.createBulkSchedule)//done
@@ -60,11 +62,15 @@ const initAPIRouters = (app) => {
     router.put('/accep/gara', AdminController.accepGara)//done
     router.get('/user/read', AdminController.readUser)//done
     router.get('/handBook/read', AdminController.readHandBook)//done
+    router.post('/handBook/create', AdminController.createHandBook)//done
+
     //admin
 
 
 
+    router.get('/handBook/readById', AdminController.readHandBookById)//done
 
+    router.put('/handBook/accep', AdminController.accepHandBook)//done
     router.post('/car/create', AdminController.createCar)//done
     router.put('/car/update', AdminController.updateCar)//done
     router.delete('/car/delete', AdminController.deleteCar)//done

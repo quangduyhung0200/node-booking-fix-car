@@ -41,6 +41,12 @@ module.exports = {
 
                 allowNull: true,
             },
+            garaId: {
+                type: Sequelize.INTEGER,
+
+                allowNull: true,
+            },
+
 
 
 

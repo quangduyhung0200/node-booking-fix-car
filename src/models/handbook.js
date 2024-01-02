@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
          * The `models/index` file will call this method automatically.
          */
         static associate(models) {
-
+            HandBook.belongsTo(models.Gara, { foreignKey: 'garaId', targetKey: 'id', as: 'GaraHandBook' });
             HandBook.belongsTo(models.User, { foreignKey: 'staffId', targetKey: 'id', as: 'StaffHandbookData' });
         }
     };
@@ -23,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
         isDelete: DataTypes.STRING,
         status: DataTypes.STRING,
         title: DataTypes.STRING,
+        garaId: DataTypes.INTEGER,
 
 
 

@@ -513,8 +513,55 @@ let getAllDay = async (req, res) => {
     }
 
 }
+let getTopHandBook = async (req, res) => {
+    let limit = req.query.limit;
+    if (!limit) limit = 10;
+
+    try {
+        let response = await guestService.getTopHandBookService(+limit);
+        return res.status(200).json(response)
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            errCode: -1,
+            massge: 'erro from server...'
+        })
+    }
+}
+let getHandBookRelateto = async (req, res) => {
+    let limit = req.query.limit;
+    let handbookId = req.query.handbookId;
+    if (!limit) limit = 10;
+
+    try {
+        let response = await guestService.getHandBookRelatetoService(+limit, +handbookId);
+        return res.status(200).json(response)
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            errCode: -1,
+            massge: 'erro from server...'
+        })
+    }
+}
+let searchHandBook = async (req, res) => {
+    let text = req.query.text;
+
+
+
+    try {
+        let response = await guestService.searchHandBookService(text);
+        return res.status(200).json(response)
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            errCode: -1,
+            massge: 'erro from server...'
+        })
+    }
+}
 module.exports = {
     postRegister, getGender, getUserAccount, readTopGara, readPayment, readPrice, readService, readSchedule, readPricePayment, readServiceCar,
     createBooking, vetyfyBooking, readAllComment, getAllGara, getAllCarByGara, readDeatailGara, readProvind, readInfoCarById, readInfoCar,
-    readCarCompany, readCar, readGarabyProvind, readGarabyProvindCarCompanyCar, getAllDay
+    readCarCompany, readCar, readGarabyProvind, readGarabyProvindCarCompanyCar, getAllDay, getTopHandBook, getHandBookRelateto, searchHandBook
 }

@@ -326,6 +326,7 @@ let getListBookingService = async (garaId, date) => {
             include: [
                 {
                     model: db.User, as: 'bookingData', attributes: ["id", "userName", "email", "address"]
+
                 },
                 {
                     model: db.Gara, as: 'bookingDataGara', attributes: ["id", "nameGara", "address", "provindId", "phone"]

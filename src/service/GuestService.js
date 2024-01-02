@@ -4,6 +4,7 @@ import _ from "lodash";
 import EmailService from './EmailService'
 import schedule from "../models/schedule";
 import moment from 'moment';
+import sequelize from "sequelize";
 import { v4 as uuidv4 } from 'uuid';
 const { Op, where } = require("sequelize");
 var salt = bcrypt.genSaltSync(10);
@@ -118,24 +119,27 @@ const getGender = async () => {
     }
 
 }
+
 let readTopGaraService = async (limitInput) => {
 
     try {
 
 
-        let user = await db.Gara.findAll({
+        let { count, rows } = await db.Gara.findAndCountAll({
             where: {
                 status: 'S2'
             },
-            limit: limitInput,
+            attributes: ['id'],
 
-            order: [['createdAt', 'DESC']],
+
+            order: [['id', 'DESC']],
 
             include: [
                 {
                     model: db.Provind, as: 'provindGaraData'
 
-                }
+                },
+                { model: db.Booking, as: 'bookingDataGara' }
 
             ],
             raw: true,
@@ -143,11 +147,41 @@ let readTopGaraService = async (limitInput) => {
 
 
         }
+
         )
+        let data1 = []
+        for (let i = 0; i <= +rows[0].id; i++) {
+            const c = rows.filter((obj) => obj.id === i && obj.bookingDataGara.id !== null).length;
+
+            data1[i] = c
+
+        }
+
+        let data2 = []
+        for (let i = 0; i < data1.length; i++) {
+            if (data1[i] !== 0) {
+                data2[i] = { curenId: i, value: data1[i] }
+            }
+
+        }
+        let o = Object.entries(data2).filter(([_, v]) => v != null);
+        o.sort((b, a) => parseFloat(a[1].value) - parseFloat(b[1].value));
+        let finaldata = []
+        for (let i = 0; i < limitInput; i++) {
+            if (i < o.length) {
+                finaldata[i] = o[i][1]
+            }
+
+        }
+
+        let data = {
+            count: count,
+            acount: finaldata
+        }
         return {
             EM: 'GET DATA SUCCESS',
             EC: 0,
-            DT: user
+            DT: data
         }
     } catch (e) {
         console.log(e)
@@ -626,6 +660,7 @@ let getAllGaraService = async () => {
 }
 let getAllCarByGaraService = async (garaId) => {
     try {
+        console.log(garaId)
         let gara = await db.Gara.findAll({
             where: { id: garaId },
             attributes: ["id", "nameGara", "address", "phone", "description", "descriptionHTML", "userId"],
@@ -1053,11 +1088,123 @@ let getAllDayService = async (garaId) => {
         }
     }
 }
+let getTopHandBookService = async (limitInput) => {
 
+    try {
+
+
+        let user = await db.HandBook.findAll({
+            where: {
+                status: 'S2'
+            },
+            include: [{ model: db.User, as: 'StaffHandbookData' }],
+            limit: limitInput,
+
+            order: [['createdAt', 'DESC']],
+
+
+            raw: true,
+            nest: true
+
+
+
+        }
+        )
+        return {
+            EM: 'GET DATA SUCCESS',
+            EC: 0,
+            DT: user
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'song thing wrong',
+            EC: -1,
+            DT: ''
+        }
+    }
+
+}
+let getHandBookRelatetoService = async (limitInput, id) => {
+
+    try {
+
+
+        let user = await db.HandBook.findAll({
+            where: {
+                status: 'S2',
+                id: {
+                    [Op.ne]: id
+                },
+
+            },
+            include: [{ model: db.User, as: 'StaffHandbookData' }],
+            limit: limitInput,
+
+            order: [['createdAt', 'DESC']],
+
+
+            raw: true,
+            nest: true
+
+
+
+        }
+        )
+        return {
+            EM: 'GET DATA SUCCESS',
+            EC: 0,
+            DT: user
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'song thing wrong',
+            EC: -1,
+            DT: ''
+        }
+    }
+
+}
+let searchHandBookService = async (text) => {
+
+    try {
+
+
+        let ata = await db.HandBook.findAll({
+            where: {
+                name: sequelize.where(
+                    sequelize.fn("LOWER", sequelize.col("title")),
+                    "LIKE",
+                    "%" + text + "%"
+                )
+            },
+            include: [{
+                model: db.User, as: 'StaffHandbookData', attributes: {
+                    exclude: ['avata', 'password']
+                }
+            }]
+
+        })
+        return {
+            EM: 'GET DATA SUCCESS',
+            EC: 0,
+            DT: ata
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'song thing wrong',
+            EC: -1,
+            DT: ''
+        }
+    }
+
+}
 module.exports = {
     createRegisterUser, getGender, readTopGaraService, readAllPayment, readAllPrice, readAllService, readScheduleByDay, readPricePaymentService,
     readServiceCarService, createBookingService, vetyfyBookingService, getAllGaraService, getAllCarByGaraService, getGaraWithId, readProvindservice,
     getCarWithCarId, getCarWithCarCompany, getAllCar, readCarCompany, getCarWithPage, readAllCommentService, readGarabyProvind, readGarabyProvindCarCompanyCar,
-    getAllDayService
+    getAllDayService, getTopHandBookService, getHandBookRelatetoService, searchHandBookService
 
 }

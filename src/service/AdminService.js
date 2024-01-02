@@ -376,8 +376,10 @@ let readHandBookService = async (page, limit, staffId) => {
         let { count, rows } = await db.HandBook.findAndCountAll({
             where: {
                 staffId: staffId,
-                status: 'S1',
-                isDelete: null
+
+                isDelete: {
+                    [Op.ne]: 1
+                },
 
             },
             attributes: ["id", "staffId", "contentHTML", "contentMarkdown", "avata", "status", "title", "createdAt"],
@@ -430,7 +432,210 @@ let readHandBookService = async (page, limit, staffId) => {
         }
     }
 }
+
+let createHandBookService = async (data) => {
+    try {
+
+
+        let handBook = await db.HandBook.findOne({ where: { title: data.title } })
+        if (handBook === null) {
+            await db.HandBook.create({
+                staffId: data.staffId,
+                contentHTML: data.contentHTML,
+                contentMarkdown: data.contentMarkdown,
+                avata: data.avata,
+                isDelete: false,
+                status: 'S1',
+                title: data.title,
+                garaId: data.garaId
+
+            })
+            return {
+                EM: 'create Succes',
+                EC: 0,
+                DT: ''
+            }
+
+        } else {
+            return {
+                EM: 'hanndbook alrydi has',
+                EC: 1,
+                DT: ''
+            }
+        }
+
+
+
+
+
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: ''
+        }
+    }
+
+}
+let getAllHandBook = async (page, limit) => {
+    try {
+
+        let offset = (page - 1) * limit
+        let { count, rows } = await db.HandBook.findAndCountAll({
+            where: {
+
+                status: 'S1',
+                isDelete: {
+                    [Op.ne]: 1
+                },
+
+            },
+            attributes: ["id", "staffId", "contentHTML", "contentMarkdown", "avata", "status", "title", "createdAt"],
+            include: [{ model: db.User, as: 'StaffHandbookData' }],
+
+
+
+            order: [['id', 'DESC']],
+            raw: true,
+            nest: true,
+
+            offset: offset,
+            limit: limit
+        })
+        let totalPage = Math.ceil(count / limit)
+        let data = {}
+
+
+        data = {
+            totalRow: count,
+            totalPage: totalPage,
+            user: rows
+
+        }
+
+
+
+        if (data) {
+
+
+            return {
+                EM: 'GET DATA SUCCESS',
+                EC: 0,
+                DT: data
+            }
+        }
+        else {
+            return {
+                EM: 'GET DATA SUCCESS',
+                EC: 1,
+                DT: ''
+            }
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: []
+        }
+    }
+}
+let readHandBookById = async (id) => {
+    try {
+
+
+        let data = await db.HandBook.findOne({
+            where: {
+
+                id: id,
+                isDelete: {
+                    [Op.ne]: 1
+                },
+
+            },
+            attributes: ["id", "staffId", "contentHTML", "contentMarkdown", "avata", "status", "title", "createdAt", "garaId"],
+            include: [{ model: db.User, as: 'StaffHandbookData' },
+            {
+                model: db.Gara, as: 'GaraHandBook'
+            }],
+
+
+
+            order: [['id', 'DESC']],
+            raw: true,
+            nest: true,
+
+
+        })
+
+
+
+
+
+        if (data) {
+
+            return {
+                EM: 'GET DATA SUCCESS',
+                EC: 0,
+                DT: data
+            }
+        }
+        else {
+            return {
+                EM: 'data emty',
+                EC: 1,
+                DT: ''
+            }
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: []
+        }
+    }
+}
+let accepHandBookService = async (data) => {
+    try {
+
+
+        let handBook = await db.HandBook.findOne({ where: { id: data.id } })
+        if (handBook === null) {
+            return {
+                EM: 'dont fout data',
+                EC: 1,
+                DT: ''
+            }
+
+
+        } else {
+            handBook.status = 'S2'
+            handBook.save()
+            return {
+                EM: 'update Succes',
+                EC: 0,
+                DT: handBook
+            }
+        }
+
+
+
+
+
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: ''
+        }
+    }
+
+}
 module.exports = {
     getUserWithPage, getAllUser, getGaraWithPage, getAllGara, accepGaraService, test, createCarService,
-    updateCarService, deleteUserService, readHandBookService
+    updateCarService, deleteUserService, readHandBookService, createHandBookService, getAllHandBook, readHandBookById,
+    accepHandBookService
 }

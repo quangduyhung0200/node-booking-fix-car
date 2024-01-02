@@ -189,7 +189,8 @@ let deleteCar = async (req, res) => {
 let readHandBook = async (req, res) => {
     try {
 
-        if (req.query.page && req.query.limit && req.query && req.query.staffId) {
+        if (req.query.page && req.query.limit && req.query && req.query.staffId !== 'ALL') {
+            console.log('ok')
             let page = req.query.page;
             let limit = req.query.limit;
             let staffId = req.query.staffId;
@@ -201,7 +202,9 @@ let readHandBook = async (req, res) => {
             })
         }
         else {
-            let data = await AdminService.getAllHandBook()
+            let page = req.query.page;
+            let limit = req.query.limit;
+            let data = await AdminService.getAllHandBook(+page, +limit)
             return res.status(200).json({
                 EM: data.EM,
                 EC: data.EC,
@@ -220,6 +223,92 @@ let readHandBook = async (req, res) => {
     }
 
 }
+let createHandBook = async (req, res) => {
+    try {
+
+
+
+
+        let data = await AdminService.createHandBookService(req.body)
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT
+        })
+
+
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+    }
+}
+let readHandBookById = async (req, res) => {
+    try {
+
+        if (req.query.id) {
+
+            let id = req.query.id;
+
+            let data = await AdminService.readHandBookById(+id)
+            return res.status(200).json({
+                EM: data.EM,
+                EC: data.EC,
+                DT: data.DT
+            })
+        }
+        else {
+            console.log(e)
+            return res.status(500).json({
+                EM: 'missing requi',
+                EC: 1,
+                DT: ''
+
+            })
+        }
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+    }
+
+}
+let accepHandBook = async (req, res) => {
+    try {
+
+
+
+
+        let data = await AdminService.accepHandBookService(req.body)
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT
+        })
+
+
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+    }
+}
 module.exports = {
-    readUser, readGaraNonCensorship, accepGara, test, createCar, updateCar, deleteCar, readHandBook
+    readUser, readGaraNonCensorship, accepGara, test, createCar, updateCar, deleteCar, readHandBook, createHandBook, readHandBookById,
+    accepHandBook
 }
