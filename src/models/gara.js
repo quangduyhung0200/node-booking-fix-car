@@ -27,8 +27,7 @@ module.exports = (sequelize, DataTypes) => {
 
 
         nameGara: DataTypes.STRING,
-        descriptionHTML: DataTypes.STRING,
-        descriptionMarkDown: DataTypes.STRING,
+
         description: DataTypes.TEXT('long'),
         address: DataTypes.STRING,
         provindId: DataTypes.INTEGER,

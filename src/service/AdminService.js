@@ -5,7 +5,12 @@ const getUserWithPage = async (page, limit) => {
     try {
         let offset = (page - 1) * limit
         let { count, rows } = await db.User.findAndCountAll({
-            attributes: ["id", "userName", "email", "phone", "gender", "address"],
+            where: {
+                isDelete: {
+                    [Op.ne]: 1
+                },
+            },
+            attributes: ["id", "userName", "email", "phone", "gender", "address", 'avata', 'groupId'],
             include: { model: db.Group, attributes: ["id", "name", "description"], as: 'groupData' },
             order: [['id', 'DESC']],
             raw: false,
@@ -90,7 +95,7 @@ let getGaraWithPage = async (page, limit) => {
                 status: 'S1'
 
             },
-            attributes: ["id", "nameGara", "address", "phone", "description", "descriptionHTML"],
+            attributes: ["id", "nameGara", "address", "phone", "description", "contenHTML"],
             include: { model: db.Provind, attributes: ['id', "name"], as: 'provindGaraData' },
 
 
@@ -338,7 +343,7 @@ let updateCarService = async (data) => {
         }
     }
 }
-let deleteUserService = async (inputId) => {
+let deletecarService = async (inputId) => {
     try {
 
         let user = await db.Car.findOne({
@@ -435,34 +440,67 @@ let readHandBookService = async (page, limit, staffId) => {
 
 let createHandBookService = async (data) => {
     try {
+        let admin = await db.User.findOne({
+            where: { id: data.staffId }
+        })
+        if (admin.groupId === 4) {
+            let handBook = await db.HandBook.findOne({ where: { title: data.title } })
+            if (handBook === null) {
+                await db.HandBook.create({
+                    staffId: data.staffId,
+                    contentHTML: data.contentHTML,
+                    contentMarkdown: data.contentMarkdown,
+                    avata: data.avata,
+                    isDelete: false,
+                    status: 'S2',
+                    title: data.title,
+                    garaId: data.garaId
 
+                })
+                return {
+                    EM: 'create Succes by admin',
+                    EC: 0,
+                    DT: ''
+                }
 
-        let handBook = await db.HandBook.findOne({ where: { title: data.title } })
-        if (handBook === null) {
-            await db.HandBook.create({
-                staffId: data.staffId,
-                contentHTML: data.contentHTML,
-                contentMarkdown: data.contentMarkdown,
-                avata: data.avata,
-                isDelete: false,
-                status: 'S1',
-                title: data.title,
-                garaId: data.garaId
-
-            })
-            return {
-                EM: 'create Succes',
-                EC: 0,
-                DT: ''
-            }
-
-        } else {
-            return {
-                EM: 'hanndbook alrydi has',
-                EC: 1,
-                DT: ''
+            } else {
+                return {
+                    EM: 'hanndbook alrydi has',
+                    EC: 1,
+                    DT: ''
+                }
             }
         }
+        else {
+            let handBook = await db.HandBook.findOne({ where: { title: data.title } })
+            if (handBook === null) {
+                await db.HandBook.create({
+                    staffId: data.staffId,
+                    contentHTML: data.contentHTML,
+                    contentMarkdown: data.contentMarkdown,
+                    avata: data.avata,
+                    isDelete: false,
+                    status: 'S1',
+                    title: data.title,
+                    garaId: data.garaId
+
+                })
+                return {
+                    EM: 'create Succes',
+                    EC: 0,
+                    DT: ''
+                }
+
+            } else {
+                return {
+                    EM: 'hanndbook alrydi has',
+                    EC: 1,
+                    DT: ''
+                }
+            }
+        }
+
+
 
 
 
@@ -634,8 +672,396 @@ let accepHandBookService = async (data) => {
     }
 
 }
+let getAllGroupService = async () => {
+    try {
+
+
+        let data = await db.Group.findAll({
+
+            raw: true,
+
+        })
+        if (data) {
+
+            return {
+                EM: 'GET DATA SUCCESS',
+                EC: 0,
+                DT: data
+            }
+        }
+        else {
+            return {
+                EM: 'data emty',
+                EC: 1,
+                DT: ''
+            }
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: []
+        }
+    }
+}
+let userUpdateService = async (data) => {
+    try {
+
+
+        let user = await db.User.findOne({ where: { id: data.userId } }
+        )
+        if (user) {
+            user.userName = data.userName;
+            user.phone = data.phone;
+            user.gender = data.gender;
+            user.address = data.address
+            user.groupId = data.groupId
+            user.avata = data.avata
+            user.save()
+            return {
+                EM: 'update user seccess',
+                EC: 0,
+                DT: ''
+            }
+        }
+
+
+        else {
+            return {
+                EM: 'updatae user fail',
+                EC: 1,
+                DT: ''
+            }
+
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: []
+        }
+    }
+}
+let readAllHandbookService = async (page, limit) => {
+    try {
+
+        let offset = (page - 1) * limit
+        let { count, rows } = await db.HandBook.findAndCountAll({
+            where: {
+
+                status: 'S2',
+                isDelete: {
+                    [Op.ne]: 1
+                },
+
+            },
+            attributes: ["id", "staffId", "contentHTML", "contentMarkdown", "avata", "status", "title", "createdAt"],
+            include: [{ model: db.User, as: 'StaffHandbookData' }],
+
+
+
+            order: [['id', 'DESC']],
+            raw: true,
+            nest: true,
+
+            offset: offset,
+            limit: limit
+        })
+        let totalPage = Math.ceil(count / limit)
+        let data = {}
+
+
+        data = {
+            totalRow: count,
+            totalPage: totalPage,
+            user: rows
+
+        }
+
+
+
+        if (data) {
+
+
+            return {
+                EM: 'GET DATA SUCCESS',
+                EC: 0,
+                DT: data
+            }
+        }
+        else {
+            return {
+                EM: 'GET DATA SUCCESS',
+                EC: 1,
+                DT: ''
+            }
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: []
+        }
+    }
+}
+
+let deleteUserService = async (data) => {
+    try {
+
+
+        let user = await db.User.findOne({ where: { id: data.id } }
+        )
+        if (user) {
+            user.isDelete = 1;
+
+            user.save()
+            return {
+                EM: 'delete user seccess',
+                EC: 0,
+                DT: ''
+            }
+        } else {
+            return {
+                EM: 'delete user fail',
+                EC: 1,
+                DT: ''
+            }
+        }
+
+
+
+
+
+
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: []
+        }
+    }
+}
+let updateHandbookService = async (data) => {
+    try {
+
+
+        let user = await db.User.findOne({ where: { id: data.staffId } }
+        )
+        if (user.groupId === 4) {
+            let handBook = await db.HandBook.findOne({ where: { id: data.id } })
+            if (handBook) {
+                handBook.staffId = data.staffId;
+                handBook.contentHTML = data.contentHTML;
+                handBook.contentMarkdown = data.contentMarkdown;
+
+                handBook.avata = data.avata;
+                handBook.status = 'S2';
+                handBook.title = data.title;
+
+                handBook.garaId = data.garaId;
+
+
+                handBook.save()
+                return {
+                    EM: 'UPDATE user seccess BY ADMIN',
+                    EC: 0,
+                    DT: ''
+                }
+            } else {
+                return {
+                    EM: 'UPDATE user fail BY ADMIN',
+                    EC: 1,
+                    DT: ''
+                }
+            }
+
+        } else {
+            let handBook = await db.HandBook.findOne({ where: { id: data.id } })
+            if (handBook) {
+                handBook.staffId = data.staffId;
+                handBook.contentHTML = data.contentHTML;
+                handBook.contentMarkdown = data.contentMarkdown;
+
+                handBook.avata = data.avata;
+                handBook.status = 'S1';
+                handBook.title = data.title;
+
+                handBook.garaId = data.garaId;
+
+
+                handBook.save()
+                return {
+                    EM: 'UPDATE user seccess BY staff',
+                    EC: 0,
+                    DT: ''
+                }
+            } else {
+                return {
+                    EM: 'UPDATE user fail BY staff',
+                    EC: 1,
+                    DT: ''
+                }
+            }
+
+        }
+
+
+
+
+
+
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: []
+        }
+    }
+}
+let deleteHandbookService = async (data) => {
+    try {
+
+
+        let user = await db.HandBook.findOne({ where: { id: data.id } }
+        )
+        if (user) {
+            user.isDelete = 1;
+
+            user.save()
+            return {
+                EM: 'delete user seccess',
+                EC: 0,
+                DT: ''
+            }
+        } else {
+            return {
+                EM: 'delete user fail',
+                EC: 1,
+                DT: ''
+            }
+        }
+
+
+
+
+
+
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: []
+        }
+    }
+}
+let getAllGarabyPageService = async (page, limit) => {
+    try {
+
+        let offset = (page - 1) * limit
+        let { count, rows } = await db.Gara.findAndCountAll({
+            where: {
+
+                status: 'S2',
+                isDelete: {
+                    [Op.ne]: 1
+                },
+
+            },
+            attributes: ["id", "nameGara", "address", "phone", "description", "contenHTML", "status"],
+            include: { model: db.Provind, attributes: ['id', "name"], as: 'provindGaraData' },
+
+
+            order: [['id', 'DESC']],
+            raw: true,
+            nest: true,
+
+            offset: offset,
+            limit: limit
+        })
+        let totalPage = Math.ceil(count / limit)
+        let data = {}
+
+
+        data = {
+            totalRow: count,
+            totalPage: totalPage,
+            user: rows
+
+        }
+
+
+
+        if (data) {
+
+
+            return {
+                EM: 'GET DATA SUCCESS',
+                EC: 0,
+                DT: data
+            }
+        }
+        else {
+            return {
+                EM: 'GET DATA SUCCESS',
+                EC: 1,
+                DT: ''
+            }
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: []
+        }
+    }
+}
+let deleteGaraService = async (data) => {
+    try {
+
+
+        let user = await db.Gara.findOne({ where: { id: data.id } }
+        )
+        if (user) {
+            user.isDelete = 1;
+
+            user.save()
+            return {
+                EM: 'delete gara seccess',
+                EC: 0,
+                DT: ''
+            }
+        } else {
+            return {
+                EM: 'delete gara fail',
+                EC: 1,
+                DT: ''
+            }
+        }
+
+
+
+
+
+
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: []
+        }
+    }
+}
 module.exports = {
     getUserWithPage, getAllUser, getGaraWithPage, getAllGara, accepGaraService, test, createCarService,
-    updateCarService, deleteUserService, readHandBookService, createHandBookService, getAllHandBook, readHandBookById,
-    accepHandBookService
+    updateCarService, deletecarService, readHandBookService, createHandBookService, getAllHandBook, readHandBookById,
+    accepHandBookService, getAllGroupService, userUpdateService, readAllHandbookService, deleteUserService, updateHandbookService,
+    deleteHandbookService, getAllGarabyPageService, deleteGaraService
 }

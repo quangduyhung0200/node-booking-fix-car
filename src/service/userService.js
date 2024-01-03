@@ -31,7 +31,7 @@ const checkPassword = (password, hashPassword) => {
 }
 
 let LoginUser = async (rawData) => {
-    let data = {}
+    console.log(rawData)
     try {
         let checkMail = await checkemailIsExit(rawData.email)
         if (checkMail === false) {
@@ -112,8 +112,7 @@ let createRegisterGara = async (rawUserData) => {
         if (checkMail === false && gara === null) {
             await db.Gara.create({
                 nameGara: rawUserData.nameGara,
-                descriptionHTML: rawUserData.descriptionHTML,
-                descriptionMarkDown: rawUserData.descriptionMarkDown,
+
                 contenMarkdown: rawUserData.contenMarkdown,
                 contenHTML: rawUserData.contenHTML,
                 address: rawUserData.address,
@@ -122,8 +121,7 @@ let createRegisterGara = async (rawUserData) => {
                 phone: rawUserData.phone,
                 description: rawUserData.description,
                 userId: rawUserData.id,
-                contenMarkdown: rawUserData.descriptionMarkDown,
-                contenHTML: rawUserData.descriptionHTML,
+
                 status: 'S1'
             });
             return {

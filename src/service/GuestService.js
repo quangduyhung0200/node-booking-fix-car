@@ -30,30 +30,49 @@ const hashUserPassword = (password) => {
 }
 const createRegisterUser = async (rawUserData) => {
     let checkMail = await checkemailIsExit(rawUserData.email)
-
-
     let hashPassword = hashUserPassword(rawUserData.password)
-
     try {
         if (checkMail) {
-            await db.User.create({
-                userName: rawUserData.userName,
-                password: hashPassword,
-                email: rawUserData.email,
-                phone: rawUserData.phone,
-                gender: rawUserData.gender,
-                address: rawUserData.address,
-                groupId: 1,
+            if (rawUserData.groupId) {
+                await db.User.create({
+                    userName: rawUserData.userName,
+                    password: hashPassword,
+                    email: rawUserData.email,
+                    phone: rawUserData.phone,
+                    gender: rawUserData.gender,
+                    address: rawUserData.address,
+                    groupId: rawUserData.groupId,
+                    avata: rawUserData.avata,
+                })
 
-
-
-            })
-
-            return {
-                EM: 'register success',
-                EC: 0,
-                DT: ''
+                return {
+                    EM: 'register success',
+                    EC: 0,
+                    DT: ''
+                }
             }
+            else {
+                await db.User.create({
+                    userName: rawUserData.userName,
+                    password: hashPassword,
+                    email: rawUserData.email,
+                    phone: rawUserData.phone,
+                    gender: rawUserData.gender,
+                    address: rawUserData.address,
+                    groupId: 1,
+                    avata: rawUserData.avata
+
+
+
+                })
+
+                return {
+                    EM: 'register success',
+                    EC: 0,
+                    DT: ''
+                }
+            }
+
         }
         else {
 
@@ -72,6 +91,7 @@ const createRegisterUser = async (rawUserData) => {
                 user.phone = rawUserData.phone;
                 user.gender = rawUserData.gender;
                 user.address = rawUserData.address;
+                user.avata = rawUserData.avata;
                 user.groupId = 1;
                 user.save()
                 return {
@@ -286,7 +306,7 @@ let readScheduleByDay = async (garaId, day) => {
             },
             include: [
                 { model: db.Time, as: 'timeDataSchedule', attributes: ['timValue'] },
-                { model: db.Gara, as: 'GaraScheduleData', attributes: ["id", "nameGara", "address", "phone", "description", "descriptionHTML", "avata", "userId"], }
+                { model: db.Gara, as: 'GaraScheduleData', attributes: ["id", "nameGara", "address", "phone", "description", "contenHTML", "avata", "userId"], }
 
 
 
@@ -303,12 +323,21 @@ let readScheduleByDay = async (garaId, day) => {
                 GaraScheduleData: item.GaraScheduleData, garaId: garaId, date: item.date,
                 timeType: item.timeType, maxOrder: +item.maxOrder, currenOrder: +item.currenOrder, id: item.id, timeDataSchedule: item.timeDataSchedule
             }) : '')
-
-        return {
-            EM: 'GET DATA SUCCESS',
-            EC: 0,
-            DT: tocreate2
+        if (tocreate2.length > 0) {
+            return {
+                EM: 'GET DATA SUCCESS',
+                EC: 0,
+                DT: tocreate2
+            }
         }
+        else {
+            return {
+                EM: 'dataemty',
+                EC: 1,
+                DT: ''
+            }
+        }
+
     } catch (e) {
         console.log(e)
         return {
@@ -663,7 +692,7 @@ let getAllCarByGaraService = async (garaId) => {
         console.log(garaId)
         let gara = await db.Gara.findAll({
             where: { id: garaId },
-            attributes: ["id", "nameGara", "address", "phone", "description", "descriptionHTML", "userId"],
+            attributes: ["id", "nameGara", "address", "phone", "description", "contenHTML", "userId"],
             include: {
                 model: db.Car,
                 attributes: ["id", "nameCar", "descriptions", "avata"],
@@ -699,7 +728,7 @@ let getGaraWithId = async (id) => {
 
         let user = await db.Gara.findOne({
             where: { id: id },
-            attributes: ["id", "nameGara", "address", "avata", "phone", "description", "descriptionHTML", "userId", 'rateId', 'contenHTML', 'contenMarkdown'],
+            attributes: ["id", "nameGara", "address", "avata", "phone", "description", "contenHTML", "userId", 'rateId', 'contenHTML', 'contenMarkdown'],
             include: [{ model: db.Provind, attributes: ["id", "name"], as: 'provindGaraData' },
             ],
 

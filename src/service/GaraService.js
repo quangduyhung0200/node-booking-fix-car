@@ -14,7 +14,7 @@ let readInfoGaraService = async (id) => {
 
         let user = await db.Gara.findOne({
             where: { userId: id },
-            attributes: ["id", "nameGara", "address", "phone", "description", "descriptionHTML", "avata", "userId", "rateId"],
+            attributes: ["id", "nameGara", "address", "phone", "description", "contenHTML", "avata", "userId", "rateId", "status"],
             include: [{ model: db.Provind, as: 'provindGaraData' }]
 
 
@@ -232,6 +232,10 @@ let createBulkScheduleService = async (data) => {
 
             }
         }
+        console.log('da co', exiting)
+        console.log('dua len', dataschedule)
+        console.log('can luu', tocreate2)
+        console.log('can xoa', results)
         return {
             EM: 'create success',
             EC: 0,
@@ -646,7 +650,94 @@ let canserOrderService = async (data) => {
         }
     }
 }
+let updateGaraService = async (data) => {
+    try {
+        let isStaff = await db.User.findOne({
+            where: {
+                id: data.id
+            }
+        })
+        if (isStaff.groupId === 3 || isStaff.groupId === 4) {
+            let gara = await db.Gara.findOne({
+                where: {
+                    id: data.garaId
+                }
+            })
+            if (gara) {
+                gara.nameGara = data.nameGara
+                gara.contenHTML = data.contenHTML
+
+                gara.contenMarkdown = data.contenMarkdown
+                gara.address = data.addressGara
+
+                gara.provindId = data.provindId
+                gara.avata = data.avata
+                gara.phone = data.phone
+                gara.status = 'S2'
+                gara.description = data.descpistion
+
+                gara.save()
+                return {
+                    EM: 'update by staff or admin success',
+                    EC: 0,
+                    DT: ''
+                }
+            }
+            else {
+                return {
+                    EM: 'cant find the gara',
+                    EC: 1,
+                    DT: []
+                }
+            }
+        } else {
+            let gara = await db.Gara.findOne({
+                where: {
+                    id: data.garaId
+                }
+            })
+            if (gara) {
+                gara.nameGara = data.nameGara
+                gara.contenHTML = data.contenHTML
+
+                gara.contenMarkdown = data.contenMarkdown
+                gara.address = data.address
+
+                gara.provindId = data.provindId
+                gara.avata = data.avata
+                gara.phone = data.phone
+                gara.status = 'S1'
+
+                gara.description = data.descpistion
+                gara.save()
+                return {
+                    EM: 'update by gara',
+                    EC: 0,
+                    DT: ''
+                }
+            }
+            else {
+                return {
+                    EM: 'cant find the gara',
+                    EC: 1,
+                    DT: []
+                }
+            }
+        }
+
+
+
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: []
+        }
+    }
+}
 module.exports = {
     readInfoGaraService, registerCartoGaraService, readAllTimeService, createBulkScheduleService
-    , deletePickCarService, getListBookingService, comfimeBookingService, getListOrderService, finishOrderService, canserOrderService
+    , deletePickCarService, getListBookingService, comfimeBookingService, getListOrderService, finishOrderService, canserOrderService,
+    updateGaraService
 }

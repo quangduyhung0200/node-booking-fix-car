@@ -25,6 +25,7 @@ const initAPIRouters = (app) => {
     router.get('/gara/getAllGara', GuestController.getAllGara)//done
 
 
+
     router.get('/provind/read', GuestController.readProvind)//done
     router.get('/gara/getAllCar', GuestController.getAllCarByGara)//done
 
@@ -58,25 +59,29 @@ const initAPIRouters = (app) => {
     router.get('/gara/getListOrder', GaraController.getListOrder)//done
     router.post('/gara/finishOrder', GaraController.finishOrder)//done
     router.post('/gara/canserOrder', GaraController.canserOrder)//done
+    router.put('/gara/updateGara', GaraController.updateGara)//done
     //ngui kiem duyet
     router.put('/accep/gara', AdminController.accepGara)//done
     router.get('/user/read', AdminController.readUser)//done
     router.get('/handBook/read', AdminController.readHandBook)//done
     router.post('/handBook/create', AdminController.createHandBook)//done
-
+    router.put('/handBook/update', AdminController.updateHandbook)//done
+    router.get('/user/getAllGroup', AdminController.getAllGroup)//done
+    router.get('/gara/getAllGarabyPage', AdminController.getAllGarabyPage)//done
     //admin
 
 
-
+    router.delete('/handBook/delete', AdminController.deleteHandbook)//done
+    router.delete('/gara/delete', AdminController.deleteGara)//done
     router.get('/handBook/readById', AdminController.readHandBookById)//done
-
+    router.get('/handBook/readAll', AdminController.readAllHandbook)//done
     router.put('/handBook/accep', AdminController.accepHandBook)//done
     router.post('/car/create', AdminController.createCar)//done
     router.put('/car/update', AdminController.updateCar)//done
     router.delete('/car/delete', AdminController.deleteCar)//done
-    router.get('/garanoncensorship/read', checkUserJWT, checkUserPermisstion, AdminController.readGaraNonCensorship)//done
-
-
+    router.get('/garanoncensorship/read', AdminController.readGaraNonCensorship)//done
+    router.put('/user/update', AdminController.userUpdate)//done
+    router.delete('/user/delete', AdminController.deleteUser)//done
     router.get('/test', AdminController.test)
 
 

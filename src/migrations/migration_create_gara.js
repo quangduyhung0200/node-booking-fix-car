@@ -12,13 +12,7 @@ module.exports = {
             nameGara: {
                 type: Sequelize.STRING
             },
-            descriptionHTML: {
-                type: Sequelize.STRING
-            },
 
-            descriptionMarkDown: {
-                type: Sequelize.STRING
-            },
             address: {
                 type: Sequelize.STRING
             },
