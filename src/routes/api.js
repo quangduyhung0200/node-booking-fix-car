@@ -60,7 +60,12 @@ const initAPIRouters = (app) => {
     router.post('/gara/finishOrder', GaraController.finishOrder)//done
     router.post('/gara/canserOrder', GaraController.canserOrder)//done
     router.put('/gara/updateGara', GaraController.updateGara)//done
+
     //ngui kiem duyet
+    router.get('/booking/searchBooking', AdminController.searchBooking)//done
+    router.get('/user/searchUser', AdminController.searchUser)//done
+    router.get('/gara/searchGaranocenser', AdminController.searchGaranocenser)//done
+    router.get('/gara/searchGara', AdminController.searchGara)//done
     router.put('/accep/gara', AdminController.accepGara)//done
     router.get('/user/read', AdminController.readUser)//done
     router.get('/handBook/read', AdminController.readHandBook)//done
@@ -68,6 +73,9 @@ const initAPIRouters = (app) => {
     router.put('/handBook/update', AdminController.updateHandbook)//done
     router.get('/user/getAllGroup', AdminController.getAllGroup)//done
     router.get('/gara/getAllGarabyPage', AdminController.getAllGarabyPage)//done
+    router.get('/booking/getAllBookingbypage', AdminController.getAllBookingbypage)//done
+    router.get('/status/getAllStatus', AdminController.getAllStatus)//done
+    router.put('/booking/updateStatus', AdminController.updateStatus)//done
     //admin
 
 

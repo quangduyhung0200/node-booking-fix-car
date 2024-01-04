@@ -18,6 +18,8 @@ module.exports = (sequelize, DataTypes) => {
             Booking.belongsTo(models.Gara, { foreignKey: 'garaId', targetKey: 'id', as: 'bookingDataGara' });
             Booking.belongsTo(models.Car, { foreignKey: 'carid', targetKey: 'id', as: 'carBookingData' });
             Booking.belongsTo(models.Service, { foreignKey: 'serviceId', targetKey: 'id', as: 'serviceBookingData' });
+            Booking.belongsTo(models.Price, { foreignKey: 'priceId', targetKey: 'id', as: 'PriceBookingData' });
+            Booking.belongsTo(models.StatusBooking, { foreignKey: 'status', targetKey: 'status', as: 'statusBooking' });
 
         }
     };
@@ -31,6 +33,7 @@ module.exports = (sequelize, DataTypes) => {
         token: DataTypes.STRING,
         serviceId: DataTypes.INTEGER,
         isDelete: DataTypes.STRING,
+        priceId: DataTypes.INTEGER,
 
 
     }, {

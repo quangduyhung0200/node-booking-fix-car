@@ -11,7 +11,7 @@ const { Op, where } = require("sequelize");
 let readInfoGaraService = async (id) => {
 
     try {
-
+        console.log(id)
         let user = await db.Gara.findOne({
             where: { userId: id },
             attributes: ["id", "nameGara", "address", "phone", "description", "contenHTML", "avata", "userId", "rateId", "status"],
@@ -53,7 +53,7 @@ let readInfoGaraService = async (id) => {
 
 
 let registerCartoGaraService = async (rawdata) => {
-
+    console.log(rawdata)
     let garaCar = await db.Gara_Car.findOne({
         where: {
             garaId: rawdata.garaId,

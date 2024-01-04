@@ -497,7 +497,8 @@ let createBookingService = async (data) => {
                         timetype: data.timetype,
                         userId: user[0].id,
                         carId: data.carId,
-                        serviceId: data.serviceId
+                        serviceId: data.serviceId,
+                        priceId: data.priceId
                     }
                 })
 
@@ -511,7 +512,8 @@ let createBookingService = async (data) => {
                         date: data.date,
                         status: 'S1',
                         token: token,
-                        serviceId: data.serviceId
+                        serviceId: data.serviceId,
+                        priceId: data.priceId
                     })
                     await EmailService.sendSimpleEmail({
                         reciverEmail: data.email,
@@ -951,7 +953,9 @@ let readGarabyProvind = async (provindId) => {
             let gara = await db.Gara.findAll({
                 where: {
                     provindId: provindId,
-                    isDelete: null
+                    isDelete: {
+                        [Op.ne]: 1
+                    },
                 },
                 include: {
                     model: db.Car,
@@ -972,7 +976,9 @@ let readGarabyProvind = async (provindId) => {
             let gara = await db.Gara.findAll({
                 where: {
 
-                    isDelete: null
+                    isDelete: {
+                        [Op.ne]: 1
+                    },
                 },
                 include: {
                     model: db.Car,
@@ -1007,7 +1013,9 @@ let readGarabyProvindCarCompanyCar = async (provindId, carCompanyId, carId) => {
             let gara = await db.Gara.findAll({
                 where: {
 
-                    isDelete: null
+                    isDelete: {
+                        [Op.ne]: 1
+                    },
                 },
                 include: {
                     model: db.Car,
@@ -1042,7 +1050,9 @@ let readGarabyProvindCarCompanyCar = async (provindId, carCompanyId, carId) => {
             let gara = await db.Gara.findAll({
                 where: {
                     provindId: provindId,
-                    isDelete: null
+                    isDelete: {
+                        [Op.ne]: 1
+                    },
                 },
                 include: {
                     model: db.Car,
@@ -1092,7 +1102,9 @@ let getAllDayService = async (garaId) => {
         let gara = await db.Schedule.findAll({
             where: {
                 garaId: garaId,
-                isDelete: null
+                isDelete: {
+                    [Op.ne]: 1
+                },
             },
             attributes: ["id", "date", "timeType", 'maxOrder', 'currenOrder'],
 

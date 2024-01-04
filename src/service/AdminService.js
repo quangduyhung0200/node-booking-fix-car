@@ -1,5 +1,7 @@
 import db from "../models";
 import bcrypt from 'bcryptjs';
+import price from "../models/price";
+import sequelize from "sequelize";
 const { Op, where } = require("sequelize");
 const getUserWithPage = async (page, limit) => {
     try {
@@ -57,7 +59,7 @@ const getAllUser = async () => {
 
         let user = await db.User.findAll({
             attributes: ["id", "username", "email", "phone", "gender"],
-            include: { model: db.Group, attributes: ['id', "name", "description"] },
+            include: { model: db.Group, as: 'groupData', attributes: ['id', "name", "description"] },
 
             raw: false,
             nest: true
@@ -1059,9 +1061,368 @@ let deleteGaraService = async (data) => {
         }
     }
 }
+let getAllBookingbypageService = async (page, limit) => {
+    try {
+
+        let offset = (page - 1) * limit
+        let { count, rows } = await db.Booking.findAndCountAll({
+            where: {
+
+
+                isDelete: {
+                    [Op.ne]: 1
+                },
+
+            },
+            attributes: ["id", "userId", "garaid", "carId", "timeType", "serviceId", "date", "status", "createdAt", "priceId"],
+            include: [
+                {
+                    model: db.User, as: 'bookingData', attributes: ["id", "userName", "email", "address"]
+
+                },
+                {
+                    model: db.Gara, as: 'bookingDataGara', attributes: ["id", "nameGara", "address", "provindId", "phone"]
+                },
+                {
+                    model: db.Time, as: 'timeDataBooking', attributes: ["id", "timValue"]
+                },
+                {
+                    model: db.Car, as: 'carBookingData', attributes: ["id", "nameCar", "carCompanyId", "descriptions",],
+                    include: { model: db.CarCompany, as: "carCompanyData" }
+                },
+                {
+                    model: db.Service, as: 'serviceBookingData', attributes: ["id", "name", "description"]
+                },
+                {
+                    model: db.Price, as: 'PriceBookingData', attributes: ["id", "value"]
+                },
+
+
+
+
+
+
+            ], raw: true,
+            nest: true,
+
+            offset: offset,
+            limit: limit
+        })
+        let totalPage = Math.ceil(count / limit)
+        let data = {}
+
+
+        data = {
+            totalRow: count,
+            totalPage: totalPage,
+            user: rows
+
+        }
+
+
+
+        if (data) {
+
+
+            return {
+                EM: 'GET DATA SUCCESS',
+                EC: 0,
+                DT: data
+            }
+        }
+        else {
+            return {
+                EM: 'GET DATA SUCCESS',
+                EC: 1,
+                DT: ''
+            }
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: []
+        }
+    }
+}
+let getAllStatus = async () => {
+
+    try {
+
+        let status = await db.StatusBooking.findAll({
+
+        })
+        if (status) {
+            return {
+                EM: 'get data successs',
+                EC: 0,
+                DT: status
+            }
+        }
+        else {
+            return {
+                EM: 'data emty',
+                EC: 1,
+                DT: ''
+            }
+        }
+
+
+
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'song thing wrong',
+            EC: -1,
+            DT: ''
+        }
+    }
+
+}
+let updateStatusService = async (data) => {
+    try {
+
+
+        let user = await db.Booking.findOne({ where: { id: data.id } }
+        )
+        if (user) {
+            user.status = data.status;
+
+            user.save()
+            return {
+                EM: 'update booking seccess',
+                EC: 0,
+                DT: ''
+            }
+        } else {
+            return {
+                EM: 'update booking fail',
+                EC: 1,
+                DT: ''
+            }
+        }
+
+
+
+
+
+
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: []
+        }
+    }
+}
+let searchBookingService = async (user, gara, car, service, date, price, status) => {
+
+    try {
+
+
+        let data = await db.Booking.findAll({
+            where: {
+                isDelete: {
+                    [Op.ne]: 1
+                },
+
+            },
+
+            attributes: ["id", "userId", "garaid", "carId", "timeType", "serviceId", "date", "status", "createdAt", "priceId"],
+            include: [
+                {
+                    model: db.User, as: 'bookingData', attributes: ["id", "userName", "email", "address"]
+
+                },
+                {
+                    model: db.Gara, as: 'bookingDataGara', attributes: ["id", "nameGara", "address", "provindId", "phone"]
+                },
+                {
+                    model: db.Time, as: 'timeDataBooking', attributes: ["id", "timValue"]
+                },
+                {
+                    model: db.Car, as: 'carBookingData', attributes: ["id", "nameCar", "carCompanyId", "descriptions",],
+                    include: { model: db.CarCompany, as: "carCompanyData" }
+                },
+                {
+                    model: db.Service, as: 'serviceBookingData', attributes: ["id", "name", "description"]
+                },
+                {
+                    model: db.Price, as: 'PriceBookingData', attributes: ["id", "value"]
+                },
+
+
+
+
+
+
+            ],
+            raw: true,
+            nest: true,
+
+        })
+        console.log(user)
+        let results = data.filter(item => item.userId === +user || +user === 0)
+        let results2 = results.filter(item => item.garaid === +gara || +gara === 0)
+        let results3 = results2.filter(item => item.carId === +car || +car === 0)
+        let results4 = results3.filter(item => item.serviceId === +service || +service === 0)
+        let results5 = results4.filter(item => item.priceId === +price || +price === 0)
+        let results6 = results5.filter(item => item.status === +status || +status === 0)
+        let results7 = results6.filter(item => item.date === date || +date === 0)
+
+        return {
+            EM: 'GET DATA SUCCESS',
+            EC: 0,
+            DT: results7
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'song thing wrong',
+            EC: -1,
+            DT: ''
+        }
+    }
+
+}
+let searchUserService = async (user, group) => {
+
+    try {
+        let data = await db.User.findAll({
+            where: {
+                isDelete: {
+                    [Op.ne]: 1
+                },
+                name: sequelize.where(
+                    sequelize.fn("LOWER", sequelize.col("userName")),
+                    "LIKE",
+                    "%" + user + "%"
+                )
+
+            },
+            attributes: ["id", "userName", "email", "phone", "gender", "groupId"],
+            include: { model: db.Group, as: 'groupData', attributes: ['id', "name", "description"] },
+
+            raw: true,
+            nest: true
+        });
+
+
+
+        let results = data.filter(item => item.groupId === +group || +group === 0)
+
+
+        return {
+            EM: 'GET DATA SUCCESS',
+            EC: 0,
+            DT: results
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'song thing wrong',
+            EC: -1,
+            DT: ''
+        }
+    }
+
+}
+let searchGaranocenserService = async (gara, provind) => {
+
+    try {
+        let data = await db.Gara.findAll({
+            where: {
+                status: 'S1',
+                isDelete: {
+                    [Op.ne]: 1
+                },
+                name: sequelize.where(
+                    sequelize.fn("LOWER", sequelize.col("nameGara")),
+                    "LIKE",
+                    "%" + gara + "%"
+                )
+
+            },
+            attributes: ["id", "nameGara", "address", "phone", "description", "contenHTML", 'provindId'],
+            include: { model: db.Provind, attributes: ['id', "name"], as: 'provindGaraData' },
+
+
+
+            raw: true,
+            nest: true
+        });
+
+
+
+        let results = data.filter(item => item.provindId === +provind || +provind === 0)
+
+
+        return {
+            EM: 'GET DATA SUCCESS',
+            EC: 0,
+            DT: results
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'song thing wrong',
+            EC: -1,
+            DT: ''
+        }
+    }
+
+}
+let searchGaraService = async (gara, provind) => {
+
+    try {
+        let data = await db.Gara.findAll({
+            where: {
+                status: 'S2',
+                isDelete: {
+                    [Op.ne]: 1
+                },
+                name: sequelize.where(
+                    sequelize.fn("LOWER", sequelize.col("nameGara")),
+                    "LIKE",
+                    "%" + gara + "%"
+                )
+
+            },
+            attributes: ["id", "nameGara", "address", "phone", "description", "contenHTML", 'provindId'],
+            include: { model: db.Provind, attributes: ['id', "name"], as: 'provindGaraData' },
+
+
+
+            raw: true,
+            nest: true
+        });
+
+
+
+        let results = data.filter(item => item.provindId === +provind || +provind === 0)
+
+
+        return {
+            EM: 'GET DATA SUCCESS',
+            EC: 0,
+            DT: results
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'song thing wrong',
+            EC: -1,
+            DT: ''
+        }
+    }
+
+}
 module.exports = {
     getUserWithPage, getAllUser, getGaraWithPage, getAllGara, accepGaraService, test, createCarService,
     updateCarService, deletecarService, readHandBookService, createHandBookService, getAllHandBook, readHandBookById,
     accepHandBookService, getAllGroupService, userUpdateService, readAllHandbookService, deleteUserService, updateHandbookService,
-    deleteHandbookService, getAllGarabyPageService, deleteGaraService
+    deleteHandbookService, getAllGarabyPageService, deleteGaraService, getAllBookingbypageService, getAllStatus, updateStatusService,
+    searchBookingService, searchUserService, searchGaranocenserService, searchGaraService
 }

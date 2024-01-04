@@ -2,8 +2,8 @@ import AdminService from '../service/AdminService'
 
 let readUser = async (req, res) => {
     try {
-
-        if (req.query.page && req.query.limit && req.query) {
+        console.log(req.query)
+        if (req.query.page !== 'ALL') {
             let page = req.query.page;
             let limit = req.query.limit;
             let data = await AdminService.getUserWithPage(+page, +limit)
@@ -514,7 +514,202 @@ let deleteGara = async (req, res) => {
         })
     }
 }
+let getAllBookingbypage = async (req, res) => {
+    try {
+
+
+
+        let page = req.query.page;
+        let limit = req.query.limit;
+
+        let data = await AdminService.getAllBookingbypageService(+page, +limit)
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT
+        })
+
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+    }
+
+}
+let getAllStatus = async (req, res) => {
+    try {
+
+
+
+
+
+        let data = await AdminService.getAllStatus()
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT
+        })
+
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+    }
+
+}
+let updateStatus = async (req, res) => {
+    try {
+
+
+
+
+        let data = await AdminService.updateStatusService(req.body)
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT
+        })
+
+
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+    }
+}
+let searchBooking = async (req, res) => {
+    try {
+
+        let user = req.query.user
+        let gara = req.query.gara
+        let car = req.query.car
+        let service = req.query.service
+        let date = req.query.date
+        let price = req.query.price
+        let status = req.query.status
+
+
+
+        let data = await AdminService.searchBookingService(user, gara, car, service, date, price, status)
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT
+        })
+
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+    }
+
+}
+let searchUser = async (req, res) => {
+    try {
+
+        let user = req.query.user
+        let group = req.query.group
+
+
+
+
+        let data = await AdminService.searchUserService(user, group)
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT
+        })
+
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+    }
+
+}
+let searchGaranocenser = async (req, res) => {
+    try {
+
+        let gara = req.query.gara
+        let provind = req.query.provind
+
+
+
+
+        let data = await AdminService.searchGaranocenserService(gara, provind)
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT
+        })
+
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+    }
+
+}
+let searchGara = async (req, res) => {
+    try {
+
+        let gara = req.query.gara
+        let provind = req.query.provind
+
+
+
+
+        let data = await AdminService.searchGaraService(gara, provind)
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT
+        })
+
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+    }
+
+}
 module.exports = {
     readUser, readGaraNonCensorship, accepGara, test, createCar, updateCar, deleteCar, readHandBook, createHandBook, readHandBookById,
-    accepHandBook, getAllGroup, userUpdate, readAllHandbook, deleteUser, updateHandbook, deleteHandbook, getAllGarabyPage, deleteGara
+    accepHandBook, getAllGroup, userUpdate, readAllHandbook, deleteUser, updateHandbook, deleteHandbook, getAllGarabyPage, deleteGara,
+    getAllBookingbypage, getAllStatus, updateStatus, searchBooking, searchUser, searchGaranocenser, searchGara
 }
