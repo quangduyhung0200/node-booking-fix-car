@@ -171,7 +171,8 @@ let getAllOrderService = async (userId) => {
                     model: db.User, as: 'bookingData', attributes: ["id", "userName", "email", "address"]
                 },
                 {
-                    model: db.Gara, as: 'bookingDataGara', attributes: ["id", "nameGara", "address", "provindId", "phone"]
+                    model: db.Gara, as: 'bookingDataGara', attributes: ["id", "nameGara", "address", "provindId", "phone"],
+                    include: [{ model: db.Provind, as: 'provindGaraData' }]
                 },
                 {
                     model: db.Time, as: 'timeDataBooking', attributes: ["id", "timValue"]
@@ -182,6 +183,9 @@ let getAllOrderService = async (userId) => {
                 },
                 {
                     model: db.Service, as: 'serviceBookingData', attributes: ["id", "name", "description"]
+                },
+                {
+                    model: db.StatusBooking, as: 'statusBooking'
                 },
             ], raw: true,
             nest: true
@@ -223,6 +227,7 @@ let createCommentService = async (data) => {
     try {
 
         let comment = await db.Comment.create({
+            isDelete: 0,
             comment: data.comment,
             garaId: data.garaId,
             userId: data.userId,
@@ -305,8 +310,106 @@ let createCommentService = async (data) => {
 
 }
 
+let searchOrderService = async (gara, status) => {
 
+    try {
+        let data = await db.Booking.findAll({
+            where: {
+
+                isDelete: {
+                    [Op.ne]: 1
+                },
+
+
+
+            },
+            attributes: ["id", "userId", "garaid", "carId", "timeType", "serviceId", "date", "status"],
+            include: [
+                {
+                    model: db.User, as: 'bookingData', attributes: ["id", "userName", "email", "address"]
+                },
+                {
+                    model: db.Gara, as: 'bookingDataGara', attributes: ["id", "nameGara", "address", "provindId", "phone"],
+                    include: [{ model: db.Provind, as: 'provindGaraData' }]
+                },
+                {
+                    model: db.Time, as: 'timeDataBooking', attributes: ["id", "timValue"]
+                },
+                {
+                    model: db.Car, as: 'carBookingData', attributes: ["id", "nameCar", "carCompanyId", "descriptions",],
+                    include: { model: db.CarCompany, as: "carCompanyData" }
+                },
+                {
+                    model: db.Service, as: 'serviceBookingData', attributes: ["id", "name", "description"]
+                },
+                {
+                    model: db.StatusBooking, as: 'statusBooking'
+                },
+            ], raw: true,
+            nest: true
+
+        });
+
+        let results = data.filter(item => item.garaid === +gara || +gara === 0)
+
+        let results2 = results.filter(item => item.status === status || +status === 0)
+
+
+        return {
+            EM: 'GET DATA SUCCESS',
+            EC: 0,
+            DT: results2
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'song thing wrong',
+            EC: -1,
+            DT: ''
+        }
+    }
+
+}
+let getUserbyIdService = async (userIdInput) => {
+
+    try {
+        let user = await db.User.findOne({
+            where: {
+                isDelete: {
+                    [Op.ne]: 1
+                },
+                id: userIdInput
+
+            },
+            attributes: ['id', 'userName', 'email', 'phone', 'gender', 'address', 'groupId', 'avata'],
+            include: [
+                {
+                    model: db.Gender, as: 'genderDataUser'
+                },
+                {
+                    model: db.Group, as: 'groupData'
+                },
+                {
+                    model: db.Gara, as: 'userGara'
+                },
+            ]
+        })
+        return {
+            EM: 'getdata succes',
+            EC: 0,
+            DT: user
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'song thing wrong',
+            EC: -1,
+            DT: ''
+        }
+    }
+
+}
 module.exports = {
     LoginUser, createRegisterGara,
-    getAllOrderService, createCommentService,
+    getAllOrderService, createCommentService, searchOrderService, getUserbyIdService
 }

@@ -18,11 +18,11 @@ let sendSimpleEmail = async (dataSend) => {
     const info = await transporter.sendMail({
         from: '"duy hung 👻" <hung321chiengden@gmail.com>', // sender address
         to: dataSend.reciverEmail, // list of receivers
-        subject: "Thông tin đặt lịch khám bệnh ✔", // Subject line
+        subject: "Thông tin đặt lịch sửa xe ✔", // Subject line
         text: "", // plain text body
         html: `<h3>Xin chào ${dataSend.customerName} !</h3>
-            <p>Bạn nhận được email này vì đã đặt lịch khám bệnh</p>
-            <p>Thông tin đặt lệnh khám bệnh</p>
+            <p>Bạn nhận được email này vì đã đặt lịch sửa xe</p>
+            <p>Thông tin đặt lệnh sửa xe</p>
             <div><b>Thời gian: ${dataSend.time}</b></div>
             <div><b>gara: ${dataSend.garaName}</b></div>
             <p>Nếu các thông tin trên đã chính xác, vui lòng click link bên dưới để hoàn tất thủ tục đặt lịch khám bệnh</p>

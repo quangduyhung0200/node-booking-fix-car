@@ -1,6 +1,6 @@
 import db from "../models";
 import bcrypt from 'bcryptjs';
-import _ from "lodash";
+import _, { create } from "lodash";
 import EmailService from './EmailService'
 import schedule from "../models/schedule";
 import moment from 'moment';
@@ -43,11 +43,12 @@ const createRegisterUser = async (rawUserData) => {
                     address: rawUserData.address,
                     groupId: rawUserData.groupId,
                     avata: rawUserData.avata,
+                    isDelete: 0
                 })
 
                 return {
-                    EM: 'register success',
-                    EC: 0,
+                    EM: 'admin add new user success',
+                    EC: 1,
                     DT: ''
                 }
             }
@@ -60,14 +61,15 @@ const createRegisterUser = async (rawUserData) => {
                     gender: rawUserData.gender,
                     address: rawUserData.address,
                     groupId: 1,
-                    avata: rawUserData.avata
+                    avata: rawUserData.avata,
+                    isDelete: 0
 
 
 
                 })
 
                 return {
-                    EM: 'register success',
+                    EM: 'user register success',
                     EC: 0,
                     DT: ''
                 }
@@ -92,10 +94,11 @@ const createRegisterUser = async (rawUserData) => {
                 user.gender = rawUserData.gender;
                 user.address = rawUserData.address;
                 user.avata = rawUserData.avata;
+                user.isDelete = 0;
                 user.groupId = 1;
                 user.save()
                 return {
-                    EM: 'register success',
+                    EM: 'user register success',
                     EC: 0,
                     DT: ''
                 }
@@ -473,94 +476,174 @@ let createBookingService = async (data) => {
     return new Promise(async (resolve, reject) => {
 
         try {
-            let token = uuidv4();
-
-            let user = await db.User.findOrCreate({
-                where: { email: data.email },
-                defaults: {
-                    email: data.email,
-                    groupId: 5,
-                    userName: data.userName,
-                    address: data.address,
+            if (!data.email || !data.userName || !data.address || !data.garaId || !data.timetype || !data.carId || !data.serviceId || !data.priceId || !data.date) {
+                resolve({
+                    EC: 1,
+                    EM: 'thong tin bi thieu',
+                    DT: ''
 
 
-                },
-                raw: true
 
-            });
-
-            if (user && user[0]) {
-                let booking = await db.Booking.findOne({
-                    where: {
-                        date: data.date,
-                        garaId: data.garaId,
-                        timetype: data.timetype,
-                        userId: user[0].id,
-                        carId: data.carId,
-                        serviceId: data.serviceId,
-                        priceId: data.priceId
-                    }
                 })
+            }
+            else {
+                let token = uuidv4();
 
-                if (booking === null) {
+                let [user, created] = await db.User.findOrCreate({
+                    where: { email: data.email },
+                    defaults: {
+                        email: data.email,
+                        groupId: 5,
+                        userName: data.userName,
+                        address: data.address,
+                        phone: data.phone,
+                        isDelete: 0
 
-                    await db.Booking.create({
-                        userId: user[0].id,
-                        garaId: data.garaId,
-                        carId: data.carId,
-                        timeType: data.timetype,
-                        date: data.date,
-                        status: 'S1',
-                        token: token,
-                        serviceId: data.serviceId,
-                        priceId: data.priceId
+
+
+                    },
+                    raw: false
+
+                });
+
+                if (created === false) {
+                    user.phone = data.phone
+                    user.save()
+                    let booking = await db.Booking.findOne({
+                        where: {
+                            date: data.date,
+                            garaId: data.garaId,
+                            timetype: data.timetype,
+                            userId: user.dataValues.id,
+                            carId: data.carId,
+                            serviceId: data.serviceId,
+                            priceId: data.priceId,
+                            isDelete: 0
+                        }
                     })
-                    await EmailService.sendSimpleEmail({
-                        reciverEmail: data.email,
-                        customerName: data.userName,
-                        time: data.time,
-                        GaraName: data.garaName,
 
-                        rediretLink: buidUrlEmail(data.garaId, token)
+                    if (booking === null) {
+
+                        await db.Booking.create({
+                            userId: user.dataValues.id,
+                            garaId: data.garaId,
+                            carId: data.carId,
+                            timeType: data.timetype,
+                            date: data.date,
+                            status: 'S1',
+                            token: token,
+                            serviceId: data.serviceId,
+                            priceId: data.priceId,
+                            isDelete: 0
+                        })
+                        await EmailService.sendSimpleEmail({
+                            reciverEmail: data.email,
+                            customerName: data.userName,
+                            time: data.time,
+                            garaName: data.garaName,
+
+                            rediretLink: buidUrlEmail(data.garaId, token)
+                        }
+
+                        )
+                        resolve({
+                            EC: 0,
+                            EM: 'DAT LICH THANH CONG',
+                            DT: ''
+
+
+
+                        })
+
+                    } else {
+                        resolve({
+                            EC: 2,
+                            EM: 'ban da dat trung vui long kiem tra lai',
+                            DT: ''
+
+
+
+                        })
+                    }
+                }
+
+                else {
+                    let booking = await db.Booking.findOne({
+                        where: {
+                            date: data.date,
+                            garaId: data.garaId,
+                            timetype: data.timetype,
+                            userId: user.dataValues.id,
+                            carId: data.carId,
+                            serviceId: data.serviceId,
+                            priceId: data.priceId,
+                            isDelete: 0
+                        }
+                    })
+
+                    if (booking === null) {
+
+                        await db.Booking.create({
+                            userId: user.dataValues.id,
+                            garaId: data.garaId,
+                            carId: data.carId,
+                            timeType: data.timetype,
+                            date: data.date,
+                            status: 'S1',
+                            token: token,
+                            serviceId: data.serviceId,
+                            priceId: data.priceId,
+                            isDelete: 0
+                        })
+                        await EmailService.sendSimpleEmail({
+                            reciverEmail: data.email,
+                            customerName: data.userName,
+                            time: data.time,
+                            garaName: data.garaName,
+
+                            rediretLink: buidUrlEmail(data.garaId, token)
+                        }
+
+                        )
+                        resolve({
+                            EC: 0,
+                            EM: 'DAT LICH THANH CONG',
+                            DT: ''
+
+
+
+                        })
+
+                    } else {
+                        resolve({
+                            EC: 2,
+                            EM: 'ban da dat trung vui long kiem tra lai',
+                            DT: ''
+
+
+
+                        })
                     }
 
-                    )
-                    resolve({
-                        EC: 0,
-                        EM: 'DAT LICH THANH CONG',
-                        DT: ''
 
-
-
-                    })
-
-                } else {
-                    resolve({
-                        EC: 1,
-                        EM: 'ban da dat trung vui long kiem tra lai',
-                        DT: ''
-
-
-
-                    })
                 }
 
 
+
+                resolve({
+                    EC: 0,
+                    EM: 'DAT LICH THANH CONG',
+                    DT: ''
+
+
+
+                })
+
             }
+        }
 
 
-
-            resolve({
-                EC: 0,
-                EM: 'DAT LICH THANH CONG',
-                DT: ''
-
-
-
-            })
-
-
-        } catch (e) {
+        catch (e) {
             console.log(e)
             reject({
                 EC: -1,
@@ -625,7 +708,11 @@ let readAllCommentService = async (garaId) => {
     try {
 
         let comment = await db.Comment.findAll({
-            where: { garaId: garaId },
+            where: {
+                garaId: garaId, isDelete: {
+                    [Op.ne]: 1
+                },
+            },
             include: [{ model: db.User, as: 'UserComment', attributes: ["userName"] }]
         })
         if (comment) {
@@ -1138,8 +1225,11 @@ let getTopHandBookService = async (limitInput) => {
             where: {
                 status: 'S2'
             },
-            include: [{ model: db.User, as: 'StaffHandbookData' }],
-            limit: limitInput,
+            include: [{
+                model: db.User, as: 'StaffHandbookData', attributes: {
+                    exclude: ['avata', 'password']
+                }
+            }],
 
             order: [['createdAt', 'DESC']],
 
@@ -1179,7 +1269,11 @@ let getHandBookRelatetoService = async (limitInput, id) => {
                 },
 
             },
-            include: [{ model: db.User, as: 'StaffHandbookData' }],
+            include: [{
+                model: db.User, as: 'StaffHandbookData', attributes: {
+                    exclude: ['avata', 'password']
+                }
+            }],
             limit: limitInput,
 
             order: [['createdAt', 'DESC']],

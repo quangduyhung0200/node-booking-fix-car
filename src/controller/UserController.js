@@ -113,9 +113,68 @@ let createComment = async (req, res) => {
     }
 }
 
+let searchOrder = async (req, res) => {
+    try {
 
+        let gara = req.query.gara
+        let status = req.query.status
+
+
+
+
+
+
+        let data = await userService.searchOrderService(gara, status)
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT
+        })
+
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+    }
+
+}
+let getUserbyId = async (req, res) => {
+    try {
+
+        let id = req.query.id
+
+
+
+
+
+
+
+        let data = await userService.getUserbyIdService(id)
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT
+        })
+
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+    }
+
+}
 module.exports = {
     handldLogin, handlLogout, postRegisterGara,
 
-    getAllOrder, createComment,
+    getAllOrder, createComment, searchOrder, getUserbyId
 }

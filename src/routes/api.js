@@ -44,11 +44,13 @@ const initAPIRouters = (app) => {
     //nguoi dung da dangky
     router.post('/login/user', UserController.handldLogin)//done
     router.post('/logout/user', UserController.handlLogout)//done
-
+    router.get('/getUserbyId', UserController.getUserbyId)//done
     router.post('/register/gara', checkUserJWT, checkUserPermisstion, UserController.postRegisterGara)//done
     router.get('/getAllOrder', UserController.getAllOrder)//done
+    router.get('/order/searchOrder', UserController.searchOrder)//done
     router.post('/comment/create', UserController.createComment)//done
     //nguoi dung dag ky gara
+    router.get('/carCompany/searchCarcompany', AdminController.searchCarcompany)//done
     router.get('/gara/readTime', GaraController.readAllTime)//done
     router.get('/gara/readdata', GaraController.readInfoGara)//done
     router.post('/gara/registerCar', GaraController.registerCartoGara)//done
@@ -62,8 +64,14 @@ const initAPIRouters = (app) => {
     router.put('/gara/updateGara', GaraController.updateGara)//done
 
     //ngui kiem duyet
+    router.get('/comment/searchComment', AdminController.searchComment)//done
+    router.get('/comment/getComentbypage', AdminController.getComentbypage)//done
+    router.delete('/carCompany/deleteCarCompany', AdminController.deleteCarCompany)//done
+    router.post('/carCompany/createCarCompany', AdminController.createCarCompany)//done
+    router.put('/carCompany/updateCarCompany', AdminController.updateCarCompany)//done
     router.get('/booking/searchBooking', AdminController.searchBooking)//done
     router.get('/user/searchUser', AdminController.searchUser)//done
+    router.get('/car/searchCar', AdminController.searchCar)//done
     router.get('/gara/searchGaranocenser', AdminController.searchGaranocenser)//done
     router.get('/gara/searchGara', AdminController.searchGara)//done
     router.put('/accep/gara', AdminController.accepGara)//done
@@ -77,8 +85,11 @@ const initAPIRouters = (app) => {
     router.get('/status/getAllStatus', AdminController.getAllStatus)//done
     router.put('/booking/updateStatus', AdminController.updateStatus)//done
     //admin
-
-
+    router.delete('/comment/deleteComment', AdminController.deleteComment)//done
+    router.get('/carCompany/getCarCompanyByPage', AdminController.getCarCompanyByPage)//done
+    router.get('/handbook/searchHandbookUncensor', AdminController.searchHandbookUncensor)//done
+    router.get('/handbook/searchHandbook', AdminController.searchHandbook)//done
+    router.get('/staff/readAllStaff', AdminController.readAllStaff)//done
     router.delete('/handBook/delete', AdminController.deleteHandbook)//done
     router.delete('/gara/delete', AdminController.deleteGara)//done
     router.get('/handBook/readById', AdminController.readHandBookById)//done

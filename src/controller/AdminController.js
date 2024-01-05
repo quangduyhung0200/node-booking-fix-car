@@ -708,8 +708,333 @@ let searchGara = async (req, res) => {
     }
 
 }
+let searchCar = async (req, res) => {
+    try {
+
+        let car = req.query.car
+        let carcompany = req.query.carcompany
+
+
+
+
+        let data = await AdminService.searchCarService(car, carcompany)
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT
+        })
+
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+    }
+
+}
+let readAllStaff = async (req, res) => {
+    try {
+
+
+
+
+
+
+        let data = await AdminService.readAllStaffService()
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT
+        })
+
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+    }
+
+}
+let searchHandbookUncensor = async (req, res) => {
+    try {
+
+        let title = req.query.title
+        let staff = req.query.staff
+
+
+
+
+        let data = await AdminService.searchHandbookUncensorService(title, staff)
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT
+        })
+
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+    }
+
+}
+let searchHandbook = async (req, res) => {
+    try {
+
+        let title = req.query.title
+        let staff = req.query.staff
+
+
+
+
+        let data = await AdminService.searchHandbookService(title, staff)
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT
+        })
+
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+    }
+
+}
+let getCarCompanyByPage = async (req, res) => {
+    try {
+
+
+
+        let page = req.query.page;
+        let limit = req.query.limit;
+
+        let data = await AdminService.getCarCompanyByPageService(+page, +limit)
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT
+        })
+
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+    }
+
+}
+let createCarCompany = async (req, res) => {
+    try {
+
+
+
+
+        let data = await AdminService.createCarCompanyService(req.body)
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT
+        })
+
+
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+    }
+}
+let updateCarCompany = async (req, res) => {
+    try {
+
+
+
+
+        let data = await AdminService.updateCarCompanyService(req.body)
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT
+        })
+
+
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+    }
+}
+let deleteCarCompany = async (req, res) => {
+    try {
+
+
+
+
+        let data = await AdminService.deleteCarCompanyService(req.body)
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT
+        })
+
+
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+    }
+}
+let searchCarcompany = async (req, res) => {
+    try {
+
+        let carcompany = req.query.carcompany
+
+
+
+
+
+        let data = await AdminService.searchCarcompanyService(carcompany)
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT
+        })
+
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+    }
+
+}
+let getComentbypage = async (req, res) => {
+    try {
+
+
+
+        let page = req.query.page;
+        let limit = req.query.limit;
+
+        let data = await AdminService.getComentbypageService(+page, +limit)
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT
+        })
+
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+    }
+
+}
+let deleteComment = async (req, res) => {
+    try {
+
+
+
+
+        let data = await AdminService.deleteCommentService(req.body)
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT
+        })
+
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+    }
+
+}
+let searchComment = async (req, res) => {
+    try {
+
+        let gara = req.query.gara
+        let user = req.query.user
+        let rate = req.query.rate
+
+
+
+
+
+        let data = await AdminService.searchCommentService(gara, user, rate)
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT
+        })
+
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+    }
+
+}
 module.exports = {
     readUser, readGaraNonCensorship, accepGara, test, createCar, updateCar, deleteCar, readHandBook, createHandBook, readHandBookById,
     accepHandBook, getAllGroup, userUpdate, readAllHandbook, deleteUser, updateHandbook, deleteHandbook, getAllGarabyPage, deleteGara,
-    getAllBookingbypage, getAllStatus, updateStatus, searchBooking, searchUser, searchGaranocenser, searchGara
+    getAllBookingbypage, getAllStatus, updateStatus, searchBooking, searchUser, searchGaranocenser, searchGara, searchCar, readAllStaff,
+    searchHandbookUncensor, searchHandbook, getCarCompanyByPage, createCarCompany, updateCarCompany, deleteCarCompany, searchCarcompany,
+    getComentbypage, deleteComment, searchComment
 }

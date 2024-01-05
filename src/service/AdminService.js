@@ -721,11 +721,13 @@ let userUpdateService = async (data) => {
             user.groupId = data.groupId
             user.avata = data.avata
             user.save()
+            console.log(user)
             return {
                 EM: 'update user seccess',
                 EC: 0,
                 DT: ''
             }
+
         }
 
 
@@ -1263,13 +1265,14 @@ let searchBookingService = async (user, gara, car, service, date, price, status)
             nest: true,
 
         })
-        console.log(user)
+
         let results = data.filter(item => item.userId === +user || +user === 0)
+
         let results2 = results.filter(item => item.garaid === +gara || +gara === 0)
         let results3 = results2.filter(item => item.carId === +car || +car === 0)
         let results4 = results3.filter(item => item.serviceId === +service || +service === 0)
         let results5 = results4.filter(item => item.priceId === +price || +price === 0)
-        let results6 = results5.filter(item => item.status === +status || +status === 0)
+        let results6 = results5.filter(item => item.status === status || +status === 0)
         let results7 = results6.filter(item => item.date === date || +date === 0)
 
         return {
@@ -1419,10 +1422,603 @@ let searchGaraService = async (gara, provind) => {
     }
 
 }
+let searchCarService = async (car, carcompany) => {
+
+    try {
+        let data = await db.Car.findAll({
+            where: {
+
+                isDelete: {
+                    [Op.ne]: 1
+                },
+                name: sequelize.where(
+                    sequelize.fn("LOWER", sequelize.col("nameCar")),
+                    "LIKE",
+                    "%" + car + "%"
+                )
+
+            },
+            attributes: ["id", "nameCar", "carCompanyId", "avata", "descriptions"],
+            include: [{
+                model: db.CarCompany, attributes: ["id", "name"], as: 'carCompanyData',
+            }],
+
+
+
+            raw: true,
+            nest: true
+        });
+
+
+
+        let results = data.filter(item => item.carCompanyId === +carcompany || +carcompany === 0)
+
+
+        return {
+            EM: 'GET DATA SUCCESS',
+            EC: 0,
+            DT: results
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'song thing wrong',
+            EC: -1,
+            DT: ''
+        }
+    }
+
+}
+let readAllStaffService = async () => {
+
+    try {
+        let data = await db.User.findAll({
+            where: {
+
+                isDelete: {
+                    [Op.ne]: 1
+                },
+                groupId: [3, 4]
+
+            },
+            attributes: ["id", "userName", "email", "phone", "gender", "groupId"],
+            include: { model: db.Group, as: 'groupData', attributes: ['id', "name", "description"] },
+
+
+
+            raw: true,
+            nest: true
+        });
+
+
+
+
+
+
+        return {
+            EM: 'GET DATA SUCCESS',
+            EC: 0,
+            DT: data
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'song thing wrong',
+            EC: -1,
+            DT: ''
+        }
+    }
+
+}
+let searchHandbookUncensorService = async (title, staff) => {
+
+    try {
+        let data = await db.HandBook.findAll({
+            where: {
+                status: 'S1',
+                isDelete: {
+                    [Op.ne]: 1
+                },
+                name: sequelize.where(
+                    sequelize.fn("LOWER", sequelize.col("title")),
+                    "LIKE",
+                    "%" + title + "%"
+                )
+
+            },
+            include: [{
+                model: db.User, as: 'StaffHandbookData', attributes: {
+                    exclude: ['avata', 'password']
+                }
+            }],
+
+
+
+            raw: true,
+            nest: true
+        });
+
+
+
+        let results = data.filter(item => item.staffId === +staff || +staff === 0)
+
+
+        return {
+            EM: 'GET DATA SUCCESS',
+            EC: 0,
+            DT: results
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'song thing wrong',
+            EC: -1,
+            DT: ''
+        }
+    }
+
+}
+let searchHandbookService = async (title, staff) => {
+
+    try {
+        let data = await db.HandBook.findAll({
+            where: {
+                status: 'S2',
+                isDelete: {
+                    [Op.ne]: 1
+                },
+                name: sequelize.where(
+                    sequelize.fn("LOWER", sequelize.col("title")),
+                    "LIKE",
+                    "%" + title + "%"
+                )
+
+            },
+            include: [{
+                model: db.User, as: 'StaffHandbookData', attributes: {
+                    exclude: ['avata', 'password']
+                }
+            }],
+
+
+
+            raw: true,
+            nest: true
+        });
+
+
+
+        let results = data.filter(item => item.staffId === +staff || +staff === 0)
+
+
+        return {
+            EM: 'GET DATA SUCCESS',
+            EC: 0,
+            DT: results
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'song thing wrong',
+            EC: -1,
+            DT: ''
+        }
+    }
+
+}
+let getCarCompanyByPageService = async (page, limit) => {
+    try {
+
+        let offset = (page - 1) * limit
+        let { count, rows } = await db.CarCompany.findAndCountAll({
+            where: {
+
+
+                isDelete: {
+                    [Op.ne]: 1
+                },
+
+            },
+            attributes: ["id", "name", "description", "avata"],
+            raw: true,
+            nest: true,
+
+            offset: offset,
+            limit: limit
+        })
+        let totalPage = Math.ceil(count / limit)
+        let data = {}
+
+
+        data = {
+            totalRow: count,
+            totalPage: totalPage,
+            user: rows
+
+        }
+
+
+
+        if (data) {
+
+
+            return {
+                EM: 'GET DATA SUCCESS',
+                EC: 0,
+                DT: data
+            }
+        }
+        else {
+            return {
+                EM: 'GET DATA SUCCESS',
+                EC: 1,
+                DT: ''
+            }
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: []
+        }
+    }
+}
+let createCarCompanyService = async (datainput) => {
+    try {
+
+
+        let data = await db.CarCompany.create({
+            name: datainput.name,
+            description: datainput.description,
+            avata: datainput.avata,
+            isDelete: 0
+
+
+        })
+
+
+
+        return {
+            EM: 'create DATA SUCCESS',
+            EC: 0,
+            DT: ''
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: []
+        }
+    }
+}
+let updateCarCompanyService = async (datainput) => {
+    try {
+
+
+        let data = await db.CarCompany.findOne({
+            where: { id: datainput.id }
+
+
+
+        })
+        if (data) {
+            data.name = datainput.name
+            data.description = datainput.description
+            data.avata = datainput.avata
+            data.save()
+            return {
+                EM: 'update DATA SUCCESS',
+                EC: 0,
+                DT: ''
+            }
+
+        }
+        else {
+            return {
+                EM: 'update DATA fail',
+                EC: 1,
+                DT: ''
+            }
+        }
+
+
+
+
+
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: []
+        }
+    }
+}
+let deleteCarCompanyService = async (datainput) => {
+    try {
+
+
+        let data = await db.CarCompany.findOne({
+            where: { id: datainput.id }
+
+
+
+        })
+        if (data) {
+            data.isDelete = 1
+
+            data.save()
+            return {
+                EM: 'update DATA SUCCESS',
+                EC: 0,
+                DT: ''
+            }
+
+        }
+        else {
+            return {
+                EM: 'update DATA fail',
+                EC: 1,
+                DT: ''
+            }
+        }
+
+
+
+
+
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: []
+        }
+    }
+}
+let searchCarcompanyService = async (carcompany) => {
+
+    try {
+        let data = await db.CarCompany.findAll({
+            where: {
+
+                isDelete: {
+                    [Op.ne]: 1
+                },
+                name: sequelize.where(
+                    sequelize.fn("LOWER", sequelize.col("name")),
+                    "LIKE",
+                    "%" + carcompany + "%"
+                )
+
+            },
+
+
+
+
+            raw: true,
+            nest: true
+        });
+
+
+
+
+
+
+        return {
+            EM: 'GET DATA SUCCESS',
+            EC: 0,
+            DT: data
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'song thing wrong',
+            EC: -1,
+            DT: ''
+        }
+    }
+
+}
+let getComentbypageService = async (page, limit) => {
+    try {
+
+        let offset = (page - 1) * limit
+        let { count, rows } = await db.Comment.findAndCountAll({
+            where: {
+
+
+                isDelete: {
+                    [Op.ne]: 1
+                },
+
+            },
+            attributes: ["id", "comment", "garaId", "userId", "rate"],
+            include: [{
+                model: db.User, as: 'UserComment'
+            },
+            {
+                model: db.Gara, as: 'GaraComment'
+            }
+            ],
+            raw: true,
+            nest: true,
+
+            offset: offset,
+            limit: limit
+        })
+        let totalPage = Math.ceil(count / limit)
+        let data = {}
+
+
+        data = {
+            totalRow: count,
+            totalPage: totalPage,
+            user: rows
+
+        }
+
+
+
+        if (data) {
+
+
+            return {
+                EM: 'GET DATA SUCCESS',
+                EC: 0,
+                DT: data
+            }
+        }
+        else {
+            return {
+                EM: 'GET DATA SUCCESS',
+                EC: 1,
+                DT: ''
+            }
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: []
+        }
+    }
+}
+let deleteCommentService = async (datainput) => {
+    try {
+
+
+        let data = await db.Comment.findOne({
+            where: { id: datainput.id }
+
+
+
+        })
+        let { count, rows } = await db.Comment.findAndCountAll({
+            where: {
+
+                garaId: datainput.garaId,
+                isDelete: {
+                    [Op.ne]: 1
+                },
+
+            },
+            attributes: ["id", "comment", "garaId", "userId", "rate"],
+            include: [{
+                model: db.User, as: 'UserComment'
+            },
+            {
+                model: db.Gara, as: 'GaraComment'
+            }
+            ],
+            raw: true,
+            nest: true,
+
+
+        })
+        if (data) {
+            data.isDelete = 1
+
+            data.save()
+            let gara = await db.Gara.findOne({ where: { id: datainput.garaId } })
+            if (gara) {
+
+                gara.rateId = +((gara.rateId * count) - data.rate) / (count - 1)
+                console.log('danh gia hien tai', count)
+                console.log('soluong danh gia', gara.rateId)
+                console.log('ddiem danh gia', gara.rateId * count)
+                console.log('danh gia can xoa', data.rate)
+                console.log('ket qua', gara.rateId)
+                gara.save()
+                return {
+                    EM: 'update DATA SUCCESS',
+                    EC: 0,
+                    DT: ''
+                }
+            }
+            else {
+                return {
+                    EM: 'no data',
+                    EC: 1,
+                    DT: ''
+                }
+            }
+
+
+        }
+        else {
+            return {
+                EM: 'no data',
+                EC: 1,
+                DT: ''
+            }
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: []
+        }
+    }
+}
+let searchCommentService = async (gara, user, rate) => {
+
+    try {
+        let data = await db.Comment.findAll({
+            where: {
+
+                isDelete: {
+                    [Op.ne]: 1
+                },
+
+
+            },
+            attributes: ["id", "comment", "garaId", "userId", "rate"],
+            include: [{
+                model: db.User, as: 'UserComment'
+            },
+            {
+                model: db.Gara, as: 'GaraComment'
+            }
+            ],
+
+
+
+            raw: true,
+            nest: true
+        });
+
+
+
+        let results = data.filter(item => item.garaId === +gara || +gara === 0)
+
+        let results2 = results.filter(item => item.userId === +user || +user === 0)
+        let results3 = results2.filter(item => item.rate === rate || +rate === 0)
+        return {
+            EM: 'GET DATA SUCCESS',
+            EC: 0,
+            DT: results3
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'song thing wrong',
+            EC: -1,
+            DT: ''
+        }
+    }
+
+}
 module.exports = {
     getUserWithPage, getAllUser, getGaraWithPage, getAllGara, accepGaraService, test, createCarService,
     updateCarService, deletecarService, readHandBookService, createHandBookService, getAllHandBook, readHandBookById,
     accepHandBookService, getAllGroupService, userUpdateService, readAllHandbookService, deleteUserService, updateHandbookService,
     deleteHandbookService, getAllGarabyPageService, deleteGaraService, getAllBookingbypageService, getAllStatus, updateStatusService,
-    searchBookingService, searchUserService, searchGaranocenserService, searchGaraService
+    searchBookingService, searchUserService, searchGaranocenserService, searchGaraService, searchCarService, readAllStaffService,
+    searchHandbookUncensorService, searchHandbookService, getCarCompanyByPageService, createCarCompanyService, updateCarCompanyService,
+    deleteCarCompanyService, searchCarcompanyService, getComentbypageService, deleteCommentService, searchCommentService
 }
