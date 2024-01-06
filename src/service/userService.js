@@ -4,6 +4,7 @@ import { getGroupWithRole } from './JWTservice'
 import { createJWT } from '../midderWare/JWTaction'
 import EmailService from './EmailService'
 import { v4 as uuidv4 } from 'uuid';
+import moment from 'moment';
 const { Op } = require("sequelize");
 var salt = bcrypt.genSaltSync(10);
 let buidUrlEmail = (garaId, token) => {
@@ -101,27 +102,28 @@ let LoginUser = async (rawData) => {
 }
 
 let createRegisterGara = async (rawUserData) => {
-    let checkMail = await checkemailIsExit(rawUserData.emailUser)
-    let gara = await db.Gara.findOne({
-        where: {
-            userId: rawUserData.id,
-            status: 'S1'
-        }
-    })
+
     try {
+        let checkMail = await checkemailIsExit(rawUserData.emailUser)
+        let gara = await db.Gara.findOne({
+            where: {
+                userId: rawUserData.id,
+                status: 'S1'
+            }
+        })
         if (checkMail === false && gara === null) {
             await db.Gara.create({
                 nameGara: rawUserData.nameGara,
 
-                contenMarkdown: rawUserData.contenMarkdown,
-                contenHTML: rawUserData.contenHTML,
+                contenMarkdown: rawUserData.descriptionMarkDown,
+                contenHTML: rawUserData.descriptionHTML,
                 address: rawUserData.address,
                 provindId: rawUserData.provindId,
                 avata: rawUserData.avata,
                 phone: rawUserData.phone,
                 description: rawUserData.description,
                 userId: rawUserData.id,
-
+                isDelete: 0,
                 status: 'S1'
             });
             return {
@@ -192,6 +194,23 @@ let getAllOrderService = async (userId) => {
 
 
         })
+
+        booking.map(async (item) => {
+            let fomatDate = moment(new Date()).startOf('day').unix()
+            if (+item.date < fomatDate && item.status !== 'S3' && item.status !== 'S4' && item.status !== 'S5') {
+
+                let booking2 = await db.Booking.findOne({
+                    where: { userId: userId, id: item.id },
+
+                })
+                console.log(booking2.id)
+                booking2.status = 'S0'
+                await booking2.save()
+            }
+        })
+
+
+
         if (booking) {
 
             return {
@@ -245,7 +264,7 @@ let createCommentService = async (data) => {
 
                 }
 
-                gara.save()
+                await gara.save()
                 let booking = await db.Booking.findOne({
                     where: {
                         userId: data.userId,
@@ -259,7 +278,7 @@ let createCommentService = async (data) => {
                 })
                 if (booking) {
                     booking.status = 'S5'
-                    booking.save()
+                    await booking.save()
                     return {
                         EM: 'danh gia thanh cong',
                         EC: 0,

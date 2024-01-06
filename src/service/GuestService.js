@@ -196,7 +196,7 @@ let readTopGaraService = async (limitInput) => {
             }
 
         }
-
+        console.log('tat ca gara', data2)
         let data = {
             count: count,
             acount: finaldata
@@ -747,6 +747,7 @@ let getAllGaraService = async () => {
     try {
 
         let comment = await db.Gara.findAll({
+            where: { status: 'S2' },
             include: [{ model: db.Provind, as: 'provindGaraData' }]
         })
         if (comment) {
@@ -824,7 +825,7 @@ let getGaraWithId = async (id) => {
             raw: false,
             nest: true,
         });
-
+        console.log('aaaaaaaaaaaa', user)
         if (user) {
 
             return {

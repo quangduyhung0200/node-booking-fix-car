@@ -1086,10 +1086,35 @@ let searchHandbookStaff = async (req, res) => {
     }
 
 }
+let deniceGara = async (req, res) => {
+    try {
+
+
+
+
+        let data = await AdminService.deniceGaraService(req.body)
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT
+        })
+
+
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+    }
+}
 module.exports = {
     readUser, readGaraNonCensorship, accepGara, test, createCar, updateCar, deleteCar, readHandBook, createHandBook, readHandBookById,
     accepHandBook, getAllGroup, userUpdate, readAllHandbook, deleteUser, updateHandbook, deleteHandbook, getAllGarabyPage, deleteGara,
     getAllBookingbypage, getAllStatus, updateStatus, searchBooking, searchUser, searchGaranocenser, searchGara, searchCar, readAllStaff,
     searchHandbookUncensor, searchHandbook, getCarCompanyByPage, createCarCompany, updateCarCompany, deleteCarCompany, searchCarcompany,
-    getComentbypage, deleteComment, searchComment, deleteBooking, searchHandbookStaff
+    getComentbypage, deleteComment, searchComment, deleteBooking, searchHandbookStaff, deniceGara
 }

@@ -84,7 +84,7 @@ let registerCartoGaraService = async (rawdata) => {
                     if (dataaa) {
                         dataaa.priceId = rawdata.priceId;
                         dataaa.paymentId = rawdata.paymentId
-                        dataaa.save()
+                        await dataaa.save()
                     }
                     else {
                         await db.Service_Gara_Car.create({
@@ -128,7 +128,7 @@ let registerCartoGaraService = async (rawdata) => {
                 if (dataaa) {
                     dataaa.priceId = rawdata.priceId;
                     dataaa.paymentId = rawdata.paymentId
-                    dataaa.save()
+                    await dataaa.save()
                 }
                 else {
                     await db.Service_Gara_Car.create({
@@ -214,7 +214,7 @@ let createBulkScheduleService = async (data) => {
 
 
         let tocreate2 = []; // new Array
-        toCreate.map(item => tocreate2.push({ garaId: data.garaId, date: item.date, timeType: item.timeType, maxOrder: +item.maxOrder, currenOrder: 0 }))
+        toCreate.map(item => tocreate2.push({ garaId: data.garaId, date: item.date, timeType: item.timeType, maxOrder: +item.maxOrder, currenOrder: 0, isDelete: 0 }))
 
         if (tocreate2 && tocreate2.length > 0) {
             await db.Schedule.bulkCreate(tocreate2);
@@ -348,20 +348,26 @@ let getListBookingService = async (garaId, date) => {
 
         })
         let booking2 = await db.Booking.findAll({
-            where: { garaId: garaId, status: 'S2' },
+            where: { status: ['S1', 'S2'], isDelete: 0 },
             attributes: ["id", "userId", "garaid", "carId", "timeType", "serviceId", "date", "status"],
 
 
         })
-        let currendate = moment(new Date()).startOf('day').unix()
-        for (let i = 0; i < booking2.length; i++) {
-            if (booking2[i].date < currendate) {
 
-                booking2[i].status = 'S0'
-                booking2[i].save()
+        booking2.map(async (item) => {
+            let fomatDate = moment(new Date()).startOf('day').unix()
+            if (+item.date < fomatDate && item.status !== 'S3' && item.status !== 'S4' && item.status !== 'S5') {
 
+                let booking3 = await db.Booking.findOne({
+                    where: { id: item.id },
+
+                })
+                console.log(booking3.id)
+                booking3.status = 'S0'
+                await booking3.save()
             }
-        }
+        })
+
 
         if (booking) {
             return {
@@ -704,9 +710,9 @@ let updateGaraService = async (data) => {
                 gara.avata = data.avata
                 gara.phone = data.phone
                 gara.status = 'S1'
-
+                gara.isDelete = 0
                 gara.description = data.descpistion
-                gara.save()
+                await gara.save()
                 return {
                     EM: 'update by gara',
                     EC: 0,

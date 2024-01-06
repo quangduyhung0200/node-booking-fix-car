@@ -42,6 +42,7 @@ const initAPIRouters = (app) => {
 
     router.get('/gara/searchHandBook', GuestController.searchHandBook)//done
     //nguoi dung da dangky
+
     router.post('/login/user', UserController.handldLogin)//done
     router.post('/logout/user', UserController.handlLogout)//done
     router.get('/getUserbyId', UserController.getUserbyId)//done
@@ -64,6 +65,7 @@ const initAPIRouters = (app) => {
     router.put('/gara/updateGara', GaraController.updateGara)//done
 
     //ngui kiem duyet
+    router.put('/gara/deniceGara', AdminController.deniceGara)//done
     router.get('/handbook/searchHandbookStaff', AdminController.searchHandbookStaff)//done
     router.get('/comment/searchComment', AdminController.searchComment)//done
     router.get('/comment/getComentbypage', AdminController.getComentbypage)//done

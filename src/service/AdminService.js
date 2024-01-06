@@ -94,12 +94,13 @@ let getGaraWithPage = async (page, limit) => {
         let offset = (page - 1) * limit
         let { count, rows } = await db.Gara.findAndCountAll({
             where: {
-                status: 'S1'
+                status: 'S1',
+                isDelete: 0
 
             },
             attributes: ["id", "nameGara", "address", "phone", "description", "contenHTML"],
-            include: { model: db.Provind, attributes: ['id', "name"], as: 'provindGaraData' },
-
+            include: [{ model: db.Provind, attributes: ['id', "name"], as: 'provindGaraData' },
+            { model: db.User, attributes: ['id'], as: 'userGara' }],
 
             order: [['id', 'DESC']],
             raw: true,
@@ -192,7 +193,7 @@ let accepGaraService = async (data) => {
         if (user) {
 
             user.status = 'S2'
-            user.save()
+            await user.save()
 
         }
         let user1 = await db.User.findOne({
@@ -200,7 +201,7 @@ let accepGaraService = async (data) => {
         })
         if (user1) {
             user1.groupId = 2
-            user1.save()
+            await user1.save()
             return {
                 EM: 'update user seccess',
                 EC: 0,
@@ -319,7 +320,7 @@ let updateCarService = async (data) => {
             user.carCompanyId = data.carCompanyId;
             user.avata = data.avata;
             user.descriptions = data.descriptions
-            user.save()
+            await user.save()
             return {
                 EM: 'update car seccess',
                 EC: 0,
@@ -652,7 +653,7 @@ let accepHandBookService = async (data) => {
 
         } else {
             handBook.status = 'S2'
-            handBook.save()
+            await handBook.save()
             return {
                 EM: 'update Succes',
                 EC: 0,
@@ -720,7 +721,7 @@ let userUpdateService = async (data) => {
             user.address = data.address
             user.groupId = data.groupId
             user.avata = data.avata
-            user.save()
+            await user.save()
             console.log(user)
             return {
                 EM: 'update user seccess',
@@ -821,7 +822,7 @@ let deleteUserService = async (data) => {
         if (user) {
             user.isDelete = 1;
 
-            user.save()
+            await user.save()
             return {
                 EM: 'delete user seccess',
                 EC: 0,
@@ -869,7 +870,7 @@ let updateHandbookService = async (data) => {
                 handBook.garaId = data.garaId;
 
 
-                handBook.save()
+                await handBook.save()
                 return {
                     EM: 'UPDATE user seccess BY ADMIN',
                     EC: 0,
@@ -897,7 +898,7 @@ let updateHandbookService = async (data) => {
                 handBook.garaId = data.garaId;
 
 
-                handBook.save()
+                await handBook.save()
                 return {
                     EM: 'UPDATE user seccess BY staff',
                     EC: 0,
@@ -936,7 +937,7 @@ let deleteHandbookService = async (data) => {
         if (user) {
             user.isDelete = 1;
 
-            user.save()
+            await user.save()
             return {
                 EM: 'delete user seccess',
                 EC: 0,
@@ -1035,7 +1036,7 @@ let deleteGaraService = async (data) => {
         if (user) {
             user.isDelete = 1;
 
-            user.save()
+            await user.save()
             return {
                 EM: 'delete gara seccess',
                 EC: 0,
@@ -1191,7 +1192,7 @@ let updateStatusService = async (data) => {
         if (user) {
             user.status = data.status;
 
-            user.save()
+            await user.save()
             return {
                 EM: 'update booking seccess',
                 EC: 0,
@@ -1707,7 +1708,7 @@ let updateCarCompanyService = async (datainput) => {
             data.name = datainput.name
             data.description = datainput.description
             data.avata = datainput.avata
-            data.save()
+            await data.save()
             return {
                 EM: 'update DATA SUCCESS',
                 EC: 0,
@@ -1749,7 +1750,7 @@ let deleteCarCompanyService = async (datainput) => {
         if (data) {
             data.isDelete = 1
 
-            data.save()
+            await data.save()
             return {
                 EM: 'update DATA SUCCESS',
                 EC: 0,
@@ -1922,7 +1923,7 @@ let deleteCommentService = async (datainput) => {
         if (data) {
             data.isDelete = 1
 
-            data.save()
+            await data.save()
             let gara = await db.Gara.findOne({ where: { id: datainput.garaId } })
             if (gara) {
 
@@ -1932,7 +1933,7 @@ let deleteCommentService = async (datainput) => {
                 console.log('ddiem danh gia', gara.rateId * count)
                 console.log('danh gia can xoa', data.rate)
                 console.log('ket qua', gara.rateId)
-                gara.save()
+                await gara.save()
                 return {
                     EM: 'update DATA SUCCESS',
                     EC: 0,
@@ -2026,7 +2027,7 @@ let deleteBookingService = async (datainput) => {
         if (data) {
             data.isDelete = 1
 
-            data.save()
+            await data.save()
             return {
                 EM: 'delete DATA SUCCESS',
                 EC: 0,
@@ -2104,6 +2105,45 @@ let searchHandbookStaffService = async (title, staff, status) => {
     }
 
 }
+let deniceGaraService = async (datainput) => {
+    try {
+        let user = await db.Gara.findOne({ where: { userId: datainput.id, status: 'S1' } }
+        )
+
+        if (user) {
+
+            user.status = 'S3'
+            await user.save()
+            return {
+                EM: 'update user success',
+                EC: 0,
+                DT: ''
+            }
+
+        }
+        else {
+            return {
+                EM: 'update user fail',
+                EC: 1,
+                DT: ''
+            }
+        }
+
+
+
+
+
+
+
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: []
+        }
+    }
+}
 module.exports = {
     getUserWithPage, getAllUser, getGaraWithPage, getAllGara, accepGaraService, test, createCarService,
     updateCarService, deletecarService, readHandBookService, createHandBookService, getAllHandBook, readHandBookById,
@@ -2112,5 +2152,5 @@ module.exports = {
     searchBookingService, searchUserService, searchGaranocenserService, searchGaraService, searchCarService, readAllStaffService,
     searchHandbookUncensorService, searchHandbookService, getCarCompanyByPageService, createCarCompanyService, updateCarCompanyService,
     deleteCarCompanyService, searchCarcompanyService, getComentbypageService, deleteCommentService, searchCommentService, deleteBookingService,
-    searchHandbookStaffService
+    searchHandbookStaffService, deniceGaraService
 }
