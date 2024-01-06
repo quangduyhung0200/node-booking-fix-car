@@ -310,12 +310,12 @@ let createCommentService = async (data) => {
 
 }
 
-let searchOrderService = async (gara, status) => {
+let searchOrderService = async (gara, status, user) => {
 
     try {
         let data = await db.Booking.findAll({
             where: {
-
+                userId: +user,
                 isDelete: {
                     [Op.ne]: 1
                 },

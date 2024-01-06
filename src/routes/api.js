@@ -64,6 +64,7 @@ const initAPIRouters = (app) => {
     router.put('/gara/updateGara', GaraController.updateGara)//done
 
     //ngui kiem duyet
+    router.get('/handbook/searchHandbookStaff', AdminController.searchHandbookStaff)//done
     router.get('/comment/searchComment', AdminController.searchComment)//done
     router.get('/comment/getComentbypage', AdminController.getComentbypage)//done
     router.delete('/carCompany/deleteCarCompany', AdminController.deleteCarCompany)//done
@@ -85,6 +86,7 @@ const initAPIRouters = (app) => {
     router.get('/status/getAllStatus', AdminController.getAllStatus)//done
     router.put('/booking/updateStatus', AdminController.updateStatus)//done
     //admin
+    router.delete('/booking/deleteBooking', AdminController.deleteBooking)//done
     router.delete('/comment/deleteComment', AdminController.deleteComment)//done
     router.get('/carCompany/getCarCompanyByPage', AdminController.getCarCompanyByPage)//done
     router.get('/handbook/searchHandbookUncensor', AdminController.searchHandbookUncensor)//done

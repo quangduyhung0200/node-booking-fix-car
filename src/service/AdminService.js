@@ -1668,7 +1668,7 @@ let createCarCompanyService = async (datainput) => {
     try {
 
 
-        let data = await db.CarCompany.create({
+        await db.CarCompany.create({
             name: datainput.name,
             description: datainput.description,
             avata: datainput.avata,
@@ -2013,6 +2013,97 @@ let searchCommentService = async (gara, user, rate) => {
     }
 
 }
+let deleteBookingService = async (datainput) => {
+    try {
+
+
+        let data = await db.Booking.findOne({
+            where: { id: datainput.id }
+
+
+
+        })
+        if (data) {
+            data.isDelete = 1
+
+            data.save()
+            return {
+                EM: 'delete DATA SUCCESS',
+                EC: 0,
+                DT: ''
+            }
+
+        }
+        else {
+            return {
+                EM: 'delete DATA fail',
+                EC: 1,
+                DT: ''
+            }
+        }
+
+
+
+
+
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: []
+        }
+    }
+}
+let searchHandbookStaffService = async (title, staff, status) => {
+
+    try {
+        let data = await db.HandBook.findAll({
+            where: {
+                staffId: +staff,
+
+                isDelete: {
+                    [Op.ne]: 1
+                },
+                name: sequelize.where(
+                    sequelize.fn("LOWER", sequelize.col("title")),
+                    "LIKE",
+                    "%" + title + "%"
+                )
+
+            }, include: [{
+                model: db.User, as: 'StaffHandbookData', attributes: {
+                    exclude: ['avata', 'password']
+                }
+            }],
+
+
+
+
+            raw: true,
+            nest: true
+        });
+
+
+
+
+
+        let results2 = data.filter(item => item.status === status || +status === 0)
+        return {
+            EM: 'GET DATA SUCCESS',
+            EC: 0,
+            DT: results2
+        }
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'song thing wrong',
+            EC: -1,
+            DT: ''
+        }
+    }
+
+}
 module.exports = {
     getUserWithPage, getAllUser, getGaraWithPage, getAllGara, accepGaraService, test, createCarService,
     updateCarService, deletecarService, readHandBookService, createHandBookService, getAllHandBook, readHandBookById,
@@ -2020,5 +2111,6 @@ module.exports = {
     deleteHandbookService, getAllGarabyPageService, deleteGaraService, getAllBookingbypageService, getAllStatus, updateStatusService,
     searchBookingService, searchUserService, searchGaranocenserService, searchGaraService, searchCarService, readAllStaffService,
     searchHandbookUncensorService, searchHandbookService, getCarCompanyByPageService, createCarCompanyService, updateCarCompanyService,
-    deleteCarCompanyService, searchCarcompanyService, getComentbypageService, deleteCommentService, searchCommentService
+    deleteCarCompanyService, searchCarcompanyService, getComentbypageService, deleteCommentService, searchCommentService, deleteBookingService,
+    searchHandbookStaffService
 }

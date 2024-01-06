@@ -1031,10 +1031,65 @@ let searchComment = async (req, res) => {
     }
 
 }
+let deleteBooking = async (req, res) => {
+    try {
+
+
+
+
+        let data = await AdminService.deleteBookingService(req.body)
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT
+        })
+
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+    }
+
+}
+let searchHandbookStaff = async (req, res) => {
+    try {
+
+        let title = req.query.title
+        let staff = req.query.staff
+        let status = req.query.status
+
+
+
+
+
+        let data = await AdminService.searchHandbookStaffService(title, staff, status)
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT
+        })
+
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+    }
+
+}
 module.exports = {
     readUser, readGaraNonCensorship, accepGara, test, createCar, updateCar, deleteCar, readHandBook, createHandBook, readHandBookById,
     accepHandBook, getAllGroup, userUpdate, readAllHandbook, deleteUser, updateHandbook, deleteHandbook, getAllGarabyPage, deleteGara,
     getAllBookingbypage, getAllStatus, updateStatus, searchBooking, searchUser, searchGaranocenser, searchGara, searchCar, readAllStaff,
     searchHandbookUncensor, searchHandbook, getCarCompanyByPage, createCarCompany, updateCarCompany, deleteCarCompany, searchCarcompany,
-    getComentbypage, deleteComment, searchComment
+    getComentbypage, deleteComment, searchComment, deleteBooking, searchHandbookStaff
 }

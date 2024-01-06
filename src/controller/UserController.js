@@ -118,13 +118,13 @@ let searchOrder = async (req, res) => {
 
         let gara = req.query.gara
         let status = req.query.status
+        let user = req.query.user
 
 
 
 
 
-
-        let data = await userService.searchOrderService(gara, status)
+        let data = await userService.searchOrderService(gara, status, user)
         return res.status(200).json({
             EM: data.EM,
             EC: data.EC,

@@ -232,10 +232,7 @@ let createBulkScheduleService = async (data) => {
 
             }
         }
-        console.log('da co', exiting)
-        console.log('dua len', dataschedule)
-        console.log('can luu', tocreate2)
-        console.log('can xoa', results)
+
         return {
             EM: 'create success',
             EC: 0,
