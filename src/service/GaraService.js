@@ -4,6 +4,7 @@ import _ from "lodash";
 import EmailService from './EmailService'
 import schedule from "../models/schedule";
 import moment from 'moment';
+import booking from "../models/booking";
 const { Op, where } = require("sequelize");
 
 
@@ -321,70 +322,147 @@ let deletePickCarService = async (data) => {
 
 let getListBookingService = async (garaId, date) => {
     try {
-        let booking = await db.Booking.findAll({
-            where: { garaId: garaId, date: date, status: 'S2' },
-            attributes: ["id", "userId", "garaid", "carId", "timeType", "serviceId", "date", "status"],
-            include: [
-                {
-                    model: db.User, as: 'bookingData', attributes: ["id", "userName", "email", "address"]
+        if (date === 'ALL') {
 
-                },
-                {
-                    model: db.Gara, as: 'bookingDataGara', attributes: ["id", "nameGara", "address", "provindId", "phone"]
-                },
-                {
-                    model: db.Time, as: 'timeDataBooking', attributes: ["id", "timValue"]
-                },
-                {
-                    model: db.Car, as: 'carBookingData', attributes: ["id", "nameCar", "carCompanyId", "descriptions",],
-                    include: { model: db.CarCompany, as: "carCompanyData" }
-                },
-                {
-                    model: db.Service, as: 'serviceBookingData', attributes: ["id", "name", "description"]
-                },
-            ], raw: true,
-            nest: true
+            let booking = await db.Booking.findAll({
+                where: { garaId: garaId, status: 'S2' },
+                attributes: ["id", "userId", "garaid", "carId", "timeType", "serviceId", "date", "status", "reson"],
+                include: [
+                    {
+                        model: db.User, as: 'bookingData', attributes: ["id", "userName", "email", "address", "phone"]
 
-
-        })
-        let booking2 = await db.Booking.findAll({
-            where: { status: ['S1', 'S2'], isDelete: 0 },
-            attributes: ["id", "userId", "garaid", "carId", "timeType", "serviceId", "date", "status"],
+                    },
+                    {
+                        model: db.Gara, as: 'bookingDataGara', attributes: ["id", "nameGara", "address", "provindId", "phone"]
+                    },
+                    {
+                        model: db.Time, as: 'timeDataBooking', attributes: ["id", "timValue"]
+                    },
+                    {
+                        model: db.Car, as: 'carBookingData', attributes: ["id", "nameCar", "carCompanyId", "descriptions",],
+                        include: { model: db.CarCompany, as: "carCompanyData" }
+                    },
+                    {
+                        model: db.Service, as: 'serviceBookingData', attributes: ["id", "name", "description"]
+                    },
+                ], raw: true,
+                nest: true
 
 
-        })
+            })
+            let booking2 = await db.Booking.findAll({
+                where: { status: ['S1', 'S2'], isDelete: 0 },
+                attributes: ["id", "userId", "garaid", "carId", "timeType", "serviceId", "date", "status"],
 
-        booking2.map(async (item) => {
+
+            })
+
+            booking2.map(async (item) => {
+                let fomatDate = moment(new Date()).startOf('day').unix()
+                if (+item.date < fomatDate && item.status !== 'S3' && item.status !== 'S4' && item.status !== 'S5') {
+
+                    let booking3 = await db.Booking.findOne({
+                        where: { id: item.id },
+
+                    })
+                    console.log(booking3.id)
+                    booking3.status = 'S0'
+                    await booking3.save()
+                }
+            })
             let fomatDate = moment(new Date()).startOf('day').unix()
-            if (+item.date < fomatDate && item.status !== 'S3' && item.status !== 'S4' && item.status !== 'S5') {
+            booking.filter((item) => {
+                item.data >= fomatDate
+            })
 
-                let booking3 = await db.Booking.findOne({
-                    where: { id: item.id },
 
-                })
-                console.log(booking3.id)
-                booking3.status = 'S0'
-                await booking3.save()
+            if (booking) {
+                return {
+                    EM: 'GET DATA SUCCESS',
+                    EC: 0,
+                    DT: booking
+                }
+
             }
-        })
+            else {
+                return {
+                    EM: 'no customer in this day',
+                    EC: 1,
+                    DT: ''
+                }
+            }
+
+        } else {
+
+            let booking = await db.Booking.findAll({
+                where: { garaId: garaId, status: 'S2', date: date },
+                attributes: ["id", "userId", "garaid", "carId", "timeType", "serviceId", "date", "status", "reson"],
+                include: [
+                    {
+                        model: db.User, as: 'bookingData', attributes: ["id", "userName", "email", "address", "phone"]
+
+                    },
+                    {
+                        model: db.Gara, as: 'bookingDataGara', attributes: ["id", "nameGara", "address", "provindId", "phone"]
+                    },
+                    {
+                        model: db.Time, as: 'timeDataBooking', attributes: ["id", "timValue"]
+                    },
+                    {
+                        model: db.Car, as: 'carBookingData', attributes: ["id", "nameCar", "carCompanyId", "descriptions",],
+                        include: { model: db.CarCompany, as: "carCompanyData" }
+                    },
+                    {
+                        model: db.Service, as: 'serviceBookingData', attributes: ["id", "name", "description"]
+                    },
+                ], raw: true,
+                nest: true
 
 
-        if (booking) {
-            return {
-                EM: 'GET DATA SUCCESS',
-                EC: 0,
-                DT: booking
+            })
+            let booking2 = await db.Booking.findAll({
+                where: { status: ['S1', 'S2'], isDelete: 0 },
+                attributes: ["id", "userId", "garaid", "carId", "timeType", "serviceId", "date", "status"],
+
+
+            })
+
+            booking2.map(async (item) => {
+                let fomatDate = moment(new Date()).startOf('day').unix()
+                if (+item.date < fomatDate && item.status !== 'S3' && item.status !== 'S4' && item.status !== 'S5') {
+
+                    let booking3 = await db.Booking.findOne({
+                        where: { id: item.id },
+
+                    })
+                    console.log(booking3.id)
+                    booking3.status = 'S0'
+                    await booking3.save()
+                }
+            })
+            let fomatDate = moment(new Date()).startOf('day').unix()
+            booking.filter((item) => {
+                item.data >= fomatDate
+            })
+
+
+            if (booking) {
+                return {
+                    EM: 'GET DATA SUCCESS',
+                    EC: 0,
+                    DT: booking
+                }
+
+            }
+            else {
+                return {
+                    EM: 'no customer in this day',
+                    EC: 1,
+                    DT: ''
+                }
             }
 
         }
-        else {
-            return {
-                EM: 'no customer in this day',
-                EC: 1,
-                DT: ''
-            }
-        }
-
 
     } catch (e) {
         console.log(e)
@@ -420,6 +498,7 @@ let comfimeBookingService = async (data) => {
             else {
                 let booking = await db.Booking.findOne({
                     where: { garaId: data.garaId, date: data.date, status: 'S2', userId: data.userId, carId: data.carId, timeType: data.timeType, serviceId: data.serviceId },
+                    include: [{ model: db.Gara, as: 'bookingDataGara', attributes: ['nameGara', 'address', 'phone'] }]
                 })
 
                 if (booking) {
@@ -428,6 +507,9 @@ let comfimeBookingService = async (data) => {
                     await EmailService.sendcomfemEmail({
                         reciverEmail: data.email,
                         time: data.time,
+                        nameGara: booking.bookingDataGara.nameGara,
+                        addressGara: booking.bookingDataGara.address,
+                        phoneGara: booking.bookingDataGara.phone
 
                     })
 
@@ -462,98 +544,86 @@ let comfimeBookingService = async (data) => {
 }
 let getListOrderService = async (garaId, date) => {
     try {
-        let booking = await db.Booking.findAll({
-            where: { garaId: garaId, date: date, status: 'S3' },
-            attributes: ["id", "userId", "garaid", "carId", "timeType", "serviceId", "date", "status"],
-            include: [
-                {
-                    model: db.User, as: 'bookingData', attributes: ["id", "userName", "email", "address"]
-                },
-                {
-                    model: db.Gara, as: 'bookingDataGara', attributes: ["id", "nameGara", "address", "provindId", "phone"]
-                },
-                {
-                    model: db.Time, as: 'timeDataBooking', attributes: ["id", "timValue"]
-                },
-                {
-                    model: db.Car, as: 'carBookingData', attributes: ["id", "nameCar", "carCompanyId", "descriptions",],
-                    include: { model: db.CarCompany, as: "carCompanyData" }
-                },
-                {
-                    model: db.Service, as: 'serviceBookingData', attributes: ["id", "name", "description"]
-                },
-            ], raw: true,
-            nest: true
+        console.log('asfasfasfasfasfas', garaId)
+        if (date === 'ALL') {
+            let booking = await db.Booking.findAll({
+                where: { garaId: garaId },
+                attributes: ["id", "userId", "garaid", "carId", "timeType", "serviceId", "date", "status"],
+                include: [
+                    {
+                        model: db.User, as: 'bookingData', attributes: ["id", "userName", "email", "address"]
+                    },
+                    {
+                        model: db.Gara, as: 'bookingDataGara', attributes: ["id", "nameGara", "address", "provindId", "phone"]
+                    },
+                    {
+                        model: db.Time, as: 'timeDataBooking', attributes: ["id", "timValue"]
+                    },
+                    {
+                        model: db.Car, as: 'carBookingData', attributes: ["id", "nameCar", "carCompanyId", "descriptions",],
+                        include: { model: db.CarCompany, as: "carCompanyData" }
+                    },
+                    {
+                        model: db.Service, as: 'serviceBookingData', attributes: ["id", "name", "description"]
+                    },
+                    {
+                        model: db.StatusBooking, as: 'statusBooking'
+                    },
+                ], raw: true,
+                nest: true
 
 
-        })
-        let booking2 = await db.Booking.findAll({
-            where: { garaId: garaId, date: date, status: 'S4' },
-            attributes: ["id", "userId", "garaid", "carId", "timeType", "serviceId", "date", "status"],
-            include: [
-                {
-                    model: db.User, as: 'bookingData', attributes: ["id", "userName", "email", "address"]
-                },
-                {
-                    model: db.Gara, as: 'bookingDataGara', attributes: ["id", "nameGara", "address", "provindId", "phone"]
-                },
-                {
-                    model: db.Time, as: 'timeDataBooking', attributes: ["id", "timValue"]
-                },
-                {
-                    model: db.Car, as: 'carBookingData', attributes: ["id", "nameCar", "carCompanyId", "descriptions",],
-                    include: { model: db.CarCompany, as: "carCompanyData" }
-                },
-                {
-                    model: db.Service, as: 'serviceBookingData', attributes: ["id", "name", "description"]
-                },
-            ], raw: true,
-            nest: true
+            })
 
 
-        })
-        let booking3 = await db.Booking.findAll({
-            where: { garaId: garaId, date: date, status: 'S0' },
-            attributes: ["id", "userId", "garaid", "carId", "timeType", "serviceId", "date", "status"],
-            include: [
-                {
-                    model: db.User, as: 'bookingData', attributes: ["id", "userName", "email", "address"]
-                },
-                {
-                    model: db.Gara, as: 'bookingDataGara', attributes: ["id", "nameGara", "address", "provindId", "phone"]
-                },
-                {
-                    model: db.Time, as: 'timeDataBooking', attributes: ["id", "timValue"]
-                },
-                {
-                    model: db.Car, as: 'carBookingData', attributes: ["id", "nameCar", "carCompanyId", "descriptions",],
-                    include: { model: db.CarCompany, as: "carCompanyData" }
-                },
-                {
-                    model: db.Service, as: 'serviceBookingData', attributes: ["id", "name", "description"]
-                },
-            ], raw: true,
-            nest: true
-
-
-        })
-        if (booking2 && booking) {
-            Array.prototype.push.apply(booking2, booking);
-            Array.prototype.push.apply(booking3, booking2);
             return {
                 EM: 'GET DATA SUCCESS',
                 EC: 0,
-                DT: booking3
+                DT: booking
+            }
+        }
+        else {
+            let booking = await db.Booking.findAll({
+                where: { garaId: garaId, date: date },
+                attributes: ["id", "userId", "garaid", "carId", "timeType", "serviceId", "date", "status"],
+                include: [
+                    {
+                        model: db.User, as: 'bookingData', attributes: ["id", "userName", "email", "address"]
+                    },
+                    {
+                        model: db.Gara, as: 'bookingDataGara', attributes: ["id", "nameGara", "address", "provindId", "phone"]
+                    },
+                    {
+                        model: db.Time, as: 'timeDataBooking', attributes: ["id", "timValue"]
+                    },
+                    {
+                        model: db.Car, as: 'carBookingData', attributes: ["id", "nameCar", "carCompanyId", "descriptions",],
+                        include: { model: db.CarCompany, as: "carCompanyData" }
+                    },
+                    {
+                        model: db.Service, as: 'serviceBookingData', attributes: ["id", "name", "description"]
+                    },
+                    {
+                        model: db.StatusBooking, as: 'statusBooking'
+                    },
+                ], raw: true,
+                nest: true
+
+
+            })
+
+
+            return {
+                EM: 'GET DATA SUCCESS',
+                EC: 0,
+                DT: booking
             }
 
         }
-        else {
-            return {
-                EM: 'no customer in this day',
-                EC: 1,
-                DT: ''
-            }
-        }
+
+
+
+
 
 
 
@@ -573,14 +643,18 @@ let finishOrderService = async (data) => {
 
         let booking = await db.Booking.findOne({
             where: { garaId: data.garaId, date: data.date, status: 'S3', userId: data.userId, carId: data.carId, timeType: data.timeType, serviceId: data.serviceId },
+            include: [{ model: db.Gara, as: 'bookingDataGara', attributes: ['nameGara', 'address', 'phone'] }]
         })
 
         if (booking) {
             booking.status = 'S4'
             booking.save()
-            await EmailService.sendcomfemEmail({
+            await EmailService.senddfinishBooking({
                 reciverEmail: data.email,
                 time: data.time,
+                nameGara: booking.bookingDataGara.nameGara,
+                addressGara: booking.bookingDataGara.address,
+                phoneGara: booking.bookingDataGara.phone
 
             })
 
@@ -616,17 +690,20 @@ let canserOrderService = async (data) => {
 
         let booking = await db.Booking.findOne({
             where: { garaId: data.garaId, date: data.date, status: 'S3', userId: data.userId, carId: data.carId, timeType: data.timeType, serviceId: data.serviceId },
+            include: [{ model: db.Gara, as: 'bookingDataGara', attributes: ['nameGara', 'address', 'phone'] }]
         })
 
         if (booking) {
-            booking.status = 'S0'
+            booking.status = 'S4'
             booking.save()
-            await EmailService.sendcomfemEmail({
+            await EmailService.senddcenserbooking({
                 reciverEmail: data.email,
                 time: data.time,
+                nameGara: booking.bookingDataGara.nameGara,
+                addressGara: booking.bookingDataGara.address,
+                phoneGara: booking.bookingDataGara.phone
 
             })
-
             return {
                 EM: 'update DATA SUCCESS',
                 EC: 0,
@@ -739,8 +816,55 @@ let updateGaraService = async (data) => {
         }
     }
 }
+let canserBookingService = async (data) => {
+    try {
+
+
+        let booking = await db.Booking.findOne({
+            where: { garaId: data.garaId, date: data.date, status: 'S2', userId: data.userId, carId: data.carId, timeType: data.timeType, serviceId: data.serviceId },
+            include: [{ model: db.Gara, as: 'bookingDataGara', attributes: ['nameGara', 'address', 'phone'] }]
+        })
+
+        if (booking) {
+            booking.status = 'S0'
+            booking.save()
+            await EmailService.senddeniceBooking({
+                reciverEmail: data.email,
+                time: data.time,
+                nameGara: booking.bookingDataGara.nameGara,
+                addressGara: booking.bookingDataGara.address,
+                phoneGara: booking.bookingDataGara.phone
+
+            })
+
+            return {
+                EM: 'update DATA SUCCESS',
+                EC: 0,
+                DT: ''
+            }
+
+        }
+        else {
+            return {
+                EM: 'update fail',
+                EC: 1,
+                DT: ''
+            }
+        }
+
+
+
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: []
+        }
+    }
+}
 module.exports = {
     readInfoGaraService, registerCartoGaraService, readAllTimeService, createBulkScheduleService
     , deletePickCarService, getListBookingService, comfimeBookingService, getListOrderService, finishOrderService, canserOrderService,
-    updateGaraService
+    updateGaraService, canserBookingService
 }

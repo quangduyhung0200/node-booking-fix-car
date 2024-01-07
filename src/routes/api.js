@@ -61,7 +61,8 @@ const initAPIRouters = (app) => {
     router.post('/gara/comfimeBooking', GaraController.comfimeBooking)//done
     router.get('/gara/getListOrder', GaraController.getListOrder)//done
     router.post('/gara/finishOrder', GaraController.finishOrder)//done
-    router.post('/gara/canserOrder', GaraController.canserOrder)//done
+    router.put('/gara/canserOrder', GaraController.canserOrder)//done
+    router.put('/gara/canserBooking', GaraController.canserBooking)//done
     router.put('/gara/updateGara', GaraController.updateGara)//done
 
     //ngui kiem duyet

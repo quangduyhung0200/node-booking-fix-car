@@ -249,7 +249,31 @@ let updateGara = async (req, res) => {
 
     }
 }
+let canserBooking = async (req, res) => {
+    try {
+
+
+
+
+        let data = await GaraService.canserBookingService(req.body)
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT
+        })
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            EM: 'erro from sever',
+            EC: -1,
+            DT: ''
+
+        })
+
+    }
+}
 module.exports = {
     readInfoGara, registerCartoGara, readAllTime, createBulkSchedule,
-    deletePickCar, getListBooking, comfimeBooking, getListOrder, finishOrder, canserOrder, updateGara
+    deletePickCar, getListBooking, comfimeBooking, getListOrder, finishOrder, canserOrder, updateGara, canserBooking
 }

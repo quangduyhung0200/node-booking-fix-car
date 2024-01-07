@@ -1107,9 +1107,10 @@ let getAllBookingbypageService = async (page, limit) => {
 
             ], raw: true,
             nest: true,
-
+            order: [['id', 'DESC']],
             offset: offset,
             limit: limit
+
         })
         let totalPage = Math.ceil(count / limit)
         let data = {}

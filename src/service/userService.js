@@ -411,6 +411,7 @@ let getUserbyIdService = async (userIdInput) => {
                 {
                     model: db.Gara, as: 'userGara'
                 },
+                { model: db.HandBook, as: 'StaffHandbookData' }
             ]
         })
         return {

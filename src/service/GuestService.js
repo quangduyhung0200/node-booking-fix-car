@@ -534,7 +534,8 @@ let createBookingService = async (data) => {
                             token: token,
                             serviceId: data.serviceId,
                             priceId: data.priceId,
-                            isDelete: 0
+                            isDelete: 0,
+                            reson: data.reson
                         })
                         await EmailService.sendSimpleEmail({
                             reciverEmail: data.email,
@@ -593,7 +594,8 @@ let createBookingService = async (data) => {
                             token: token,
                             serviceId: data.serviceId,
                             priceId: data.priceId,
-                            isDelete: 0
+                            isDelete: 0,
+                            reson: data.reson
                         })
                         await EmailService.sendSimpleEmail({
                             reciverEmail: data.email,

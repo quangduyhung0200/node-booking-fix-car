@@ -34,7 +34,7 @@ module.exports = (sequelize, DataTypes) => {
         serviceId: DataTypes.INTEGER,
         isDelete: DataTypes.STRING,
         priceId: DataTypes.INTEGER,
-
+        reson: DataTypes.TEXT('long'),
 
     }, {
         sequelize,
