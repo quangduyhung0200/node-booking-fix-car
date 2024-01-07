@@ -4,9 +4,8 @@ let handldLogin = async (req, res) => {
     try {
 
         let data = await userService.LoginUser(req.body)
-        if (data && data.DT.access_token) {
-            res.cookie("jwt", data.DT.access_token, { httpOnly: true, maxAge: 60 * 60 * 1000 * 24 })
-        }
+
+
 
         return res.status(200).json({
             EM: data.EM,
@@ -32,7 +31,7 @@ let handldLogin = async (req, res) => {
 
 let handlLogout = async (req, res) => {
     try {
-        res.clearCookie("jwt");
+
         return res.status(200).json({
             EM: 'ok',
             EC: 0,

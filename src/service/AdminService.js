@@ -58,6 +58,7 @@ const getAllUser = async () => {
     try {
 
         let user = await db.User.findAll({
+            where: { isDelete: 0 },
             attributes: ["id", "username", "email", "phone", "gender"],
             include: { model: db.Group, as: 'groupData', attributes: ['id', "name", "description"] },
 
@@ -187,7 +188,7 @@ const getAllGara = async () => {
 
 let accepGaraService = async (data) => {
     try {
-        let user = await db.Gara.findOne({ where: { userId: data.id, status: 'S1' } }
+        let user = await db.Gara.findOne({ where: { userId: data.id, status: 'S1', isDelete: 0 } }
         )
 
         if (user) {
@@ -197,7 +198,7 @@ let accepGaraService = async (data) => {
 
         }
         let user1 = await db.User.findOne({
-            where: { id: data.id }
+            where: { id: data.id, isDelete: 0 }
         })
         if (user1) {
             user1.groupId = 2
@@ -269,7 +270,8 @@ let createCarService = async (data) => {
 
         let user = await db.Car.findOne({
             where: {
-                nameCar: data.nameCar
+                nameCar: data.nameCar,
+                isDelete: 0
             }
         }
 
@@ -291,6 +293,7 @@ let createCarService = async (data) => {
                 carCompanyId: data.selectedCarCompany,
                 avata: data.avata,
                 descriptions: data.descriptions,
+                isDelete: 0
 
 
             });
@@ -313,7 +316,7 @@ let updateCarService = async (data) => {
     try {
 
 
-        let user = await db.Car.findOne({ where: { id: data.id } }
+        let user = await db.Car.findOne({ where: { id: data.id, isDelete: 0 } }
         )
         if (user) {
             user.nameCar = data.nameCar;
@@ -350,11 +353,12 @@ let deletecarService = async (inputId) => {
     try {
 
         let user = await db.Car.findOne({
-            where: { id: inputId }
+            where: { id: inputId, isDelete: 0 }
         })
 
         if (user) {
-            user.destroy()
+            user.isDelet = 1
+            await user.save()
             return {
                 EM: 'delete success',
                 EC: 0,
@@ -457,7 +461,8 @@ let createHandBookService = async (data) => {
                     isDelete: false,
                     status: 'S2',
                     title: data.title,
-                    garaId: data.garaId
+                    garaId: data.garaId,
+                    isDelete: 0
 
                 })
                 return {
@@ -485,7 +490,8 @@ let createHandBookService = async (data) => {
                     isDelete: false,
                     status: 'S1',
                     title: data.title,
-                    garaId: data.garaId
+                    garaId: data.garaId,
+                    isDelete: 0
 
                 })
                 return {
@@ -642,7 +648,7 @@ let accepHandBookService = async (data) => {
     try {
 
 
-        let handBook = await db.HandBook.findOne({ where: { id: data.id } })
+        let handBook = await db.HandBook.findOne({ where: { id: data.id, isDelete: 0 } })
         if (handBook === null) {
             return {
                 EM: 'dont fout data',
@@ -681,6 +687,7 @@ let getAllGroupService = async () => {
 
         let data = await db.Group.findAll({
 
+
             raw: true,
 
         })
@@ -712,7 +719,7 @@ let userUpdateService = async (data) => {
     try {
 
 
-        let user = await db.User.findOne({ where: { id: data.userId } }
+        let user = await db.User.findOne({ where: { id: data.userId, isDelete: 0 } }
         )
         if (user) {
             user.userName = data.userName;
@@ -817,7 +824,8 @@ let deleteUserService = async (data) => {
     try {
 
 
-        let user = await db.User.findOne({ where: { id: data.id } }
+        let user = await db.User.findOne({ where: { id: data.id, isDelete: 0 } }
+
         )
         if (user) {
             user.isDelete = 1;
@@ -857,7 +865,7 @@ let updateHandbookService = async (data) => {
         let user = await db.User.findOne({ where: { id: data.staffId } }
         )
         if (user.groupId === 4) {
-            let handBook = await db.HandBook.findOne({ where: { id: data.id } })
+            let handBook = await db.HandBook.findOne({ where: { id: data.id, isDelete: 0 } })
             if (handBook) {
                 handBook.staffId = data.staffId;
                 handBook.contentHTML = data.contentHTML;
@@ -885,7 +893,7 @@ let updateHandbookService = async (data) => {
             }
 
         } else {
-            let handBook = await db.HandBook.findOne({ where: { id: data.id } })
+            let handBook = await db.HandBook.findOne({ where: { id: data.id, isDelete: 0 } })
             if (handBook) {
                 handBook.staffId = data.staffId;
                 handBook.contentHTML = data.contentHTML;
@@ -932,7 +940,7 @@ let deleteHandbookService = async (data) => {
     try {
 
 
-        let user = await db.HandBook.findOne({ where: { id: data.id } }
+        let user = await db.HandBook.findOne({ where: { id: data.id, isDelete: 0 } }
         )
         if (user) {
             user.isDelete = 1;
@@ -1031,7 +1039,7 @@ let deleteGaraService = async (data) => {
     try {
 
 
-        let user = await db.Gara.findOne({ where: { id: data.id } }
+        let user = await db.Gara.findOne({ where: { id: data.id, isDelete: 0 } }
         )
         if (user) {
             user.isDelete = 1;
@@ -1155,7 +1163,7 @@ let getAllStatus = async () => {
     try {
 
         let status = await db.StatusBooking.findAll({
-
+            where: { isDelete: 0 }
         })
         if (status) {
             return {
@@ -1188,7 +1196,7 @@ let updateStatusService = async (data) => {
     try {
 
 
-        let user = await db.Booking.findOne({ where: { id: data.id } }
+        let user = await db.Booking.findOne({ where: { id: data.id, isDelete: 0 } }
         )
         if (user) {
             user.status = data.status;
@@ -1700,7 +1708,7 @@ let updateCarCompanyService = async (datainput) => {
 
 
         let data = await db.CarCompany.findOne({
-            where: { id: datainput.id }
+            where: { id: datainput.id, isDelete: 0 }
 
 
 
@@ -1743,7 +1751,7 @@ let deleteCarCompanyService = async (datainput) => {
 
 
         let data = await db.CarCompany.findOne({
-            where: { id: datainput.id }
+            where: { id: datainput.id, isDelete: 0 }
 
 
 
@@ -1894,7 +1902,7 @@ let deleteCommentService = async (datainput) => {
 
 
         let data = await db.Comment.findOne({
-            where: { id: datainput.id }
+            where: { id: datainput.id, isDelete: 0 }
 
 
 
@@ -1929,11 +1937,7 @@ let deleteCommentService = async (datainput) => {
             if (gara) {
 
                 gara.rateId = +((gara.rateId * count) - data.rate) / (count - 1)
-                console.log('danh gia hien tai', count)
-                console.log('soluong danh gia', gara.rateId)
-                console.log('ddiem danh gia', gara.rateId * count)
-                console.log('danh gia can xoa', data.rate)
-                console.log('ket qua', gara.rateId)
+
                 await gara.save()
                 return {
                     EM: 'update DATA SUCCESS',
@@ -2020,7 +2024,7 @@ let deleteBookingService = async (datainput) => {
 
 
         let data = await db.Booking.findOne({
-            where: { id: datainput.id }
+            where: { id: datainput.id, isDelete: 0 }
 
 
 
@@ -2108,7 +2112,7 @@ let searchHandbookStaffService = async (title, staff, status) => {
 }
 let deniceGaraService = async (datainput) => {
     try {
-        let user = await db.Gara.findOne({ where: { userId: datainput.id, status: 'S1' } }
+        let user = await db.Gara.findOne({ where: { userId: datainput.id, status: 'S1', isDelete: 0 } }
         )
 
         if (user) {
@@ -2145,6 +2149,40 @@ let deniceGaraService = async (datainput) => {
         }
     }
 }
+let deniceHandBookService = async (datainput) => {
+    try {
+        let handBook = await db.HandBook.findOne({ where: { id: datainput.id, isDelete: 0 } })
+        if (handBook === null) {
+            return {
+                EM: 'dont fout data',
+                EC: 1,
+                DT: ''
+            }
+
+
+        } else {
+            handBook.status = 'S0'
+            await handBook.save()
+            return {
+                EM: 'update Succes',
+                EC: 0,
+                DT: handBook
+            }
+        }
+
+
+
+
+
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: ''
+        }
+    }
+}
 module.exports = {
     getUserWithPage, getAllUser, getGaraWithPage, getAllGara, accepGaraService, test, createCarService,
     updateCarService, deletecarService, readHandBookService, createHandBookService, getAllHandBook, readHandBookById,
@@ -2153,5 +2191,5 @@ module.exports = {
     searchBookingService, searchUserService, searchGaranocenserService, searchGaraService, searchCarService, readAllStaffService,
     searchHandbookUncensorService, searchHandbookService, getCarCompanyByPageService, createCarCompanyService, updateCarCompanyService,
     deleteCarCompanyService, searchCarcompanyService, getComentbypageService, deleteCommentService, searchCommentService, deleteBookingService,
-    searchHandbookStaffService, deniceGaraService
+    searchHandbookStaffService, deniceGaraService, deniceHandBookService
 }

@@ -29,18 +29,26 @@ const veryflyToken = (token) => {
     return decoded
 
 }
+const extractToken = (req) => {
+    if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
+        return req.headers.authorization.split(' ')[1];
+
+    }
+
+    return null;
+}
 
 const checkUserJWT = (req, res, next) => {
     // if (nonSecurePaths.includes(req.path))
     //     return next();
 
     let cookies = req.cookies
+    let tokenFromHeader = extractToken(req)
 
 
+    if (tokenFromHeader) {
 
-    if (cookies && cookies.jwt) {
-
-        let token = cookies.jwt
+        let token = tokenFromHeader
         let decoded = veryflyToken(token)
         if (decoded) {
 
@@ -49,7 +57,10 @@ const checkUserJWT = (req, res, next) => {
 
             next()
         }
+
+
         else {
+
             return res.status(401).json({
                 EC: -1,
                 DT: '',
@@ -75,7 +86,7 @@ const checkUserPermisstion = (req, res, next) => {
 
     if (req.user) {
 
-        let email = req.user.email;
+
         let role = req.user.role[0].Roles;
         let currenUrl = req.path
 
@@ -84,12 +95,12 @@ const checkUserPermisstion = (req, res, next) => {
             return res.status(403).json({
                 EC: -1,
                 DT: '',
-                EM: 'you dont have permistions to access this resource'
+                EM: 'you dont have permistions to access this resource1'
             })
         }
 
 
-        let canAccess = role.some(item => item.name === currenUrl || currenUrl.includes(item.name));
+        let canAccess = req.user.role.some(item => item.Roles.name === currenUrl || currenUrl.includes(item.Roles.name));
 
         if (canAccess === true) {
 
@@ -99,7 +110,7 @@ const checkUserPermisstion = (req, res, next) => {
             return res.status(403).json({
                 EC: -1,
                 DT: '',
-                EM: 'you dont have permistions to access this resource'
+                EM: 'you dont have permistions to access this resource2'
             })
         }
     }

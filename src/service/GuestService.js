@@ -125,7 +125,7 @@ const createRegisterUser = async (rawUserData) => {
 const getGender = async () => {
     try {
 
-        let data = await db.Gender.findAll()
+        let data = await db.Gender.findAll({ where: { isDelete: 0 } })
         return {
             EM: `create success role`,
             EC: 0,
@@ -222,6 +222,7 @@ let readAllPayment = async () => {
 
 
         let user = await db.Payment.findAll({
+            where: { isDelete: 0 },
             attributes: ["id", "value"],
 
 
@@ -248,6 +249,7 @@ let readAllPrice = async () => {
 
 
         let user = await db.Price.findAll({
+            where: { isDelete: 0 },
             attributes: ["id", "value"],
 
 
@@ -274,6 +276,7 @@ let readAllService = async () => {
 
 
         let user = await db.Service.findAll({
+            where: { isDelete: 0 },
             attributes: ["id", "name"],
 
 
@@ -305,6 +308,7 @@ let readScheduleByDay = async (garaId, day) => {
             where: {
                 garaId: +garaId,
                 date: text,
+                isDelete: 0
 
             },
             include: [
@@ -360,7 +364,8 @@ let readPricePaymentService = async (garaId, carId, serviceId) => {
         let data = await db.Gara_Car.findOne({
             where: {
                 garaId: +garaId,
-                carId: +carId
+                carId: +carId,
+                isDelete: 0
             },
             attributes: ['id'],
             raw: true,
@@ -421,7 +426,8 @@ let readServiceCarService = async (garaId, carId) => {
         let data = await db.Gara_Car.findOne({
             where: {
                 garaId: +garaId,
-                carId: +carId
+                carId: +carId,
+                isDelete: 0
             },
             attributes: ['id'],
             raw: true,
@@ -432,7 +438,8 @@ let readServiceCarService = async (garaId, carId) => {
         if (data) {
             let service = await db.Service_Gara_Car.findAll({
                 where: {
-                    garaCarId: data.id
+                    garaCarId: data.id,
+                    isDelete: 0
                 },
                 include: [{ model: db.Price, as: 'priceData' },
                 { model: db.Payment, as: 'paymentData' }],
@@ -508,7 +515,7 @@ let createBookingService = async (data) => {
 
                 if (created === false) {
                     user.phone = data.phone
-                    user.save()
+                    await user.save()
                     let booking = await db.Booking.findOne({
                         where: {
                             date: data.date,
@@ -668,7 +675,8 @@ let vetyfyBookingService = async (data) => {
             where: {
                 token: data.token,
                 garaId: data.garaId,
-                status: 'S1'
+                status: 'S1',
+                isDelete: 0
             },
 
 
@@ -711,7 +719,8 @@ let readAllCommentService = async (garaId) => {
 
         let comment = await db.Comment.findAll({
             where: {
-                garaId: garaId, isDelete: {
+                garaId: garaId,
+                isDelete: {
                     [Op.ne]: 1
                 },
             },
@@ -748,15 +757,16 @@ let getAllGaraService = async () => {
 
     try {
 
-        let comment = await db.Gara.findAll({
+        let gara = await db.Gara.findAll({
             where: { status: 'S2' },
+            isDelete: 0,
             include: [{ model: db.Provind, as: 'provindGaraData' }]
         })
-        if (comment) {
+        if (gara) {
             return {
                 EM: 'get data successs',
                 EC: 0,
-                DT: comment
+                DT: gara
             }
         }
         else {
@@ -781,9 +791,9 @@ let getAllGaraService = async () => {
 }
 let getAllCarByGaraService = async (garaId) => {
     try {
-        console.log(garaId)
+
         let gara = await db.Gara.findAll({
-            where: { id: garaId },
+            where: { id: garaId, isDelete: 0 },
             attributes: ["id", "nameGara", "address", "phone", "description", "contenHTML", "userId"],
             include: {
                 model: db.Car,
@@ -819,7 +829,10 @@ let getGaraWithId = async (id) => {
     try {
 
         let user = await db.Gara.findOne({
-            where: { id: id },
+            where: {
+                id: id,
+                isDelete: 0
+            },
             attributes: ["id", "nameGara", "address", "avata", "phone", "description", "contenHTML", "userId", 'rateId', 'contenHTML', 'contenMarkdown'],
             include: [{ model: db.Provind, attributes: ["id", "name"], as: 'provindGaraData' },
             ],
@@ -827,7 +840,7 @@ let getGaraWithId = async (id) => {
             raw: false,
             nest: true,
         });
-        console.log('aaaaaaaaaaaa', user)
+
         if (user) {
 
             return {
@@ -838,7 +851,7 @@ let getGaraWithId = async (id) => {
         }
         else {
             return {
-                EM: 'GET DATA SUCCESS',
+                EM: 'data emty',
                 EC: 1,
                 DT: ''
             }
@@ -855,7 +868,7 @@ let getGaraWithId = async (id) => {
 let readProvindservice = async () => {
     try {
 
-        let data = await db.Provind.findAll({ attributes: ["id", "name"], })
+        let data = await db.Provind.findAll({ attributes: ["id", "name"], isDelete: 0 })
         return {
             EM: `get provind success`,
             EC: 0,
@@ -875,7 +888,7 @@ let readProvindservice = async () => {
 let getCarWithCarId = async (carId) => {
     try {
         let data = await db.Car.findOne({
-            where: { id: carId },
+            where: { id: carId, isDelete: 0 },
             attributes: ["id", "nameCar", "avata", "descriptions"],
             include: [{
                 model: db.CarCompany, attributes: ["id", "name"], as: 'carCompanyData',
@@ -905,7 +918,7 @@ let getCarWithCarId = async (carId) => {
 let getCarWithCarCompany = async (carCompany) => {
     try {
         let data = await db.Car.findAll({
-            where: { carCompanyId: carCompany },
+            where: { carCompanyId: carCompany, isDelete: 0 },
             attributes: ["id", "nameCar"],
             include: [{
                 model: db.CarCompany, attributes: ["id", "name"], as: 'carCompanyData',
@@ -934,7 +947,7 @@ let getCarWithCarCompany = async (carCompany) => {
 let getAllCar = async () => {
     try {
         let data = await db.Car.findAll({
-
+            where: { isDelete: 0 },
             attributes: ["id", "nameCar"],
 
         })
@@ -961,7 +974,7 @@ let readCarCompany = async () => {
     try {
 
         let user = await db.CarCompany.findAll({
-
+            where: { isDelete: 0 },
             attributes: ["id", "name"],
 
 
@@ -995,6 +1008,7 @@ let getCarWithPage = async (page, limit) => {
     try {
         let offset = (page - 1) * limit
         let { count, rows } = await db.Car.findAndCountAll({
+            where: { isDelete: 0 },
             attributes: ["id", "nameCar", "carCompanyId", "avata", "descriptions"],
             include: { model: db.CarCompany, attributes: ["id", "name", "description", "avata"], as: 'carCompanyData' },
             order: [['id', 'DESC']],
@@ -1226,7 +1240,8 @@ let getTopHandBookService = async (limitInput) => {
 
         let user = await db.HandBook.findAll({
             where: {
-                status: 'S2'
+                status: 'S2',
+                isDelete: 0
             },
             include: [{
                 model: db.User, as: 'StaffHandbookData', attributes: {
@@ -1311,6 +1326,7 @@ let searchHandBookService = async (text) => {
 
         let ata = await db.HandBook.findAll({
             where: {
+                isDelete: 0,
                 name: sequelize.where(
                     sequelize.fn("LOWER", sequelize.col("title")),
                     "LIKE",

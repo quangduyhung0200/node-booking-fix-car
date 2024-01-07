@@ -12,7 +12,7 @@ let buidUrlEmail = (garaId, token) => {
     return resf
 }
 const checkemailIsExit = async (email) => {
-    let data = await db.User.findOne({ where: { email: email } })
+    let data = await db.User.findOne({ where: { email: email, isDelete: 0 } })
 
     if (data) {
         return false
@@ -32,11 +32,11 @@ const checkPassword = (password, hashPassword) => {
 }
 
 let LoginUser = async (rawData) => {
-    console.log(rawData)
+
     try {
         let checkMail = await checkemailIsExit(rawData.email)
         if (checkMail === false) {
-            let datamail = await db.User.findOne({ where: { email: rawData.email } })
+            let datamail = await db.User.findOne({ where: { email: rawData.email, isDelete: 0 } })
             if (datamail.groupId === 5) {
                 return {
                     EM: 'khach da dat lich nhung chua co tai khoan',
@@ -52,11 +52,11 @@ let LoginUser = async (rawData) => {
                     let payload = {
                         email: datamail.email,
                         userName: datamail.userName,
-                        role,
+                        role: role,
                         id: datamail.id
 
                     }
-                    let token = createJWT(payload)
+                    let token = await createJWT(payload)
 
                     return {
                         EM: 'login success',
@@ -166,7 +166,7 @@ let getAllOrderService = async (userId) => {
 
     try {
         let booking = await db.Booking.findAll({
-            where: { userId: userId },
+            where: { userId: userId, isDelete: 0 },
             attributes: ["id", "userId", "garaid", "carId", "timeType", "serviceId", "date", "status"],
             include: [
                 {

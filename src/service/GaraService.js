@@ -14,7 +14,7 @@ let readInfoGaraService = async (id) => {
     try {
         console.log(id)
         let user = await db.Gara.findOne({
-            where: { userId: id },
+            where: { userId: id, isDelete: 0 },
             attributes: ["id", "nameGara", "address", "phone", "description", "contenHTML", "avata", "userId", "rateId", "status"],
             include: [{ model: db.Provind, as: 'provindGaraData' }]
 
@@ -59,6 +59,7 @@ let registerCartoGaraService = async (rawdata) => {
         where: {
             garaId: rawdata.garaId,
             carId: rawdata.carId,
+            isDelete: 0
         }
     })
     try {
@@ -66,11 +67,13 @@ let registerCartoGaraService = async (rawdata) => {
             await db.Gara_Car.create({
                 garaId: rawdata.garaId,
                 carId: rawdata.carId,
+                isDelete: 0
             }).then(async function (data) {
                 let user = await db.Gara_Car.findOne({
                     where: {
                         garaId: rawdata.garaId,
-                        carId: rawdata.carId
+                        carId: rawdata.carId,
+                        isDelete: 0
                     },
                     attributes: ['id'],
                     raw: true
@@ -80,6 +83,7 @@ let registerCartoGaraService = async (rawdata) => {
                         where: {
                             serviceId: rawdata.serviceId,
                             garaCarId: data.id,
+                            isDelete: 0
                         }
                     })
                     if (dataaa) {
@@ -93,6 +97,7 @@ let registerCartoGaraService = async (rawdata) => {
                             garaCarId: data.id,
                             priceId: rawdata.priceId,
                             paymentId: rawdata.paymentId,
+                            isDelete: 0
                         })
                     }
                 }
@@ -166,7 +171,7 @@ let registerCartoGaraService = async (rawdata) => {
 let readAllTimeService = async () => {
     try {
         let data = await db.Time.findAll({
-
+            where: { isDelete: 0 },
             attributes: ["id", "timValue"],
             raw: true
 
@@ -201,7 +206,8 @@ let createBulkScheduleService = async (data) => {
 
         let exiting = await db.Schedule.findAll({
             where: {
-                garaId: data.garaId, date: data.fomatDate
+                garaId: data.garaId, date: data.fomatDate,
+                isDelete: 0
             }, attributes: ['date', 'timeType', 'garaId'], raw: true
         })
 
@@ -223,13 +229,17 @@ let createBulkScheduleService = async (data) => {
         if (results && results.length > 0) {
             for (let i = 0; i < results.length; i++) {
 
-                await db.Schedule.destroy({
+                let res = await db.Schedule.findOne({
                     where: {
                         date: results[i].date,
                         timeType: results[i].timeType,
                         garaId: results[i].garaId
                     },
                 });
+                if (res) {
+                    res.isDelete = 1
+                    await res.save()
+                }
 
             }
         }
@@ -256,7 +266,7 @@ let deletePickCarService = async (data) => {
     try {
 
         let gara = await db.Gara_Car.findOne({
-            where: { garaId: data.garaId, carId: data.carId },
+            where: { garaId: data.garaId, carId: data.carId, isDelete: 0 },
             attributes: ['id']
 
         }).then(async function (data1) {
@@ -271,21 +281,24 @@ let deletePickCarService = async (data) => {
 
             })
             if (user) {
-                user.destroy()
+                user.isDelete = 1
+                await user.save()
 
 
 
                 let user2 = await db.Service_Gara_Car.findOne({
                     where: {
                         garaCarId: data1.dataValues.id,
+                        isDelete: 0
 
                     }
                 })
                 if (user2 === null) {
                     let gara = await db.Gara_Car.findOne({
-                        where: { garaId: data.garaId, carId: data.carId },
+                        where: { garaId: data.garaId, carId: data.carId, isDelete: 0 },
                     })
-                    gara.destroy()
+                    gara.isDelete = 1
+                    await gara.save()
                 }
             }
 
@@ -325,7 +338,7 @@ let getListBookingService = async (garaId, date) => {
         if (date === 'ALL') {
 
             let booking = await db.Booking.findAll({
-                where: { garaId: garaId, status: 'S2' },
+                where: { garaId: garaId, status: 'S2', isDelete: 0 },
                 attributes: ["id", "userId", "garaid", "carId", "timeType", "serviceId", "date", "status", "reson"],
                 include: [
                     {
@@ -476,7 +489,7 @@ let getListBookingService = async (garaId, date) => {
 let comfimeBookingService = async (data) => {
     try {
         let schedule = await db.Schedule.findOne({
-            where: { garaId: data.garaId, date: data.date, timeType: data.timeType }
+            where: { garaId: data.garaId, date: data.date, timeType: data.timeType, isDelete: 0 }
 
         })
 
@@ -487,7 +500,7 @@ let comfimeBookingService = async (data) => {
             if (+schedule.currenOrder - 1 === +schedule.maxOrder) {
 
                 schedule.currenOrder = +schedule.currenOrder - 1
-                schedule.save()
+                await schedule.save()
                 return {
                     EM: 'max limit car per time',
                     EC: 2,
@@ -497,13 +510,13 @@ let comfimeBookingService = async (data) => {
 
             else {
                 let booking = await db.Booking.findOne({
-                    where: { garaId: data.garaId, date: data.date, status: 'S2', userId: data.userId, carId: data.carId, timeType: data.timeType, serviceId: data.serviceId },
+                    where: { garaId: data.garaId, date: data.date, status: 'S2', userId: data.userId, carId: data.carId, timeType: data.timeType, serviceId: data.serviceId, isDelete: 0 },
                     include: [{ model: db.Gara, as: 'bookingDataGara', attributes: ['nameGara', 'address', 'phone'] }]
                 })
 
                 if (booking) {
                     booking.status = 'S3'
-                    booking.save()
+                    await booking.save()
                     await EmailService.sendcomfemEmail({
                         reciverEmail: data.email,
                         time: data.time,
@@ -544,10 +557,10 @@ let comfimeBookingService = async (data) => {
 }
 let getListOrderService = async (garaId, date) => {
     try {
-        console.log('asfasfasfasfasfas', garaId)
+
         if (date === 'ALL') {
             let booking = await db.Booking.findAll({
-                where: { garaId: garaId },
+                where: { garaId: garaId, isDelete: 0 },
                 attributes: ["id", "userId", "garaid", "carId", "timeType", "serviceId", "date", "status"],
                 include: [
                     {
@@ -584,7 +597,7 @@ let getListOrderService = async (garaId, date) => {
         }
         else {
             let booking = await db.Booking.findAll({
-                where: { garaId: garaId, date: date },
+                where: { garaId: garaId, date: date, isDelete: 0 },
                 attributes: ["id", "userId", "garaid", "carId", "timeType", "serviceId", "date", "status"],
                 include: [
                     {
@@ -642,13 +655,13 @@ let finishOrderService = async (data) => {
 
 
         let booking = await db.Booking.findOne({
-            where: { garaId: data.garaId, date: data.date, status: 'S3', userId: data.userId, carId: data.carId, timeType: data.timeType, serviceId: data.serviceId },
+            where: { garaId: data.garaId, date: data.date, status: 'S3', userId: data.userId, carId: data.carId, timeType: data.timeType, serviceId: data.serviceId, isDelete: 0 },
             include: [{ model: db.Gara, as: 'bookingDataGara', attributes: ['nameGara', 'address', 'phone'] }]
         })
 
         if (booking) {
             booking.status = 'S4'
-            booking.save()
+            await booking.save()
             await EmailService.senddfinishBooking({
                 reciverEmail: data.email,
                 time: data.time,
@@ -689,13 +702,13 @@ let canserOrderService = async (data) => {
 
 
         let booking = await db.Booking.findOne({
-            where: { garaId: data.garaId, date: data.date, status: 'S3', userId: data.userId, carId: data.carId, timeType: data.timeType, serviceId: data.serviceId },
+            where: { garaId: data.garaId, date: data.date, status: 'S3', userId: data.userId, carId: data.carId, timeType: data.timeType, serviceId: data.serviceId, isDelete: 0 },
             include: [{ model: db.Gara, as: 'bookingDataGara', attributes: ['nameGara', 'address', 'phone'] }]
         })
 
         if (booking) {
             booking.status = 'S4'
-            booking.save()
+            await booking.save()
             await EmailService.senddcenserbooking({
                 reciverEmail: data.email,
                 time: data.time,
@@ -734,13 +747,15 @@ let updateGaraService = async (data) => {
     try {
         let isStaff = await db.User.findOne({
             where: {
-                id: data.id
+                id: data.id,
+                isDelete: 0
             }
         })
         if (isStaff.groupId === 3 || isStaff.groupId === 4) {
             let gara = await db.Gara.findOne({
                 where: {
-                    id: data.garaId
+                    id: data.garaId,
+                    isDelete: 0
                 }
             })
             if (gara) {
@@ -756,7 +771,7 @@ let updateGaraService = async (data) => {
                 gara.status = 'S2'
                 gara.description = data.descpistion
 
-                gara.save()
+                await gara.save()
                 return {
                     EM: 'update by staff or admin success',
                     EC: 0,
@@ -773,7 +788,8 @@ let updateGaraService = async (data) => {
         } else {
             let gara = await db.Gara.findOne({
                 where: {
-                    id: data.garaId
+                    id: data.garaId,
+                    isDelete: 0
                 }
             })
             if (gara) {
@@ -821,13 +837,13 @@ let canserBookingService = async (data) => {
 
 
         let booking = await db.Booking.findOne({
-            where: { garaId: data.garaId, date: data.date, status: 'S2', userId: data.userId, carId: data.carId, timeType: data.timeType, serviceId: data.serviceId },
+            where: { garaId: data.garaId, date: data.date, status: 'S2', userId: data.userId, carId: data.carId, timeType: data.timeType, serviceId: data.serviceId, isDelete: 0 },
             include: [{ model: db.Gara, as: 'bookingDataGara', attributes: ['nameGara', 'address', 'phone'] }]
         })
 
         if (booking) {
             booking.status = 'S0'
-            booking.save()
+            await booking.save()
             await EmailService.senddeniceBooking({
                 reciverEmail: data.email,
                 time: data.time,
