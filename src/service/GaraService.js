@@ -879,8 +879,113 @@ let canserBookingService = async (data) => {
         }
     }
 }
+let getprofitService = async (garaId, date) => {
+    try {
+
+        if (date === 'ALL') {
+
+            let booking = await db.Booking.findAll({
+                where: { garaId: garaId, isDelete: 0 },
+                attributes: ["id", "userId", "garaid", "carId", "timeType", "serviceId", "date", "status"],
+                include: [
+                    {
+                        model: db.User, as: 'bookingData', attributes: ["id", "userName", "email", "address"]
+                    },
+                    {
+                        model: db.Gara, as: 'bookingDataGara', attributes: ["id", "nameGara", "address", "provindId", "phone"]
+                    },
+                    {
+                        model: db.Time, as: 'timeDataBooking', attributes: ["id", "timValue"]
+                    },
+                    {
+                        model: db.Car, as: 'carBookingData', attributes: ["id", "nameCar", "carCompanyId", "descriptions",],
+                        include: { model: db.CarCompany, as: "carCompanyData" }
+                    },
+                    {
+                        model: db.Service, as: 'serviceBookingData', attributes: ["id", "name", "description"]
+                    },
+
+                    {
+                        model: db.StatusBooking, as: 'statusBooking'
+                    },
+                    {
+                        model: db.Price, as: 'PriceBookingData'
+                    },
+                ], raw: true,
+                nest: true
+
+
+            })
+
+
+            return {
+                EM: 'GET DATA SUCCESS',
+                EC: 0,
+                DT: booking
+            }
+
+        }
+        else {
+
+            let booking = await db.Booking.findAll({
+                where: { garaId: garaId, isDelete: 0, date: date },
+                attributes: ["id", "userId", "garaid", "carId", "timeType", "serviceId", "date", "status"],
+                include: [
+                    {
+                        model: db.User, as: 'bookingData', attributes: ["id", "userName", "email", "address"]
+                    },
+                    {
+                        model: db.Gara, as: 'bookingDataGara', attributes: ["id", "nameGara", "address", "provindId", "phone"]
+                    },
+                    {
+                        model: db.Time, as: 'timeDataBooking', attributes: ["id", "timValue"]
+                    },
+                    {
+                        model: db.Car, as: 'carBookingData', attributes: ["id", "nameCar", "carCompanyId", "descriptions",],
+                        include: { model: db.CarCompany, as: "carCompanyData" }
+                    },
+                    {
+                        model: db.Service, as: 'serviceBookingData', attributes: ["id", "name", "description"]
+                    },
+                    {
+                        model: db.StatusBooking, as: 'statusBooking'
+                    },
+                    {
+                        model: db.Price, as: 'PriceBookingData'
+                    },
+                ], raw: true,
+                nest: true
+
+
+            })
+
+
+            return {
+                EM: 'GET DATA SUCCESS',
+                EC: 0,
+                DT: booking
+            }
+
+        }
+
+
+
+
+
+
+
+
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'SOMTHING WRONG',
+            EC: -1,
+            DT: []
+        }
+    }
+}
 module.exports = {
     readInfoGaraService, registerCartoGaraService, readAllTimeService, createBulkScheduleService
     , deletePickCarService, getListBookingService, comfimeBookingService, getListOrderService, finishOrderService, canserOrderService,
-    updateGaraService, canserBookingService
+    updateGaraService, canserBookingService, getprofitService
 }

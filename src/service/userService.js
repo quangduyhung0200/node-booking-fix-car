@@ -189,7 +189,11 @@ let getAllOrderService = async (userId) => {
                 {
                     model: db.StatusBooking, as: 'statusBooking'
                 },
-            ], raw: true,
+            ],
+            order: [
+                ['id', 'DESC'],
+            ],
+            raw: true,
             nest: true
 
 

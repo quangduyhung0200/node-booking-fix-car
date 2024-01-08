@@ -1327,6 +1327,7 @@ let searchHandBookService = async (text) => {
         let ata = await db.HandBook.findAll({
             where: {
                 isDelete: 0,
+                status: 'S2',
                 name: sequelize.where(
                     sequelize.fn("LOWER", sequelize.col("title")),
                     "LIKE",
