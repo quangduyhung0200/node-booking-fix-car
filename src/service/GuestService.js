@@ -180,6 +180,7 @@ let readTopGaraService = async (limitInput) => {
 
         }
 
+
         let data2 = []
         for (let i = 0; i < data1.length; i++) {
             if (data1[i] !== 0) {
@@ -196,7 +197,7 @@ let readTopGaraService = async (limitInput) => {
             }
 
         }
-        console.log('tat ca gara', data2)
+
         let data = {
             count: count,
             acount: finaldata
@@ -799,7 +800,7 @@ let getAllCarByGaraService = async (garaId) => {
                 model: db.Car,
                 attributes: ["id", "nameCar", "descriptions", "avata"],
                 include: [{ model: db.CarCompany, as: 'carCompanyData' }],
-                through: { attributes: [] }
+                through: { attributes: [], where: { isDelete: 0 } }
             }, raw: true,
             nest: true
 
@@ -1065,7 +1066,7 @@ let readGarabyProvind = async (provindId) => {
                     model: db.Car,
                     attributes: ["id", "nameCar", "carCompanyId", 'descriptions'],
                     include: [{ model: db.CarCompany, as: 'carCompanyData' }],
-                    through: { attributes: [] }
+                    through: { attributes: [], where: { isDelete: 0 } }
                 },
                 raw: true,
                 nest: true
@@ -1088,7 +1089,7 @@ let readGarabyProvind = async (provindId) => {
                     model: db.Car,
                     attributes: ["id", "nameCar", "carCompanyId", 'descriptions'],
                     include: [{ model: db.CarCompany, as: 'carCompanyData' }],
-                    through: { attributes: [] }
+                    through: { attributes: [], where: { isDelete: 0 } }
                 },
                 raw: true,
                 nest: true
@@ -1125,7 +1126,7 @@ let readGarabyProvindCarCompanyCar = async (provindId, carCompanyId, carId) => {
                     model: db.Car,
                     attributes: ["id", "nameCar", "carCompanyId", 'descriptions'],
                     include: [{ model: db.CarCompany, as: 'carCompanyData' }],
-                    through: { attributes: [] }
+                    through: { attributes: [], where: { isDelete: 0 } }
                 },
                 raw: true,
                 nest: true
@@ -1162,7 +1163,7 @@ let readGarabyProvindCarCompanyCar = async (provindId, carCompanyId, carId) => {
                     model: db.Car,
                     attributes: ["id", "nameCar", "carCompanyId", 'descriptions'],
                     include: [{ model: db.CarCompany, as: 'carCompanyData' }],
-                    through: { attributes: [] }
+                    through: { attributes: [], where: { isDelete: 0 } }
                 },
                 raw: true,
                 nest: true

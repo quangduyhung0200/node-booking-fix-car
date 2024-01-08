@@ -101,7 +101,7 @@ let getGaraWithPage = async (page, limit) => {
             },
             attributes: ["id", "nameGara", "address", "phone", "description", "contenHTML"],
             include: [{ model: db.Provind, attributes: ['id', "name"], as: 'provindGaraData' },
-            { model: db.User, attributes: ['id'], as: 'userGara' }],
+            { model: db.User, attributes: ['id', 'userName'], as: 'userGara' }],
 
             order: [['id', 'DESC']],
             raw: true,
@@ -357,7 +357,7 @@ let deletecarService = async (inputId) => {
         })
 
         if (user) {
-            user.isDelet = 1
+            user.isDelete = 1
             await user.save()
             return {
                 EM: 'delete success',
@@ -1315,7 +1315,7 @@ let searchUserService = async (user, group) => {
                 )
 
             },
-            attributes: ["id", "userName", "email", "phone", "gender", "groupId"],
+            attributes: ["id", "userName", "email", "phone", "gender", "groupId", "avata", "address"],
             include: { model: db.Group, as: 'groupData', attributes: ['id', "name", "description"] },
 
             raw: true,
