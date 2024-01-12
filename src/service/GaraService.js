@@ -129,6 +129,7 @@ let registerCartoGaraService = async (rawdata) => {
                     where: {
                         serviceId: rawdata.serviceId,
                         garaCarId: data.id,
+                        isDelete: 0
                     }
                 })
                 if (dataaa) {
@@ -561,10 +562,10 @@ let getListOrderService = async (garaId, date) => {
         if (date === 'ALL') {
             let booking = await db.Booking.findAll({
                 where: { garaId: garaId, isDelete: 0 },
-                attributes: ["id", "userId", "garaid", "carId", "timeType", "serviceId", "date", "status"],
+                attributes: ["id", "userId", "garaid", "carId", "timeType", "serviceId", "date", "status", 'priceId'],
                 include: [
                     {
-                        model: db.User, as: 'bookingData', attributes: ["id", "userName", "email", "address"]
+                        model: db.User, as: 'bookingData', attributes: ["id", "userName", "email", "address", "phone"]
                     },
                     {
                         model: db.Gara, as: 'bookingDataGara', attributes: ["id", "nameGara", "address", "provindId", "phone"]
@@ -582,6 +583,7 @@ let getListOrderService = async (garaId, date) => {
                     {
                         model: db.StatusBooking, as: 'statusBooking'
                     },
+                    { model: db.Price, as: 'PriceBookingData' }
                 ], raw: true,
                 nest: true
 
@@ -797,7 +799,7 @@ let updateGaraService = async (data) => {
                 gara.contenHTML = data.contenHTML
 
                 gara.contenMarkdown = data.contenMarkdown
-                gara.address = data.address
+                gara.address = data.addressGara
 
                 gara.provindId = data.provindId
                 gara.avata = data.avata
@@ -889,7 +891,7 @@ let getprofitService = async (garaId, date) => {
                 attributes: ["id", "userId", "garaid", "carId", "timeType", "serviceId", "date", "status"],
                 include: [
                     {
-                        model: db.User, as: 'bookingData', attributes: ["id", "userName", "email", "address"]
+                        model: db.User, as: 'bookingData', attributes: ["id", "userName", "email", "address", "phone"]
                     },
                     {
                         model: db.Gara, as: 'bookingDataGara', attributes: ["id", "nameGara", "address", "provindId", "phone"]

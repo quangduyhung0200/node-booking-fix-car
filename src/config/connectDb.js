@@ -1,7 +1,8 @@
 const { Sequelize } = require('sequelize');
 const sequelize = new Sequelize('booking-fix-car', 'root', null, {
-    host: 'localhost',
-    dialect: 'mysql'
+    host: '127.0.0.1',
+    dialect: 'mysql',
+    port: "3307",
 });
 
 

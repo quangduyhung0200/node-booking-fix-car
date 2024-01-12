@@ -172,8 +172,25 @@ let getUserbyId = async (req, res) => {
     }
 
 }
+let chanepass = async (req, res) => {
+
+
+
+
+    try {
+
+        let response = await userService.chanepassService(req.body);
+        return res.status(200).json(response)
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            errCode: -1,
+            massge: 'erro from server...'
+        })
+    }
+}
 module.exports = {
     handldLogin, handlLogout, postRegisterGara,
 
-    getAllOrder, createComment, searchOrder, getUserbyId
+    getAllOrder, createComment, searchOrder, getUserbyId, chanepass
 }

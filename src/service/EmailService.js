@@ -171,9 +171,42 @@ let senddcenserbooking = async (dataSend) => {
 
 }
 
+let senddnewpassword = async (dataSend) => {
+
+    const transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 465,
+        secure: true,
+        auth: {
+            // TODO: replace `user` and `pass` values from <https://forwardemail.net>
+            user: process.env.MAIL,
+            pass: process.env.MAIL_PASS,
+        },
+    });
+
+    const info = await transporter.sendMail({
+        from: '"duy hung 👻" <hung321chiengden@gmail.com>', // sender address
+        to: dataSend.reciverEmail, // list of receivers
+        subject: "Đây là mật khẩu mới cảu bạn, vui lòn không chia sẻ cho bất cứ ai về email này✔", // Subject line
+        text: "", // plain text body
+        html: `
+        
+            <div><b>Mật khẩu mới: ${dataSend.pass}</b></div>
+         
+      
+       
+       
+            <div>Xin chân thành cảm ơn</div>`, // html body
+    });
+
+
+
+}
+
+
 
 
 
 module.exports = {
-    sendSimpleEmail, sendcomfemEmail, senddeniceBooking, senddeniceBooking, senddfinishBooking, senddcenserbooking
+    sendSimpleEmail, sendcomfemEmail, senddeniceBooking, senddeniceBooking, senddfinishBooking, senddcenserbooking, senddnewpassword
 }

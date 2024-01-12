@@ -834,7 +834,7 @@ let getGaraWithId = async (id) => {
                 id: id,
                 isDelete: 0
             },
-            attributes: ["id", "nameGara", "address", "avata", "phone", "description", "contenHTML", "userId", 'rateId', 'contenHTML', 'contenMarkdown'],
+            attributes: ["id", "nameGara", "address", "avata", "phone", "description", "contenHTML", "userId", 'rateId', 'contenHTML', 'contenMarkdown', 'status'],
             include: [{ model: db.Provind, attributes: ["id", "name"], as: 'provindGaraData' },
             ],
 
@@ -1357,10 +1357,62 @@ let searchHandBookService = async (text) => {
     }
 
 }
+let forgetpasswordService = async (datainput) => {
+
+    try {
+
+
+        let data = await db.User.findOne({
+            where: {
+                isDelete: 0,
+                email: datainput.data,
+
+            },
+
+
+        })
+        let newPass = Math.floor(Math.random() * 1000000) + 1;
+        console.log('pass: ', newPass)
+        let text = newPass.toString();
+        if (data) {
+            let hashPassword = hashUserPassword(text)
+            data.password = hashPassword
+            await data.save()
+            await EmailService.senddnewpassword({
+                reciverEmail: datainput.data,
+                pass: newPass,
+
+            })
+            return {
+                EM: 'succse',
+                EC: 0,
+                DT: ''
+            }
+
+
+        }
+        else {
+            return {
+                EM: 'khong co email trong he thong',
+                EC: 1,
+                DT: ''
+            }
+        }
+
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'song thing wrong',
+            EC: -1,
+            DT: ''
+        }
+    }
+
+}
 module.exports = {
     createRegisterUser, getGender, readTopGaraService, readAllPayment, readAllPrice, readAllService, readScheduleByDay, readPricePaymentService,
     readServiceCarService, createBookingService, vetyfyBookingService, getAllGaraService, getAllCarByGaraService, getGaraWithId, readProvindservice,
     getCarWithCarId, getCarWithCarCompany, getAllCar, readCarCompany, getCarWithPage, readAllCommentService, readGarabyProvind, readGarabyProvindCarCompanyCar,
-    getAllDayService, getTopHandBookService, getHandBookRelatetoService, searchHandBookService
+    getAllDayService, getTopHandBookService, getHandBookRelatetoService, searchHandBookService, forgetpasswordService
 
 }

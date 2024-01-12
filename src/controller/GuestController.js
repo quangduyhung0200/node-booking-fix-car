@@ -560,8 +560,25 @@ let searchHandBook = async (req, res) => {
         })
     }
 }
+let forgetpassword = async (req, res) => {
+
+
+
+
+    try {
+
+        let response = await guestService.forgetpasswordService(req.body);
+        return res.status(200).json(response)
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            errCode: -1,
+            massge: 'erro from server...'
+        })
+    }
+}
 module.exports = {
     postRegister, getGender, getUserAccount, readTopGara, readPayment, readPrice, readService, readSchedule, readPricePayment, readServiceCar,
     createBooking, vetyfyBooking, readAllComment, getAllGara, getAllCarByGara, readDeatailGara, readProvind, readInfoCarById, readInfoCar,
-    readCarCompany, readCar, readGarabyProvind, readGarabyProvindCarCompanyCar, getAllDay, getTopHandBook, getHandBookRelateto, searchHandBook
+    readCarCompany, readCar, readGarabyProvind, readGarabyProvindCarCompanyCar, getAllDay, getTopHandBook, getHandBookRelateto, searchHandBook, forgetpassword
 }

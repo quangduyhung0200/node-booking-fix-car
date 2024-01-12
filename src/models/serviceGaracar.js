@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
             Service_Gara_Car.belongsTo(models.Price, { foreignKey: 'priceId', targetKey: 'id', as: 'priceData' });
             Service_Gara_Car.belongsTo(models.Payment, { foreignKey: 'paymentId', targetKey: 'id', as: 'paymentData' });
 
+
         }
     };
     Service_Gara_Car.init({

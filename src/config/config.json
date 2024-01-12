@@ -5,6 +5,7 @@
     "database": "booking-fix-car",
     "host": "127.0.0.1",
     "dialect": "mysql",
+    "port": "3307",
     "define": {
       "freezeTableName": true
     },
@@ -16,11 +17,13 @@
     "password": null,
     "database": "database_test",
     "host": "127.0.0.1",
+    "port": "3307",
     "dialect": "mysql"
   },
   "production": {
     "username": "root",
     "password": null,
+    "port": "3307",
     "database": "database_production",
     "host": "127.0.0.1",
     "dialect": "mysql"

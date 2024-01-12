@@ -45,6 +45,7 @@ let LoginUser = async (rawData) => {
                 }
             }
             else {
+
                 let checkpass = checkPassword(rawData.password, datamail.password)
                 if (checkpass) {
                     let role = await getGroupWithRole(datamail)
@@ -189,6 +190,7 @@ let getAllOrderService = async (userId) => {
                 {
                     model: db.StatusBooking, as: 'statusBooking'
                 },
+                { model: db.Price, as: 'PriceBookingData' }
             ],
             order: [
                 ['id', 'DESC'],
@@ -433,7 +435,58 @@ let getUserbyIdService = async (userIdInput) => {
     }
 
 }
+let chanepassService = async (datainput) => {
+
+    try {
+
+
+        let data = await db.User.findOne({
+            where: {
+                isDelete: 0,
+                email: datainput.email,
+
+            },
+
+
+        })
+        console.log('email: ', datainput)
+        let checkpass = checkPassword(datainput.oldpassword, data.password)
+
+        if (checkpass) {
+            let hashPassword = hashUserPassword(datainput.newPassword)
+            data.password = hashPassword
+            await data.save()
+
+
+
+            return {
+                EM: 'chane successs',
+                EC: 0,
+                DT: ''
+            }
+
+        }
+        else {
+            return {
+                EM: 'wrong passworld',
+                EC: 1,
+                DT: ''
+            }
+        }
+
+
+
+    } catch (e) {
+        console.log(e)
+        return {
+            EM: 'song thing wrong',
+            EC: -1,
+            DT: ''
+        }
+    }
+
+}
 module.exports = {
     LoginUser, createRegisterGara,
-    getAllOrderService, createCommentService, searchOrderService, getUserbyIdService
+    getAllOrderService, createCommentService, searchOrderService, getUserbyIdService, chanepassService
 }

@@ -43,6 +43,7 @@ const initAPIRouters = (app) => {
     router.get('/gara/searchHandBook', GuestController.searchHandBook)
     router.get('/handbook/searchHandbook', AdminController.searchHandbook)
     router.get('/handBook/readById', AdminController.readHandBookById)
+    router.put('/user/forgetpassword', GuestController.forgetpassword)//done
     //nguoi dung da dangky
 
     router.get('/status/getAllStatus', checkUserJWT, checkUserPermisstion, AdminController.getAllStatus)//done
@@ -52,6 +53,7 @@ const initAPIRouters = (app) => {
     router.get('/getAllOrder', checkUserJWT, checkUserPermisstion, UserController.getAllOrder)
     router.get('/order/searchOrder', checkUserJWT, checkUserPermisstion, UserController.searchOrder)
     router.post('/comment/create', checkUserJWT, checkUserPermisstion, UserController.createComment)
+    router.put('/user/chanepass', UserController.chanepass)//done
     //nguoi dung dag ky gara
     router.get('/carCompany/searchCarcompany', checkUserJWT, checkUserPermisstion, AdminController.searchCarcompany)
     router.get('/gara/readTime', checkUserJWT, checkUserPermisstion, GaraController.readAllTime)

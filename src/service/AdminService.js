@@ -867,7 +867,7 @@ let updateHandbookService = async (data) => {
         if (user.groupId === 4) {
             let handBook = await db.HandBook.findOne({ where: { id: data.id, isDelete: 0 } })
             if (handBook) {
-                handBook.staffId = data.staffId;
+
                 handBook.contentHTML = data.contentHTML;
                 handBook.contentMarkdown = data.contentMarkdown;
 
@@ -909,13 +909,13 @@ let updateHandbookService = async (data) => {
                 await handBook.save()
                 return {
                     EM: 'UPDATE user seccess BY staff',
-                    EC: 0,
+                    EC: 1,
                     DT: ''
                 }
             } else {
                 return {
                     EM: 'UPDATE user fail BY staff',
-                    EC: 1,
+                    EC: 2,
                     DT: ''
                 }
             }
