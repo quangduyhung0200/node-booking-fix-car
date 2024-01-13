@@ -340,7 +340,7 @@ let getListBookingService = async (garaId, date) => {
 
             let booking = await db.Booking.findAll({
                 where: { garaId: garaId, status: 'S2', isDelete: 0 },
-                attributes: ["id", "userId", "garaid", "carId", "timeType", "serviceId", "date", "status", "reson"],
+                attributes: ["id", "userId", "garaid", "carId", "timeType", "serviceId", "date", "status", "reson", "priceId"],
                 include: [
                     {
                         model: db.User, as: 'bookingData', attributes: ["id", "userName", "email", "address", "phone"]
@@ -359,6 +359,11 @@ let getListBookingService = async (garaId, date) => {
                     {
                         model: db.Service, as: 'serviceBookingData', attributes: ["id", "name", "description"]
                     },
+                    { model: db.Price, as: 'PriceBookingData' },
+
+                    {
+                        model: db.StatusBooking, as: 'statusBooking'
+                    }
                 ], raw: true,
                 nest: true
 
@@ -379,7 +384,7 @@ let getListBookingService = async (garaId, date) => {
                         where: { id: item.id },
 
                     })
-                    console.log(booking3.id)
+
                     booking3.status = 'S0'
                     await booking3.save()
                 }
@@ -770,7 +775,7 @@ let updateGaraService = async (data) => {
                 gara.provindId = data.provindId
                 gara.avata = data.avata
                 gara.phone = data.phone
-                gara.status = 'S2'
+                gara.status = 'S1'
                 gara.description = data.descpistion
 
                 await gara.save()
