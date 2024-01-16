@@ -13,7 +13,7 @@ let buidUrlEmail = (garaId, token) => {
     return resf
 }
 const checkemailIsExit = async (email) => {
-    let data = await db.User.findOne({ where: { email: email } })
+    let data = await db.User.findOne({ where: { email: email, isDelete: 0 } })
 
     if (data) {
         return false
@@ -80,7 +80,7 @@ const createRegisterUser = async (rawUserData) => {
 
 
             let user = await db.User.findOne({
-                where: { email: rawUserData.email }
+                where: { email: rawUserData.email, isDelete: 0 }
 
 
 
@@ -378,7 +378,8 @@ let readPricePaymentService = async (garaId, carId, serviceId) => {
             let service = await db.Service_Gara_Car.findOne({
                 where: {
                     garaCarId: data.id,
-                    serviceId: serviceId
+                    serviceId: serviceId,
+                    isDelete: 0
                 },
                 include: [{ model: db.Price, as: 'priceData' },
                 { model: db.Payment, as: 'paymentData' }],
@@ -797,9 +798,9 @@ let getAllCarByGaraService = async (garaId) => {
             where: { id: garaId, isDelete: 0 },
             attributes: ["id", "nameGara", "address", "phone", "description", "contenHTML", "userId"],
             include: {
-                model: db.Car,
+                model: db.Car, where: { isDelete: 0 },
                 attributes: ["id", "nameCar", "descriptions", "avata"],
-                include: [{ model: db.CarCompany, as: 'carCompanyData' }],
+                include: [{ model: db.CarCompany, as: 'carCompanyData', where: { isDelete: 0 } }],
                 through: { attributes: [], where: { isDelete: 0 } }
             }, raw: true,
             nest: true
@@ -922,7 +923,7 @@ let getCarWithCarCompany = async (carCompany) => {
             where: { carCompanyId: carCompany, isDelete: 0 },
             attributes: ["id", "nameCar"],
             include: [{
-                model: db.CarCompany, attributes: ["id", "name"], as: 'carCompanyData',
+                model: db.CarCompany, attributes: ["id", "name"], as: 'carCompanyData', where: { isDelete: 0 }
             }]
 
         })
@@ -950,6 +951,7 @@ let getAllCar = async () => {
         let data = await db.Car.findAll({
             where: { isDelete: 0 },
             attributes: ["id", "nameCar"],
+            include: { model: db.CarCompany, as: 'carCompanyData', where: { isDelete: 0 } }
 
         })
 
@@ -1063,9 +1065,9 @@ let readGarabyProvind = async (provindId) => {
                     },
                 },
                 include: {
-                    model: db.Car,
+                    model: db.Car, where: { isDelete: 0 },
                     attributes: ["id", "nameCar", "carCompanyId", 'descriptions'],
-                    include: [{ model: db.CarCompany, as: 'carCompanyData' }],
+                    include: [{ model: db.CarCompany, as: 'carCompanyData', where: { isDelete: 0 } }],
                     through: { attributes: [], where: { isDelete: 0 } }
                 },
                 raw: true,
@@ -1086,9 +1088,9 @@ let readGarabyProvind = async (provindId) => {
                     },
                 },
                 include: {
-                    model: db.Car,
+                    model: db.Car, where: { isDelete: 0 },
                     attributes: ["id", "nameCar", "carCompanyId", 'descriptions'],
-                    include: [{ model: db.CarCompany, as: 'carCompanyData' }],
+                    include: [{ model: db.CarCompany, as: 'carCompanyData', where: { isDelete: 0 } }],
                     through: { attributes: [], where: { isDelete: 0 } }
                 },
                 raw: true,
@@ -1122,10 +1124,11 @@ let readGarabyProvindCarCompanyCar = async (provindId, carCompanyId, carId) => {
                         [Op.ne]: 1
                     },
                 },
+                attributes: ['id'],
                 include: {
-                    model: db.Car,
+                    model: db.Car, where: { isDelete: 0 },
                     attributes: ["id", "nameCar", "carCompanyId", 'descriptions'],
-                    include: [{ model: db.CarCompany, as: 'carCompanyData' }],
+                    include: [{ model: db.CarCompany, as: 'carCompanyData', where: { isDelete: 0 } }],
                     through: { attributes: [], where: { isDelete: 0 } }
                 },
                 raw: true,
@@ -1144,7 +1147,7 @@ let readGarabyProvindCarCompanyCar = async (provindId, carCompanyId, carId) => {
                     datafinal.push(item)
                 }
             })
-            console.log(datafinal)
+
             return {
                 EM: 'GET DATA SUCCESS',
                 EC: 0,
@@ -1160,15 +1163,15 @@ let readGarabyProvindCarCompanyCar = async (provindId, carCompanyId, carId) => {
                     },
                 },
                 include: {
-                    model: db.Car,
+                    model: db.Car, where: { isDelete: 0 },
                     attributes: ["id", "nameCar", "carCompanyId", 'descriptions'],
-                    include: [{ model: db.CarCompany, as: 'carCompanyData' }],
+                    include: [{ model: db.CarCompany, as: 'carCompanyData', where: { isDelete: 0 } }],
                     through: { attributes: [], where: { isDelete: 0 } }
                 },
                 raw: true,
                 nest: true
             })
-            console.log(+provindId)
+
             let data = []
             gara.map((item, index) => {
 
@@ -1366,6 +1369,7 @@ let forgetpasswordService = async (datainput) => {
             where: {
                 isDelete: 0,
                 email: datainput.data,
+                isDelete: 0
 
             },
 

@@ -448,10 +448,10 @@ let readHandBookService = async (page, limit, staffId) => {
 let createHandBookService = async (data) => {
     try {
         let admin = await db.User.findOne({
-            where: { id: data.staffId }
+            where: { id: data.staffId, isDelete: 0 }
         })
         if (admin.groupId === 4) {
-            let handBook = await db.HandBook.findOne({ where: { title: data.title } })
+            let handBook = await db.HandBook.findOne({ where: { title: data.title, isDelete: 0 } })
             if (handBook === null) {
                 await db.HandBook.create({
                     staffId: data.staffId,
@@ -480,7 +480,7 @@ let createHandBookService = async (data) => {
             }
         }
         else {
-            let handBook = await db.HandBook.findOne({ where: { title: data.title } })
+            let handBook = await db.HandBook.findOne({ where: { title: data.title, isDelete: 0 } })
             if (handBook === null) {
                 await db.HandBook.create({
                     staffId: data.staffId,
@@ -862,9 +862,9 @@ let updateHandbookService = async (data) => {
     try {
 
 
-        let user = await db.User.findOne({ where: { id: data.staffId } }
+        let user = await db.User.findOne({ where: { id: data.staffId, isDelete: 0 } }
         )
-        if (user.groupId === 4) {
+        if (user && user.groupId === 4) {
             let handBook = await db.HandBook.findOne({ where: { id: data.id, isDelete: 0 } })
             if (handBook) {
 
@@ -1276,12 +1276,13 @@ let searchBookingService = async (user, gara, car, service, date, price, status)
 
         })
 
-        let results = data.filter(item => item.userId === +user || +user === 0)
+        let results = data.filter(item => +item.userId === +user || +user === 0)
 
+        console.log(results)
         let results2 = results.filter(item => item.garaid === +gara || +gara === 0)
         let results3 = results2.filter(item => item.carId === +car || +car === 0)
         let results4 = results3.filter(item => item.serviceId === +service || +service === 0)
-        let results5 = results4.filter(item => item.priceId === +price || +price === 0)
+        let results5 = results4.filter(item => +item.priceId === +price || +price === 0)
         let results6 = results5.filter(item => item.status === status || +status === 0)
         let results7 = results6.filter(item => item.date === date || +date === 0)
 
@@ -1933,7 +1934,7 @@ let deleteCommentService = async (datainput) => {
             data.isDelete = 1
 
             await data.save()
-            let gara = await db.Gara.findOne({ where: { id: datainput.garaId } })
+            let gara = await db.Gara.findOne({ where: { id: datainput.garaId, isDelete: 0 } })
             if (gara) {
 
                 gara.rateId = +((gara.rateId * count) - data.rate) / (count - 1)

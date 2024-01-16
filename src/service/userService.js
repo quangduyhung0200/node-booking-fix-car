@@ -109,7 +109,8 @@ let createRegisterGara = async (rawUserData) => {
         let gara = await db.Gara.findOne({
             where: {
                 userId: rawUserData.id,
-                status: 'S1'
+                status: 'S1',
+                isDelete: 0
             }
         })
         if (checkMail === false && gara === null) {
@@ -206,7 +207,7 @@ let getAllOrderService = async (userId) => {
             if (+item.date < fomatDate && item.status !== 'S3' && item.status !== 'S4' && item.status !== 'S5') {
 
                 let booking2 = await db.Booking.findOne({
-                    where: { userId: userId, id: item.id },
+                    where: { userId: userId, id: item.id, isDelete: 0 },
 
                 })
                 console.log(booking2.id)
@@ -260,7 +261,7 @@ let createCommentService = async (data) => {
         })
 
         if (comment) {
-            let gara = await db.Gara.findOne({ where: { id: data.garaId } })
+            let gara = await db.Gara.findOne({ where: { id: data.garaId, isDelete: 0 } })
             if (gara) {
                 if (gara.rateId === null) {
                     gara.rateId = data.rate
@@ -279,7 +280,8 @@ let createCommentService = async (data) => {
                         timeType: data.timeType,
                         serviceId: data.serviceId,
                         date: data.date,
-                        status: 'S4'
+                        status: 'S4',
+                        isDelete: 0
                     }
                 })
                 if (booking) {

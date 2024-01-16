@@ -86,6 +86,7 @@ let deletePickCar = async (req, res) => {
 
 
         let data = await GaraService.deletePickCarService(req.body)
+        console.log(data)
         return res.status(200).json({
             EM: data.EM,
             EC: data.EC,

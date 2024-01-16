@@ -64,6 +64,7 @@ let registerCartoGaraService = async (rawdata) => {
     })
     try {
         if (garaCar === null) {
+            console.log('aaaaaaaaa')
             await db.Gara_Car.create({
                 garaId: rawdata.garaId,
                 carId: rawdata.carId,
@@ -116,15 +117,18 @@ let registerCartoGaraService = async (rawdata) => {
         }
 
         else {
+
             await db.Gara_Car.findOne({
                 where: {
                     garaId: rawdata.garaId,
                     carId: rawdata.carId,
+                    isDelete: 0
                 },
                 attributes: ['id'],
                 raw: true
 
             }).then(async function (data) {
+
                 let dataaa = await db.Service_Gara_Car.findOne({
                     where: {
                         serviceId: rawdata.serviceId,
@@ -143,6 +147,7 @@ let registerCartoGaraService = async (rawdata) => {
                         garaCarId: data.id,
                         priceId: rawdata.priceId,
                         paymentId: rawdata.paymentId,
+                        isDelete: 0
                     })
                 }
 
@@ -234,7 +239,8 @@ let createBulkScheduleService = async (data) => {
                     where: {
                         date: results[i].date,
                         timeType: results[i].timeType,
-                        garaId: results[i].garaId
+                        garaId: results[i].garaId,
+                        isDelete: 0
                     },
                 });
                 if (res) {
@@ -274,13 +280,15 @@ let deletePickCarService = async (data) => {
 
             let user = await db.Service_Gara_Car.findOne({
                 where: {
-                    garaCarId: data1.dataValues.id,
-                    serviceId: data.serviceId
+                    garaCarId: data1 ? data1.dataValues.id : 0,
+                    serviceId: data.serviceId,
+                    isDelete: 0
                 },
 
 
 
             })
+            console.log(user)
             if (user) {
                 user.isDelete = 1
                 await user.save()
@@ -289,7 +297,7 @@ let deletePickCarService = async (data) => {
 
                 let user2 = await db.Service_Gara_Car.findOne({
                     where: {
-                        garaCarId: data1.dataValues.id,
+                        garaCarId: data1 ? data1.dataValues.id : 0,
                         isDelete: 0
 
                     }
@@ -300,13 +308,26 @@ let deletePickCarService = async (data) => {
                     })
                     gara.isDelete = 1
                     await gara.save()
+                    return {
+                        EM: 'sua thanh cong',
+                        EC: 0,
+                        DT: ''
+                    }
+                }
+                else {
+                    return {
+                        EM: 'no car indatebase',
+                        EC: 1,
+                        DT: ''
+                    }
                 }
             }
 
             else {
+
                 return {
-                    EM: 'update database succes',
-                    EC: 0,
+                    EM: 'no car indatebase',
+                    EC: 1,
                     DT: ''
                 }
 
@@ -381,7 +402,7 @@ let getListBookingService = async (garaId, date) => {
                 if (+item.date < fomatDate && item.status !== 'S3' && item.status !== 'S4' && item.status !== 'S5') {
 
                     let booking3 = await db.Booking.findOne({
-                        where: { id: item.id },
+                        where: { id: item.id, isDelete: 0 },
 
                     })
 
@@ -451,7 +472,7 @@ let getListBookingService = async (garaId, date) => {
                 if (+item.date < fomatDate && item.status !== 'S3' && item.status !== 'S4' && item.status !== 'S5') {
 
                     let booking3 = await db.Booking.findOne({
-                        where: { id: item.id },
+                        where: { id: item.id, isDelete: 0 },
 
                     })
                     console.log(booking3.id)

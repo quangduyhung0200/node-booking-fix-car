@@ -59,7 +59,7 @@ let sendcomfemEmail = async (dataSend) => {
             <div><b>Thời gian: ${dataSend.time}</b></div>
             <div><b>Tại gara: ${dataSend.nameGara}</b></div>
             <div><b>Địa chỉ: ${dataSend.addressGara}</b></div>
-            <div>Nếu có bất kỳ thắc mắc nào vui lòng liên hệ với gara qua số điện thoại: ${dataSend.phone}</div>
+            <div>Nếu có bất kỳ thắc mắc nào vui lòng liên hệ với gara qua số điện thoại: ${dataSend.phoneGara}</div>
        
        
             <div>Xin chân thành cảm ơn</div>`, // html body
